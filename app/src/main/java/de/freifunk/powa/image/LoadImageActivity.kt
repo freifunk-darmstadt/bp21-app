@@ -50,7 +50,7 @@ class LoadImageActivity : PermissionActivity() {
     }
 
     private fun setImageVilibility(value: Boolean){
-        loadImgBtn.isInvisible = value
-        showImgIv.isVisible = value
+        loadImgBtn.isVisible = value
+        showImgIv.isInvisible = value
     }
 }
