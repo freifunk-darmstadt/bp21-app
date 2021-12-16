@@ -12,6 +12,7 @@ import android.view.ScaleGestureDetector
 import android.widget.Button
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import kotlin.math.max
 import kotlin.math.min
@@ -21,13 +22,12 @@ class LoadImageActivity : AppCompatActivity() {
     private lateinit var showImgIv: ImageView
     private lateinit var loadImgBtn: Button
     private lateinit var scaleGesture: ScaleGestureDetector
-    private var Factor: Float = 1.0f
-    private lateinit var markerView: ImageView
+    private var factor: Float = 1.0f
+    private lateinit var markerView: MarkerView
     private lateinit var myGesture: GestureDetector
     private var scrollHistoryX: Int = 0
     private  var scrollHistoryY: Int = 0
-    private var markerPosX = 0f
-    private var markerPosY = 0f
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_load_image)
@@ -35,6 +35,8 @@ class LoadImageActivity : AppCompatActivity() {
         showImgIv = findViewById(R.id.showImgIv)
         loadImgBtn = findViewById(R.id.loadImageBtn)
         markerView = findViewById(R.id.marker_view)
+
+
         scaleGesture = ScaleGestureDetector(this, ScaleListener())
         myGesture = GestureDetector(this, MyGestureListener())
         supportActionBar!!.hide()
@@ -50,41 +52,28 @@ class LoadImageActivity : AppCompatActivity() {
         var endX: Float
         var startY: Float
         var endY: Float
-
-
+        var distanceX: Int
+        var distanceY: Int
         if(event?.pointerCount == 2){
             scaleGesture?.onTouchEvent(event)
-
         }
         if(event?.action == MotionEvent.ACTION_MOVE && event.pointerCount == 1) {
             historySize = event.historySize
             if(historySize >0){
-                startX = event.getHistoricalX(0, 0)
-                endX = event.getHistoricalX(0,historySize-1)
-                startY = event.getHistoricalY(0,0)
-                endY = event.getHistoricalY(0,historySize -1)
+                startX = event.getHistoricalX(0)
+                endX = event.getHistoricalX(historySize-1)
+                startY = event.getHistoricalY(0)
+                endY = event.getHistoricalY(historySize -1)
+                distanceX = ((startX - endX)/factor).toInt()
+                distanceY = ((startY - endY)/factor).toInt()
+                scrollHistoryX += distanceX
+                scrollHistoryY += distanceY
 
-
-                markerView?.x = markerView!!.x + (endX - startX)
-                markerView?.y = markerView!!.y + (endY - startY)
-                scrollHistoryX += ((startX - endX)/Factor).toInt()
-                scrollHistoryY += ((startY - endY)/Factor).toInt()
-                markerPosX = markerView!!.x
-                markerPosY = markerView!!.y
-
-                showImgIv?.scrollBy(((startX - endX)/Factor).toInt(), ((startY - endY)/Factor).toInt())
-
+                markerView?.scrollBy(distanceX, distanceY)
+                showImgIv?.scrollBy(distanceX, distanceY)
             }
-
         }
-
         myGesture?.onTouchEvent(event)
-
-
-
-
-
-
         return super.onTouchEvent(event)
     }
 
@@ -94,44 +83,38 @@ class LoadImageActivity : AppCompatActivity() {
         return rectangle.top
     }
 
-
     inner class ScaleListener: ScaleGestureDetector.SimpleOnScaleGestureListener(){
         override fun onScale(detector: ScaleGestureDetector?): Boolean {
-            var width = showImgIv?.width
-            var height = showImgIv?.height
-
-            var vectorX = markerView!!.x - width!!/2
-            var vectorY = markerView!!.y - height!!/2
-
-            Factor *= detector!!.scaleFactor
-            Factor = max(0.1f, min(Factor, 5.0f))
-            showImgIv?.scaleX = Factor
-            showImgIv?.scaleY = Factor
-            markerView?.scaleX = Factor
-            markerView?.scaleY = Factor
-
-            if(Factor < 5.0 && Factor > 0.5) {
-                markerView?.x = width!! / 2 + vectorX * detector!!.scaleFactor
-                markerView?.y = height!! / 2 + vectorY * detector!!.scaleFactor
-            }
-
-
-
+            factor *= detector!!.scaleFactor
+            factor = max(0.1f, min(factor, 10.0f))
+            showImgIv?.scaleX = factor
+            showImgIv?.scaleY = factor
+            markerView?.scaleX = factor
+            markerView?.scaleY = factor
             return true
         }
     }
 
     inner class MyGestureListener: GestureDetector.SimpleOnGestureListener(){
         override fun onDoubleTap(e: MotionEvent?): Boolean {
-
             var statusBarHeight = getHeight()
-
-
-            markerView!!.x = e!!.getX() - markerView!!.width/2
-            markerView!!.y = e!!.getY() - statusBarHeight.toFloat() - markerView!!.height/2
-
-
-
+            markerView?.circleShouldDraw = true
+            var middleX = showImgIv!!.width/2
+            var middleY = showImgIv!!.height/2
+            var vectorX: Float
+            var vectorY: Float
+            var onlyViewHeight = e!!.getY() - statusBarHeight
+            if(factor == 1.0f){
+                markerView!!.initX = ((e!!.getX()) + scrollHistoryX )
+                markerView!!.initY = (onlyViewHeight + scrollHistoryY )
+            }
+            else {
+                vectorX = (e!!.getX()) - middleX
+                vectorY =  onlyViewHeight - middleY
+                markerView?.initX = middleX + vectorX / factor + scrollHistoryX
+                markerView?.initY = middleY + vectorY / factor + scrollHistoryY
+            }
+            markerView!!.invalidate()
             return super.onDoubleTap(e)
         }
 
