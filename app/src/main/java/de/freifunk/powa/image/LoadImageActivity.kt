@@ -37,7 +37,6 @@ class LoadImageActivity : PermissionActivity() {
         showImgIv.isInvisible = true
 
         loadImgBtn.setOnClickListener {
-            Log.d("button", "ButtonClicked")
             checkPermission(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 PermissionActivity.WRITE_EXTERNAL_STORAGE_CODE)
