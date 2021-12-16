@@ -22,11 +22,13 @@ class LoadImageActivity : AppCompatActivity() {
     private lateinit var showImgIv: ImageView
     private lateinit var loadImgBtn: Button
     private lateinit var scaleGesture: ScaleGestureDetector
-    private var factor: Float = 1.0f
+    private var scaleFactor: Float = 1.0f
     private lateinit var markerView: MarkerView
-    private lateinit var myGesture: GestureDetector
+    private lateinit var markerGesture: GestureDetector
     private var scrollHistoryX: Int = 0
-    private  var scrollHistoryY: Int = 0
+    private var scrollHistoryY: Int = 0
+    private var minZoomFactor: Float = 0.1f
+    private var maxZoomFactor: Float = 1.0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +38,8 @@ class LoadImageActivity : AppCompatActivity() {
         loadImgBtn = findViewById(R.id.loadImageBtn)
         markerView = findViewById(R.id.marker_view)
 
-
         scaleGesture = ScaleGestureDetector(this, ScaleListener())
-        myGesture = GestureDetector(this, MyGestureListener())
+        markerGesture = GestureDetector(this, MarkerGestureListener())
         supportActionBar!!.hide()
 
         loadImgBtn.setOnClickListener {
@@ -64,8 +65,8 @@ class LoadImageActivity : AppCompatActivity() {
                 endX = event.getHistoricalX(historySize-1)
                 startY = event.getHistoricalY(0)
                 endY = event.getHistoricalY(historySize -1)
-                distanceX = ((startX - endX)/factor).toInt()
-                distanceY = ((startY - endY)/factor).toInt()
+                distanceX = ((startX - endX)/scaleFactor).toInt()
+                distanceY = ((startY - endY)/scaleFactor).toInt()
                 scrollHistoryX += distanceX
                 scrollHistoryY += distanceY
 
@@ -73,7 +74,7 @@ class LoadImageActivity : AppCompatActivity() {
                 showImgIv?.scrollBy(distanceX, distanceY)
             }
         }
-        myGesture?.onTouchEvent(event)
+        markerGesture?.onTouchEvent(event)
         return super.onTouchEvent(event)
     }
 
@@ -85,17 +86,17 @@ class LoadImageActivity : AppCompatActivity() {
 
     inner class ScaleListener: ScaleGestureDetector.SimpleOnScaleGestureListener(){
         override fun onScale(detector: ScaleGestureDetector?): Boolean {
-            factor *= detector!!.scaleFactor
-            factor = max(0.1f, min(factor, 10.0f))
-            showImgIv?.scaleX = factor
-            showImgIv?.scaleY = factor
-            markerView?.scaleX = factor
-            markerView?.scaleY = factor
+            scaleFactor *= detector!!.scaleFactor
+            scaleFactor = max(minZoomFactor, min(scaleFactor, maxZoomFactor))
+            showImgIv?.scaleX = scaleFactor
+            showImgIv?.scaleY = scaleFactor
+            markerView?.scaleX = scaleFactor
+            markerView?.scaleY = scaleFactor
             return true
         }
     }
 
-    inner class MyGestureListener: GestureDetector.SimpleOnGestureListener(){
+    inner class MarkerGestureListener: GestureDetector.SimpleOnGestureListener(){
         override fun onDoubleTap(e: MotionEvent?): Boolean {
             var statusBarHeight = getHeight()
             markerView?.circleShouldDraw = true
@@ -104,15 +105,14 @@ class LoadImageActivity : AppCompatActivity() {
             var vectorX: Float
             var vectorY: Float
             var onlyViewHeight = e!!.getY() - statusBarHeight
-            if(factor == 1.0f){
+            if(scaleFactor == 1.0f){
                 markerView!!.initX = ((e!!.getX()) + scrollHistoryX )
                 markerView!!.initY = (onlyViewHeight + scrollHistoryY )
-            }
-            else {
+            } else {
                 vectorX = (e!!.getX()) - middleX
                 vectorY =  onlyViewHeight - middleY
-                markerView?.initX = middleX + vectorX / factor + scrollHistoryX
-                markerView?.initY = middleY + vectorY / factor + scrollHistoryY
+                markerView?.initX = middleX + vectorX / scaleFactor + scrollHistoryX
+                markerView?.initY = middleY + vectorY / scaleFactor + scrollHistoryY
             }
             markerView!!.invalidate()
             return super.onDoubleTap(e)

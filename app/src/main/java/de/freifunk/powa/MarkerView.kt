@@ -8,9 +8,12 @@ import android.util.AttributeSet
 import android.view.View
 
 class MarkerView: View {
-    constructor(context: Context?):super(context)
-    constructor(context: Context?, attrs: AttributeSet?): super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int): super(context,attrs, defStyleAttr)
+    constructor(context: Context?):
+            super(context)
+    constructor(context: Context?, attrs: AttributeSet?):
+            super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int):
+            super(context,attrs, defStyleAttr)
     lateinit var canvas: Canvas
     var initX: Float = 0f
     var initY: Float = 0f
@@ -23,7 +26,6 @@ class MarkerView: View {
         strokeWidth = 5f
     }
 
-
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas?.let {
@@ -31,9 +33,7 @@ class MarkerView: View {
 
             if(circleShouldDraw) {
                 drawCircle()
-
             }
-
         }
     }
 
