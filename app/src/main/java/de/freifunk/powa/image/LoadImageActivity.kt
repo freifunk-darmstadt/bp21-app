@@ -1,8 +1,11 @@
 package de.freifunk.powa.image
 
 import android.content.Intent
-import android.graphics.Rect
+import android.Manifest
 import androidx.appcompat.app.AppCompatActivity
+import android.graphics.BitmapFactory
+import android.graphics.Rect
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -11,13 +14,17 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.widget.Button
 import android.widget.ImageView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
+import de.freifunk.powa.permissions.PermissionActivity
 import kotlin.math.max
 import kotlin.math.min
 
-class LoadImageActivity : AppCompatActivity() {
+class LoadImageActivity : PermissionActivity() {
 
     private lateinit var showImgIv: ImageView
     private lateinit var loadImgBtn: Button
@@ -29,6 +36,17 @@ class LoadImageActivity : AppCompatActivity() {
     private var scrollHistoryY: Int = 0
     private var minZoomFactor: Float = 0.1f
     private var maxZoomFactor: Float = 1.0f
+
+    //create ComponentActivity to load and handle loading the image
+    private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        if (uri != null){
+            setImageVisibility(false)
+
+            //loads the image from the URI and stores it to the imageview
+            val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri!!))
+            showImgIv.setImageBitmap(bitmap)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,11 +60,30 @@ class LoadImageActivity : AppCompatActivity() {
         markerGesture = GestureDetector(this, MarkerGestureListener())
         supportActionBar!!.hide()
 
-        loadImgBtn.setOnClickListener {
+        showImgIv.isInvisible = true
 
+        //request permissions on Button press and open system image selector
+        loadImgBtn.setOnClickListener {
+            checkPermission(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                PermissionActivity.WRITE_EXTERNAL_STORAGE_CODE)
+            checkPermission(
+                Manifest.permission.CAMERA,
+                CAMERA_PERMISSION_CODE)
+
+            getContent.launch("image/*")
         }
     }
-
+    
+    /**
+     * set the visibility of the imageView and the load image button
+     * @param value the value to set the visibility of the imageView to
+     */
+    private fun setImageVisibility(value: Boolean){
+        loadImgBtn.isVisible = value
+        showImgIv.isInvisible = value
+    }
+    
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         var historySize: Int
         var startX: Float
@@ -123,7 +160,4 @@ class LoadImageActivity : AppCompatActivity() {
         }
 
     }
-
-
-
 }
