@@ -34,8 +34,8 @@ class LoadImageActivity : PermissionActivity() {
     private lateinit var markerGesture: GestureDetector
     private var scrollHistoryX: Int = 0
     private var scrollHistoryY: Int = 0
-    private var minZoomFactor: Float = 0.1f
-    private var maxZoomFactor: Float = 1.0f
+    private var minZoomFactor: Float = 0.25f
+    private var maxZoomFactor: Float = 20.0f
 
     //create ComponentActivity to load and handle loading the image
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
