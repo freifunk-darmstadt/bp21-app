@@ -143,13 +143,14 @@ class LoadImageActivity : PermissionActivity() {
             var vectorY: Float
             var onlyViewHeight = e!!.getY() - statusBarHeight
             if(scaleFactor == 1.0f){
-                markerView!!.initX = ((e!!.getX()) + scrollHistoryX )
-                markerView!!.initY = (onlyViewHeight + scrollHistoryY )
+                markerView!!.initX = ((e!!.getX()) + scrollHistoryX ) - showImgIv!!.x
+                markerView!!.initY = (onlyViewHeight + scrollHistoryY ) - showImgIv!!.y
+                // subtraction with the position of showImgIv because it is not positioned in the origin
             } else {
                 vectorX = (e!!.getX()) - middleX
                 vectorY =  onlyViewHeight - middleY
-                markerView?.initX = middleX + vectorX / scaleFactor + scrollHistoryX
-                markerView?.initY = middleY + vectorY / scaleFactor + scrollHistoryY
+                markerView?.initX = middleX + vectorX / scaleFactor + scrollHistoryX - showImgIv!!.x/scaleFactor
+                markerView?.initY = middleY + vectorY / scaleFactor + scrollHistoryY - showImgIv!!.y/scaleFactor
             }
             markerView!!.invalidate()
             return super.onDoubleTap(e)
