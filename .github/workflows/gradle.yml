@@ -66,18 +66,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-        # Check the code with detekt, you can remove this job if you don't use detekt
-      - name: Run detekt Linter
-        run: ./gradlew detekt
-
         # Check the code with ktlint, you can remove this job if you don't use ktlint
       - name: Run Kotlin Linter
         run: ./gradlew ktlintCheck
-
-      # Check the code with Android linter (need assemble)
-      - name: Run Android Linter
-        run: ./gradlew lint
-
-        # Check the code with Spotless
-      - name: Run Spotless
-        run: ./gradlew spotlessCheck
