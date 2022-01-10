@@ -34,8 +34,8 @@ class LoadImageActivity : PermissionActivity() {
     private lateinit var markerGesture: GestureDetector
     private var scrollHistoryX: Int = 0
     private var scrollHistoryY: Int = 0
-    private var minZoomFactor: Float = 0.1f
-    private var maxZoomFactor: Float = 1.0f
+    private var minZoomFactor: Float = 0.25f
+    private var maxZoomFactor: Float = 20.0f
 
     //create ComponentActivity to load and handle loading the image
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -143,13 +143,14 @@ class LoadImageActivity : PermissionActivity() {
             var vectorY: Float
             var onlyViewHeight = e!!.getY() - statusBarHeight
             if(scaleFactor == 1.0f){
-                markerView!!.initX = ((e!!.getX()) + scrollHistoryX )
-                markerView!!.initY = (onlyViewHeight + scrollHistoryY )
+                markerView!!.initX = ((e!!.getX()) + scrollHistoryX ) - showImgIv!!.x
+                markerView!!.initY = (onlyViewHeight + scrollHistoryY ) - showImgIv!!.y
+                // subtraction with the position of showImgIv because it is not positioned in the origin
             } else {
                 vectorX = (e!!.getX()) - middleX
                 vectorY =  onlyViewHeight - middleY
-                markerView?.initX = middleX + vectorX / scaleFactor + scrollHistoryX
-                markerView?.initY = middleY + vectorY / scaleFactor + scrollHistoryY
+                markerView?.initX = middleX + vectorX / scaleFactor + scrollHistoryX - showImgIv!!.x/scaleFactor
+                markerView?.initY = middleY + vectorY / scaleFactor + scrollHistoryY - showImgIv!!.y/scaleFactor
             }
             markerView!!.invalidate()
             return super.onDoubleTap(e)
