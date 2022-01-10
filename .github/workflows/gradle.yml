@@ -26,15 +26,8 @@ jobs:
         distribution: 'adopt'
     - name: Change wrapper permissions
       run: chmod +x ./gradlew
-    - name: Cache Gradle and wrapper
-      uses: actions/cache@v2
-      with:
-        path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-            restore-keys: |
-              ${{ runner.os }}-gradle-
+    - name: Cache .gradle
+      uses: burrunan/gradle-cache-action@v1
     - uses: actions/upload-artifact@master
       with:
         name: release.apk
@@ -55,17 +48,10 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '11'
-
-      - name: Cache Gradle and wrapper
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+      - name: Cache .gradle
+        uses: burrunan/gradle-cache-action@v1
         # Check the code with ktlint, you can remove this job if you don't use ktlint
       - name: Run Kotlin Linter
         run: ./gradlew ktlintCheck
