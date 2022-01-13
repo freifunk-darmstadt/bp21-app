@@ -58,6 +58,11 @@ jobs:
         # Check the code with ktlint, you can remove this job if you don't use ktlint
       - name: Run Kotlin Linter
         run: ./gradlew ktlintCheck
+      - name: find file
+        run: |
+          find . -name 'ktlint'
+          cd build/reports/ktlint
+          ls
       - uses: actions/upload-artifact@master
         with:
           name: linter.txt
