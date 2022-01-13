@@ -28,6 +28,10 @@ jobs:
       run: chmod +x ./gradlew
     - name: Cache .gradle
       uses: burrunan/gradle-cache-action@v1
+    - name: run build
+      run: |
+        ./gradlew build
+        pwd
     - uses: actions/upload-artifact@master
       with:
         name: release.apk
