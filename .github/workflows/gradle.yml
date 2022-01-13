@@ -61,4 +61,4 @@ jobs:
       - uses: actions/upload-artifact@master
         with:
           name: lint-results.html
-          path: /app/build/reports/lint-results-debug.html
+          path: app/build/reports/lint-results-debug.html
