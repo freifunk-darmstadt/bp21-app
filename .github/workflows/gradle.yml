@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-
+    if: ${{ false }}
     runs-on: ubuntu-latest
 
     steps:
@@ -61,7 +61,7 @@ jobs:
       - name: find file
         run: |
           find . -name 'ktlint'
-          cd build/reports/ktlint
+          cd /app/build/reports/ktlint
           ls
       - uses: actions/upload-artifact@master
         with:
