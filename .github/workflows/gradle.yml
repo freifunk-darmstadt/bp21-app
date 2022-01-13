@@ -57,7 +57,7 @@ jobs:
         uses: burrunan/gradle-cache-action@v1
         # Check the code with ktlint, you can remove this job if you don't use ktlint
       - name: Run Kotlin Linter
-        run: ./gradlew --continue lint
+        run: ./gradlew --continue lint ktlintCheck
       - uses: actions/upload-artifact@master
         with:
           name: lint-results.html
