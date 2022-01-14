@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.POWA">
         <activity
+            android:name=".permissions.PermissionsDemoActivity"
+            android:exported="false" />
+        <activity
             android:name=".image.LoadImageActivity"
             android:exported="false" />
         <activity
