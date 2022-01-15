@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import de.freifunk.powa.image.LoadImageActivity
-import de.freifunk.powa.scan.SingleScanActivity
+import de.freifunk.powa.scan.scan
+import de.freifunk.powa.scan.handleScanResults
+import de.freifunk.powa.scan.handleScanFailure
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,15 +21,15 @@ class MainActivity : AppCompatActivity() {
         goToLoadImgActivityBtn = findViewById(R.id.goToLoadImageActivityBtn)
 
         goToLoadImgActivityBtn.setOnClickListener {
-            val goToLoadImageActivityIntent = Intent(this, LoadImageActivity::class.java)
-            startActivity(goToLoadImageActivityIntent)
+            startActivity(Intent(this, LoadImageActivity::class.java))
         }
 
         goToScanActivityBtn = findViewById(R.id.goToScanActivityBtn)
 
         goToScanActivityBtn.setOnClickListener {
-            val goToLoadImageActivityIntent = Intent(this, SingleScanActivity::class.java)
-            startActivity(goToLoadImageActivityIntent)
+            scan(this@MainActivity, ::handleScanResults, ::handleScanFailure)
         }
+
+
     }
 }
