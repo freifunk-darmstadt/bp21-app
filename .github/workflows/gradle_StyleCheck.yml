@@ -36,18 +36,22 @@ jobs:
       - name: Run Kotlin Linter
         run: ./gradlew --continue lint ktlintFormat
       - uses: actions/upload-artifact@master
+        if: {{ always() }}
         with:
           name: Android-lint-results.html
           path: app/build/reports/lint-results-debug.html
       - uses: actions/upload-artifact@master
+        if: {{ always() }}
         with:
           name: lint-results-AndroidTest.txt
           path: app/build/reports/ktlint/ktlintAndroidTestSourceSetFormat/ktlintAndroidTestSourceSetFormat.txt
       - uses: actions/upload-artifact@master
+        if: {{ always() }}
         with:
           name: lint-results-MainSource.txt
           path: app/build/reports/ktlint/ktlintMainSourceSetFormat/ktlintMainSourceSetFormat.txt
       - uses: actions/upload-artifact@master
+        if: {{ always() }}
         with:
           name: lint-results-Test.txt
           path: app/build/reports/ktlint/ktlintTestSourceSetFormat/ktlintTestSourceSetFormat.txt
