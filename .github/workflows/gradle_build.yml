@@ -14,7 +14,6 @@ on:
 
 jobs:
   build:
-    if: ${{ false }}
     runs-on: ubuntu-latest
 
     steps:
@@ -35,30 +34,3 @@ jobs:
       with:
         name: release.apk
         path: app/build/outputs/apk/debug/app-debug.apk
-
-  static-analysis:
-    name: Execute analyse on code
-    continue-on-error: true
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up our JDK environment
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '11'
-      - name: Change wrapper permissions
-        run: chmod +x ./gradlew
-      - name: Cache .gradle
-        uses: burrunan/gradle-cache-action@v1
-        # Check the code with ktlint, you can remove this job if you don't use ktlint
-      - name: Run Kotlin Linter
-        run: ./gradlew --continue lint ktlintCheck
-      - uses: actions/upload-artifact@master
-        with:
-          name: lint-results.html
-          path: app/build/reports/lint-results-debug.html
