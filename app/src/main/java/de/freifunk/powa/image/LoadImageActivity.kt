@@ -43,7 +43,7 @@ class LoadImageActivity : PermissionActivity() {
             setImageVisibility(false)
 
             //loads the image from the URI and stores it to the imageview
-            val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri!!))
+            val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri))
             showImgIv.setImageBitmap(bitmap)
         }
     }
@@ -93,7 +93,7 @@ class LoadImageActivity : PermissionActivity() {
         var distanceX: Int
         var distanceY: Int
         if(event?.pointerCount == 2){
-            scaleGesture?.onTouchEvent(event)
+            scaleGesture.onTouchEvent(event)
         }
         if(event?.action == MotionEvent.ACTION_MOVE && event.pointerCount == 1) {
             historySize = event.historySize
@@ -107,11 +107,11 @@ class LoadImageActivity : PermissionActivity() {
                 scrollHistoryX += distanceX
                 scrollHistoryY += distanceY
 
-                markerView?.scrollBy(distanceX, distanceY)
-                showImgIv?.scrollBy(distanceX, distanceY)
+                markerView.scrollBy(distanceX, distanceY)
+                showImgIv.scrollBy(distanceX, distanceY)
             }
         }
-        markerGesture?.onTouchEvent(event)
+        markerGesture.onTouchEvent(event)
         return super.onTouchEvent(event)
     }
 
@@ -125,10 +125,10 @@ class LoadImageActivity : PermissionActivity() {
         override fun onScale(detector: ScaleGestureDetector?): Boolean {
             scaleFactor *= detector!!.scaleFactor
             scaleFactor = max(minZoomFactor, min(scaleFactor, maxZoomFactor))
-            showImgIv?.scaleX = scaleFactor
-            showImgIv?.scaleY = scaleFactor
-            markerView?.scaleX = scaleFactor
-            markerView?.scaleY = scaleFactor
+            showImgIv.scaleX = scaleFactor
+            showImgIv.scaleY = scaleFactor
+            markerView.scaleX = scaleFactor
+            markerView.scaleY = scaleFactor
             return true
         }
     }
@@ -136,23 +136,23 @@ class LoadImageActivity : PermissionActivity() {
     inner class MarkerGestureListener: GestureDetector.SimpleOnGestureListener(){
         override fun onDoubleTap(e: MotionEvent?): Boolean {
             var statusBarHeight = getHeight()
-            markerView?.circleShouldDraw = true
-            var middleX = showImgIv!!.width/2
-            var middleY = showImgIv!!.height/2
+            markerView.circleShouldDraw = true
+            var middleX = showImgIv.width/2
+            var middleY = showImgIv.height/2
             var vectorX: Float
             var vectorY: Float
             var onlyViewHeight = e!!.getY() - statusBarHeight
             if(scaleFactor == 1.0f){
-                markerView!!.initX = ((e!!.getX()) + scrollHistoryX ) - showImgIv!!.x
-                markerView!!.initY = (onlyViewHeight + scrollHistoryY ) - showImgIv!!.y
+                markerView.initX = ((e.getX()) + scrollHistoryX ) - showImgIv.x
+                markerView.initY = (onlyViewHeight + scrollHistoryY ) - showImgIv.y
                 // subtraction with the position of showImgIv because it is not positioned in the origin
             } else {
-                vectorX = (e!!.getX()) - middleX
+                vectorX = (e.getX()) - middleX
                 vectorY =  onlyViewHeight - middleY
-                markerView?.initX = middleX + vectorX / scaleFactor + scrollHistoryX - showImgIv!!.x/scaleFactor
-                markerView?.initY = middleY + vectorY / scaleFactor + scrollHistoryY - showImgIv!!.y/scaleFactor
+                markerView.initX = middleX + vectorX / scaleFactor + scrollHistoryX - showImgIv.x/scaleFactor
+                markerView.initY = middleY + vectorY / scaleFactor + scrollHistoryY - showImgIv.y/scaleFactor
             }
-            markerView!!.invalidate()
+            markerView.invalidate()
             return super.onDoubleTap(e)
         }
 
