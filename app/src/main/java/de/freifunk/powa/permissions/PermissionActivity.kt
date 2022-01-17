@@ -7,12 +7,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import de.freifunk.powa.image.LoadImageActivity
 
-open class PermissionActivity: AppCompatActivity() {
-
-    companion object {
-        const val CAMERA_PERMISSION_CODE = 100
-        const val STORAGE_PERMISSION_CODE = 101
-
 open class PermissionActivity : AppCompatActivity() {
 
     companion object {
@@ -53,7 +47,7 @@ open class PermissionActivity : AppCompatActivity() {
     // This function is called when the user accepts or decline the permission.
     // Request Code is used to check which permission called this function.
     // This request code is provided when the user is prompt for permission.
-    override fun onRequestPermissionsResult(requestCode: Int,
+    fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>,
                                             grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

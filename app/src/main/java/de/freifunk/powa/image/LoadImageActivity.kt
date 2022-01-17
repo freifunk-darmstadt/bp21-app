@@ -46,14 +46,6 @@ class LoadImageActivity : PermissionActivity() {
         }
     }
 
-    private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        if (uri != null){
-            setImageVilibility(false)
-            val myBitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri!!))
-            showImgIv.setImageBitmap(myBitmap)
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_load_image)
@@ -70,15 +62,6 @@ class LoadImageActivity : PermissionActivity() {
 
         // request permissions on Button press and open system image selector
         loadImgBtn.setOnClickListener {
-            checkPermission(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                PermissionActivity.WRITE_EXTERNAL_STORAGE_CODE
-            )
-            checkPermission(
-                Manifest.permission.CAMERA,
-                CAMERA_PERMISSION_CODE
-            )
-
             getContent.launch("image/*")
         }
     }
