@@ -13,15 +13,15 @@ import android.view.ScaleGestureDetector
 import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
-import de.freifunk.powa.permissions.PermissionActivity
 import kotlin.math.max
 import kotlin.math.min
 
-class LoadImageActivity : PermissionActivity() {
+class LoadImageActivity : AppCompatActivity() {
 
     private lateinit var showImgIv: ImageView
     private lateinit var loadImgBtn: Button
