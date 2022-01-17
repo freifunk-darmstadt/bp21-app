@@ -1,0 +1,63 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Static Check
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  static-analysis:
+    name: Execute analysis on code
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up our JDK environment
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+      - name: Cache .gradle
+        uses: burrunan/gradle-cache-action@v1
+        # Check the code with ktlint, you can remove this job if you don't use ktlint
+      - name: Run Kotlin Linter
+        run: ./gradlew --continue lint ktlintFormat
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: lint results
+          add: '*.kt'
+      - uses: actions/upload-artifact@master
+        if: always()
+        with:
+          name: Android-lint-results.html
+          path: app/build/reports/lint-results-debug.html
+      - uses: actions/upload-artifact@master
+        if: always()
+        with:
+          name: lint-results-AndroidTest.txt
+          path: app/build/reports/ktlint/ktlintAndroidTestSourceSetFormat/ktlintAndroidTestSourceSetFormat.txt
+      - uses: actions/upload-artifact@master
+        if: always()
+        with:
+          name: lint-results-MainSource.txt
+          path: app/build/reports/ktlint/ktlintMainSourceSetFormat/ktlintMainSourceSetFormat.txt
+      - uses: actions/upload-artifact@master
+        if: always()
+        with:
+          name: lint-results-Test.txt
+          path: app/build/reports/ktlint/ktlintTestSourceSetFormat/ktlintTestSourceSetFormat.txt

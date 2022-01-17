@@ -1,24 +1,27 @@
 package de.freifunk.powa.image
 
+import android.Manifest
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
+import de.freifunk.powa.permissions.PermissionActivity
 import kotlin.math.max
 import kotlin.math.min
 
-class LoadImageActivity : AppCompatActivity() {
+class LoadImageActivity : PermissionActivity() {
 
     private lateinit var showImgIv: ImageView
     private lateinit var loadImgBtn: Button
@@ -31,12 +34,12 @@ class LoadImageActivity : AppCompatActivity() {
     private var minZoomFactor: Float = 0.25f
     private var maxZoomFactor: Float = 20.0f
 
-    //create ComponentActivity to load and handle loading the image
+    // create ComponentActivity to load and handle loading the image
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        if (uri != null){
+        if (uri != null) {
             setImageVisibility(false)
 
-            //loads the image from the URI and stores it to the imageview
+            // loads the image from the URI and stores it to the imageview
             val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri))
             showImgIv.setImageBitmap(bitmap)
         }
@@ -56,41 +59,41 @@ class LoadImageActivity : AppCompatActivity() {
 
         showImgIv.isInvisible = true
 
-        //on Button press open system image selector
+        // request permissions on Button press and open system image selector
         loadImgBtn.setOnClickListener {
             getContent.launch("image/*")
         }
     }
-    
+
     /**
      * set the visibility of the imageView and the load image button
      * @param value the value to set the visibility of the imageView to
      */
-    private fun setImageVisibility(value: Boolean = false){
+    private fun setImageVisibility(value: Boolean) {
         loadImgBtn.isVisible = value
         showImgIv.isInvisible = value
     }
-    
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        val historySize: Int
-        val startX: Float
-        val endX: Float
-        val startY: Float
-        val endY: Float
-        val distanceX: Int
-        val distanceY: Int
-        if(event?.pointerCount == 2){
+        var historySize: Int
+        var startX: Float
+        var endX: Float
+        var startY: Float
+        var endY: Float
+        var distanceX: Int
+        var distanceY: Int
+        if (event?.pointerCount == 2) {
             scaleGesture.onTouchEvent(event)
         }
-        if(event?.action == MotionEvent.ACTION_MOVE && event.pointerCount == 1) {
+        if (event?.action == MotionEvent.ACTION_MOVE && event.pointerCount == 1) {
             historySize = event.historySize
-            if(historySize >0){
+            if (historySize > 0) {
                 startX = event.getHistoricalX(0)
-                endX = event.getHistoricalX(historySize-1)
+                endX = event.getHistoricalX(historySize - 1)
                 startY = event.getHistoricalY(0)
-                endY = event.getHistoricalY(historySize -1)
-                distanceX = ((startX - endX)/scaleFactor).toInt()
-                distanceY = ((startY - endY)/scaleFactor).toInt()
+                endY = event.getHistoricalY(historySize - 1)
+                distanceX = ((startX - endX) / scaleFactor).toInt()
+                distanceY = ((startY - endY) / scaleFactor).toInt()
                 scrollHistoryX += distanceX
                 scrollHistoryY += distanceY
 
@@ -102,13 +105,13 @@ class LoadImageActivity : AppCompatActivity() {
         return super.onTouchEvent(event)
     }
 
-    fun getHeight():Int{
-        val rectangle = Rect()
+    fun getHeight(): Int {
+        var rectangle = Rect()
         window.decorView.getWindowVisibleDisplayFrame(rectangle)
         return rectangle.top
     }
 
-    inner class ScaleListener: ScaleGestureDetector.SimpleOnScaleGestureListener(){
+    inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
         override fun onScale(detector: ScaleGestureDetector?): Boolean {
             scaleFactor *= detector!!.scaleFactor
             scaleFactor = max(minZoomFactor, min(scaleFactor, maxZoomFactor))
@@ -120,32 +123,31 @@ class LoadImageActivity : AppCompatActivity() {
         }
     }
 
-    inner class MarkerGestureListener: GestureDetector.SimpleOnGestureListener(){
+    inner class MarkerGestureListener : GestureDetector.SimpleOnGestureListener() {
         override fun onDoubleTap(e: MotionEvent?): Boolean {
-            val statusBarHeight = getHeight()
+            var statusBarHeight = getHeight()
             markerView.circleShouldDraw = true
-            val middleX = showImgIv.width/2
-            val middleY = showImgIv.height/2
-            val vectorX: Float
-            val vectorY: Float
-            val onlyViewHeight = e!!.getY() - statusBarHeight
-            if(scaleFactor == 1.0f){
-                markerView.initX = ((e.getX()) + scrollHistoryX ) - showImgIv.x
-                markerView.initY = (onlyViewHeight + scrollHistoryY ) - showImgIv.y
+            var middleX = showImgIv.width / 2
+            var middleY = showImgIv.height / 2
+            var vectorX: Float
+            var vectorY: Float
+            var onlyViewHeight = e!!.getY() - statusBarHeight
+            if (scaleFactor == 1.0f) {
+                markerView.initX = ((e.getX()) + scrollHistoryX) - showImgIv.x
+                markerView.initY = (onlyViewHeight + scrollHistoryY) - showImgIv.y
                 // subtraction with the position of showImgIv because it is not positioned in the origin
             } else {
                 vectorX = (e.getX()) - middleX
-                vectorY =  onlyViewHeight - middleY
-                markerView.initX = middleX + vectorX / scaleFactor + scrollHistoryX - showImgIv.x/scaleFactor
-                markerView.initY = middleY + vectorY / scaleFactor + scrollHistoryY - showImgIv.y/scaleFactor
+                vectorY = onlyViewHeight - middleY
+                markerView.initX = middleX + vectorX / scaleFactor + scrollHistoryX - showImgIv.x / scaleFactor
+                markerView.initY = middleY + vectorY / scaleFactor + scrollHistoryY - showImgIv.y / scaleFactor
             }
             markerView.invalidate()
             return super.onDoubleTap(e)
         }
 
-        fun dpFromPx(px:Float): Float{
-            return px/ resources.displayMetrics.density
+        fun dpFromPx(px: Float): Float {
+            return px / resources.displayMetrics.density
         }
-
     }
 }

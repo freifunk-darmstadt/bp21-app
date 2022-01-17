@@ -7,13 +7,13 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 
-class MarkerView: View {
-    constructor(context: Context?):
-            super(context)
-    constructor(context: Context?, attrs: AttributeSet?):
-            super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int):
-            super(context,attrs, defStyleAttr)
+class MarkerView : View {
+    constructor(context: Context?) :
+        super(context)
+    constructor(context: Context?, attrs: AttributeSet?) :
+        super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) :
+        super(context, attrs, defStyleAttr)
     lateinit var canvas: Canvas
     var initX: Float = 0f
     var initY: Float = 0f
@@ -31,13 +31,13 @@ class MarkerView: View {
         canvas?.let {
             this.canvas = canvas
 
-            if(circleShouldDraw) {
+            if (circleShouldDraw) {
                 drawCircle()
             }
         }
     }
 
-    fun drawCircle(){
-        canvas.drawCircle(initX, initY, rad, linePaint )
+    fun drawCircle() {
+        canvas.drawCircle(initX, initY, rad, linePaint)
     }
 }
