@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.image.LoadImageActivity
-import de.freifunk.powa.scan.scan
-import de.freifunk.powa.scan.handleScanResults
 import de.freifunk.powa.scan.handleScanFailure
+import de.freifunk.powa.scan.handleScanResults
+import de.freifunk.powa.scan.scan
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,7 +29,5 @@ class MainActivity : AppCompatActivity() {
         goToScanActivityBtn.setOnClickListener {
             scan(this@MainActivity, ::handleScanResults, ::handleScanFailure)
         }
-
-
     }
 }

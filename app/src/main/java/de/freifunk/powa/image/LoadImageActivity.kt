@@ -1,21 +1,17 @@
 package de.freifunk.powa.image
 
-import android.Manifest
 import android.graphics.BitmapFactory
-
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
-
 import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.permissions.PermissionActivity
