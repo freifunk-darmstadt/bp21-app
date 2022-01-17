@@ -2,10 +2,10 @@ package de.freifunk.powa
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.permissions.GeneralPermissionRequestCode
 import de.freifunk.powa.permissions.PERMISSIONS
@@ -36,16 +36,20 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == GeneralPermissionRequestCode) {
+        if (requestCode == GeneralPermissionRequestCode) {
             for (resultIndex in grantResults.indices) {
                 if (grantResults[resultIndex] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this@MainActivity,
+                    Toast.makeText(
+                        this@MainActivity,
                         "Permission granted: ${PERMISSIONS[resultIndex]}",
-                        Toast.LENGTH_SHORT).show()
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    Toast.makeText(this@MainActivity,
+                    Toast.makeText(
+                        this@MainActivity,
                         "Permission denied: ${PERMISSIONS[resultIndex]}",
-                        Toast.LENGTH_SHORT).show()
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
