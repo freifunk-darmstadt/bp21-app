@@ -1,16 +1,18 @@
 package de.freifunk.powa
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.image.LoadImageActivity
-import de.freifunk.powa.scan.handleScanFailure
-import de.freifunk.powa.scan.handleScanResults
-import de.freifunk.powa.scan.scan
 import de.freifunk.powa.permissions.GeneralPermissionRequestCode
 import de.freifunk.powa.permissions.PERMISSIONS
 import de.freifunk.powa.permissions.requestAllPermissions
+import de.freifunk.powa.scan.handleScanFailure
+import de.freifunk.powa.scan.handleScanResults
+import de.freifunk.powa.scan.scan
 
 class MainActivity : AppCompatActivity() {
 

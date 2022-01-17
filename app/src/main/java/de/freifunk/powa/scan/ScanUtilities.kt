@@ -1,5 +1,6 @@
 package de.freifunk.powa.scan
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -7,6 +8,7 @@ import android.content.IntentFilter
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.util.Log
+import de.freifunk.powa.permissions.requestSelectedPermissions
 
 const val MAX_LEVEL = -1
 const val MIN_LEVEL = -90
@@ -17,8 +19,6 @@ fun scan(
     onFailure: () -> Unit,
     filter: (List<ScanResult>) -> List<ScanResult> = (::filterData)
 ) {
-
-    // TODO("permissions abfragen")
 
     // wifi manager
     val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
