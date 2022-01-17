@@ -35,6 +35,11 @@ jobs:
         # Check the code with ktlint, you can remove this job if you don't use ktlint
       - name: Run Kotlin Linter
         run: ./gradlew --continue lint ktlintFormat
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v7
+        with:
+          author_name: lint results
+          add: '*.kt'
       - uses: actions/upload-artifact@master
         if: always()
         with:
