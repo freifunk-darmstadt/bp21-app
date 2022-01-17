@@ -8,6 +8,9 @@ import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.scan.handleScanFailure
 import de.freifunk.powa.scan.handleScanResults
 import de.freifunk.powa.scan.scan
+import de.freifunk.powa.permissions.GeneralPermissionRequestCode
+import de.freifunk.powa.permissions.PERMISSIONS
+import de.freifunk.powa.permissions.requestAllPermissions
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +31,29 @@ class MainActivity : AppCompatActivity() {
 
         goToScanActivityBtn.setOnClickListener {
             scan(this@MainActivity, ::handleScanResults, ::handleScanFailure)
+        }
+
+        requestAllPermissions(this@MainActivity)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == GeneralPermissionRequestCode) {
+            for (resultIndex in grantResults.indices) {
+                if (grantResults[resultIndex] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this@MainActivity,
+                        "Permission granted: ${PERMISSIONS[resultIndex]}",
+                        Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@MainActivity,
+                        "Permission denied: ${PERMISSIONS[resultIndex]}",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }
