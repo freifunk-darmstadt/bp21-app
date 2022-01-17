@@ -1,9 +1,9 @@
 package de.freifunk.powa
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.scan.scan
 import de.freifunk.powa.scan.handleScanResults
