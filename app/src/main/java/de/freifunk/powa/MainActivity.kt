@@ -10,10 +10,14 @@ import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.permissions.GeneralPermissionRequestCode
 import de.freifunk.powa.permissions.PERMISSIONS
 import de.freifunk.powa.permissions.requestAllPermissions
+import de.freifunk.powa.scan.handleScanFailure
+import de.freifunk.powa.scan.handleScanResults
+import de.freifunk.powa.scan.scan
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var goToLoadImgActivityBtn: Button
+    private lateinit var goToScanActivityBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,9 +26,13 @@ class MainActivity : AppCompatActivity() {
         goToLoadImgActivityBtn = findViewById(R.id.goToLoadImageActivityBtn)
 
         goToLoadImgActivityBtn.setOnClickListener {
-            val goToLoadImageActivityIntent =
-                Intent(this, LoadImageActivity::class.java)
-            startActivity(goToLoadImageActivityIntent)
+            startActivity(Intent(this, LoadImageActivity::class.java))
+        }
+
+        goToScanActivityBtn = findViewById(R.id.goToScanActivityBtn)
+
+        goToScanActivityBtn.setOnClickListener {
+            scan(this@MainActivity, ::handleScanResults, ::handleScanFailure)
         }
 
         requestAllPermissions(this@MainActivity)
