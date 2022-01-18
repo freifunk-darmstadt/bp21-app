@@ -5,7 +5,7 @@ class WiFiScanObject {
     lateinit var ssid: String
     lateinit var capabilities: String
     var centerFreq0: Int? = null
-    var centerfreq1: Int? = null
+    var centerFreq1: Int? = null
     var channelWidth: Int? = null
     var frequency: Int? = null
     var level: Int? = null
