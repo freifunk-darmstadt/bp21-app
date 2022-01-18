@@ -69,7 +69,7 @@ class ScanDBHelper(context: Context):
             db.insert(MAP_TABLE_NAME, null, value)
 
             db?.execSQL(
-                " CREATE TABLE IF NOT EXISTS" + name + " (" +
+                " CREATE TABLE IF NOT EXISTS " + name + " (" +
                         COLUMN_SCANS_TIMESTAMP + " TIMESTAMP NOT NULL," + //timeformat is: "YYYY-MM-DD hh:mm:ss"
                         COLUMN_SCANS_X + " FLOAT NOT NULL," +
                         COLUMN_SCANS_Y + " FLOAT NOT NULL," +
