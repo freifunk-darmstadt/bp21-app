@@ -5,7 +5,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.widget.Toast
 import de.freifunk.powa.model.WiFiScanObject
 import java.util.*
 
@@ -70,7 +69,7 @@ class ScanDBHelper(context: Context):
             db.insert(MAP_TABLE_NAME, null, value)
 
             db?.execSQL(
-                " CREATE TABLE IF NOT EXISTS" + name + " (" +
+                " CREATE TABLE IF NOT EXISTS " + name + " (" +
                         COLUMN_SCANS_TIMESTAMP + " TIMESTAMP NOT NULL," + //timeformat is: "YYYY-MM-DD hh:mm:ss"
                         COLUMN_SCANS_X + " FLOAT NOT NULL," +
                         COLUMN_SCANS_Y + " FLOAT NOT NULL," +
@@ -84,7 +83,7 @@ class ScanDBHelper(context: Context):
                         COLUMN_SCANS_LEVEL + " INTEGER NOT NULL," +
                         COLUMN_SCANS_OPERATOR_FRIENDLY_NAME + " VARCHAR(256) NOT NULL," +
                         COLUMN_SCANS_VENUE_NAME + " VARCHAR(256) NOT NULL," +
-                        " CONSTRAINT" + PRIMARY_KEY_NAME + " " +
+                        " CONSTRAINT " + PRIMARY_KEY_NAME + " " +
                         "PRIMARY KEY ( " + COLUMN_SCANS_TIMESTAMP + "," + COLUMN_SCANS_BSSID + "));"
             )
 
@@ -100,14 +99,14 @@ class ScanDBHelper(context: Context):
     /**
      * Only invoke this method after validation of scan-attributes
      */
-    fun insertInMapsTable(tableName: String, scan: WiFiScanObject ){
+    fun insertInMapsTable(scanTableName: String, scan: WiFiScanObject ){
         var db = this.writableDatabase
         var value = ContentValues()
         value.put(COLUMN_SCANS_BSSID, scan.bssid)
         value.put(COLUMN_SCANS_SSID, scan.ssid)
         value.put(COLUMN_SCANS_CAPABILITIES, scan.capabilities)
         value.put(COLUMN_SCANS_CENTERFREQ0, scan.centerFreq0)
-        value.put(COLUMN_SCANS_CENTERFREQ1, scan.centerfreq1)
+        value.put(COLUMN_SCANS_CENTERFREQ1, scan.centerFreq1)
         value.put(COLUMN_SCANS_CHANNEL_WIDTH, scan.channelWidth)
         value.put(COLUMN_SCANS_FREQUENCY, scan.frequency)
         value.put(COLUMN_SCANS_LEVEL, scan.level)
@@ -116,7 +115,7 @@ class ScanDBHelper(context: Context):
         value.put(COLUMN_SCANS_VENUE_NAME, scan.venueName)
         value.put(COLUMN_SCANS_X, scan.xCoordinate)
         value.put(COLUMN_SCANS_Y, scan.yCoordinate)
-        db.insert(tableName, null, value)
+        db.insert(scanTableName, null, value)
 
         db.close()
 
@@ -125,12 +124,13 @@ class ScanDBHelper(context: Context):
     /**
      * Get a specific entry to given timestamp
      * If null returned then there are none entries for the timestamp
+     * The entries are sorted in relation of index column
      */
 
     @SuppressLint("Range")
-    fun readSpecificScan(tableName: String, timeStamp: String): List<WiFiScanObject>?{
+    fun readSpecificScan(scanTableName: String, timeStamp: String): List<WiFiScanObject>?{
         var db = this.writableDatabase
-        var query = " SELECT * FROM " + tableName +
+        var query = " SELECT * FROM " + scanTableName +
                     " WHERE " + COLUMN_SCANS_TIMESTAMP + " = '" + timeStamp + "' ;"
         var cursor = db.rawQuery(query, null)
         var scanLinkedList = LinkedList<WiFiScanObject>()
@@ -143,7 +143,7 @@ class ScanDBHelper(context: Context):
                 scan.ssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_SSID))
                 scan.capabilities = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_CAPABILITIES))
                 scan.centerFreq0 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ0))
-                scan.centerfreq1 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ1))
+                scan.centerFreq1 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ1))
                 scan.channelWidth = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CHANNEL_WIDTH))
                 scan.frequency = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_FREQUENCY))
                 scan.level = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_LEVEL))
