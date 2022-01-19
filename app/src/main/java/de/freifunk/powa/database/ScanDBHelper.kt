@@ -16,7 +16,7 @@ val DATABASE_FACTORY = null
 class ScanDBHelper(context: Context):
     SQLiteOpenHelper(context, DATABASE_NAME, DATABASE_FACTORY, DATABASE_VERSION ) {
 
-    val MAP_TABLE_NAME = "Maps"
+    val MAP_TABLE_NAME = "maps"
     val COLUMN_MAP_NAME = "name"
     val COLUMN_SCANS_BSSID = "bssid"
     val COLUMN_SCANS_SSID = "ssid"
@@ -28,17 +28,17 @@ class ScanDBHelper(context: Context):
     val COLUMN_SCANS_LEVEL = "level"
     val COLUMN_SCANS_OPERATOR_FRIENDLY_NAME = "operator"
     val COLUMN_SCANS_VENUE_NAME = "venueName"
-    val COLUMN_SCANS_X = "xCoordinate"
-    val COLUMN_SCANS_Y = "yCoordinate"
+    val COLUMN_SCANS_X = "xcoordinate"
+    val COLUMN_SCANS_Y = "ycoordinate"
     val COLUMN_SCANS_TIMESTAMP = "timestamp"
-    val PRIMARY_KEY_NAME = "Pk_Scan"
-    val INFORMATION_TABLE = "InformationTable"
+    val PRIMARY_KEY_NAME = "pk_scan"
+    val INFORMATION_TABLE = "informationtable"
     val INFORMATION_TABLE_ID = "id"
     val INFORMATION_TABLE_BYTES = "bytes"
     val INFORMATION_TABLE_PK ="pk"
-    val SCAN_TABLE = "Scans"
+    val SCAN_TABLE = "scans"
     val COLUMN_SCANS_MAP_NAME = "mapname"
-    val COLUMN_SCANS_INFORMATION_ID = "informationID"
+    val COLUMN_SCANS_INFORMATION_ID = "informationid"
     override fun onCreate(db: SQLiteDatabase?) {
 
         db?.execSQL("CREATE TABLE " + MAP_TABLE_NAME + " (" +
