@@ -11,7 +11,6 @@ import java.util.LinkedList
 val DATABASE_NAME = "ScansDB"
 val DATABASE_VERSION = 1
 
-
 class ScanDBHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
