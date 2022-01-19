@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             scan(this@MainActivity, { results ->
                 results.forEach {
                     Toast.makeText(this, "SSID: ${it.SSID}, Level: ${it.level}", Toast.LENGTH_SHORT).show()
-                } 
+                }
             }, ::handleScanFailure)
         }
 
