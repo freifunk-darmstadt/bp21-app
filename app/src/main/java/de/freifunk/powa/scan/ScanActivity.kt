@@ -59,8 +59,7 @@ class ScanActivity : AppCompatActivity() {
         Toast.makeText(this, "Scan failed", Toast.LENGTH_SHORT).show()
     }
 
-
-    fun getTime():String{
+    fun getTime(): String {
         val formatter = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneOffset.UTC)

@@ -32,7 +32,7 @@ class ScanDBHelperTest {
 
         assert(checkExistence(dataBase.MAP_TABLE_NAME, db))
         assert(checkExistence(dataBase.SCAN_TABLE, db))
-        assert(checkExistence(dataBase.INFORMATION_TABLE,db))
+        assert(checkExistence(dataBase.INFORMATION_TABLE, db))
     }
 
     @Test
