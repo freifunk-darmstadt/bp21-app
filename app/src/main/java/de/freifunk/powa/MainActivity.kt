@@ -32,7 +32,9 @@ class MainActivity : AppCompatActivity() {
         goToScanActivityBtn = findViewById(R.id.goToScanActivityBtn)
 
         goToScanActivityBtn.setOnClickListener {
-            scan(this@MainActivity, ::handleScanResults, ::handleScanFailure)
+            scan(this@MainActivity, {results -> results.forEach{
+                Toast.makeText(this, "SSID: ${it.SSID}, Level: ${it.level}", Toast.LENGTH_SHORT).show()
+            }}, ::handleScanFailure)
         }
 
         requestAllPermissions(this@MainActivity)
