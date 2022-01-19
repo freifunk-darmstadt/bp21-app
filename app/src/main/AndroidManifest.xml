@@ -17,6 +17,7 @@
         android:theme="@style/Theme.POWA">
         <activity
             android:name=".image.LoadImageActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

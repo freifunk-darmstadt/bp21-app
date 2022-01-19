@@ -44,16 +44,20 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == GeneralPermissionRequestCode) {
+        if (requestCode == GeneralPermissionRequestCode) {
             for (resultIndex in grantResults.indices) {
                 if (grantResults[resultIndex] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this@MainActivity,
+                    Toast.makeText(
+                        this@MainActivity,
                         "Permission granted: ${PERMISSIONS[resultIndex]}",
-                        Toast.LENGTH_SHORT).show()
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    Toast.makeText(this@MainActivity,
+                    Toast.makeText(
+                        this@MainActivity,
                         "Permission denied: ${PERMISSIONS[resultIndex]}",
-                        Toast.LENGTH_SHORT).show()
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
