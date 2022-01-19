@@ -6,8 +6,8 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import de.freifunk.powa.model.WiFiScanObject
-import java.nio.ByteBuffer
-import java.util.*
+import java.util.LinkedList
+
 
 val DATABASE_NAME = "ScansDB"
 val DATABASE_VERSION = 1
