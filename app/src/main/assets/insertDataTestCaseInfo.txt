@@ -1,0 +1,16 @@
+
+Timestamp;xcoordinate;ycoordinate;bssid;ssid;capabilities;centerfreq0;centerfreq1;channel width;frequency;level;operator friendly name;venue name
+
+* Timestamp: TIMESTAMP Primary Key "YYYY-MM-DD hh:mm:ss"
+* xcoordinate: FLOAT
+* ycoordinate: FLOAT
+* bssid: VARCHAR(256) Primary Key
+* ssid: VARCHAR(256)
+* capabilities: TEXT
+* centerfreq0: INTEGER
+* centerfreq1: INTEGER
+* channel width: INTEGER
+* frequency: INTEGER
+* level: INTEGER
+* operator friendly name: VARCHAR(256)
+* venue name: VARCHAR(256)
