@@ -11,7 +11,6 @@ import de.freifunk.powa.permissions.GeneralPermissionRequestCode
 import de.freifunk.powa.permissions.PERMISSIONS
 import de.freifunk.powa.permissions.requestAllPermissions
 import de.freifunk.powa.scan.handleScanFailure
-import de.freifunk.powa.scan.handleScanResults
 import de.freifunk.powa.scan.scan
 
 class MainActivity : AppCompatActivity() {
@@ -32,9 +31,11 @@ class MainActivity : AppCompatActivity() {
         goToScanActivityBtn = findViewById(R.id.goToScanActivityBtn)
 
         goToScanActivityBtn.setOnClickListener {
-            scan(this@MainActivity, {results -> results.forEach{
-                Toast.makeText(this, "SSID: ${it.SSID}, Level: ${it.level}", Toast.LENGTH_SHORT).show()
-            }}, ::handleScanFailure)
+            scan(this@MainActivity, { results ->
+                results.forEach {
+                    Toast.makeText(this, "SSID: ${it.SSID}, Level: ${it.level}", Toast.LENGTH_SHORT).show()
+                } 
+            }, ::handleScanFailure)
         }
 
         requestAllPermissions(this@MainActivity)
