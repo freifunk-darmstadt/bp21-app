@@ -10,17 +10,21 @@ import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.model.WiFiScanObject
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 class ScanActivity : AppCompatActivity() {
-    lateinit var tableMapName: String
-    lateinit var timeStamp: String
-    var xCoordinate: Float = 0f
-    var yCoordinate: Float = 0f
+    lateinit var tableMapName: String // should be set before scan is invoked
+    lateinit var timeStamp: String // time should be set before scan is invoked
+    var xCoordinate: Float = 0f // should be set before scan is invoked
+    var yCoordinate: Float = 0f // should be set before scan is invoked
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         var scanButton = findViewById<Button>(R.id.scanBtn)
         scanButton.setOnClickListener {
+            timeStamp = getTime()
             scan(this, ::onSuccess, ::onFailure)
         }
     }
@@ -53,5 +57,15 @@ class ScanActivity : AppCompatActivity() {
     }
     fun onFailure() {
         Toast.makeText(this, "Scan failed", Toast.LENGTH_SHORT).show()
+    }
+
+
+    fun getTime():String{
+        val formatter = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd HH:mm:ss")
+            .withZone(ZoneOffset.UTC)
+            .format(Instant.now())
+
+        return formatter
     }
 }

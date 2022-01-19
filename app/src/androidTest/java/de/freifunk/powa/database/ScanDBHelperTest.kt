@@ -29,8 +29,10 @@ class ScanDBHelperTest {
     fun onCreate() {
         var db = dataBase.writableDatabase
         assertEquals("ScansDB", dataBase.databaseName)
-        var res = checkExistence(dataBase.MAP_TABLE_NAME, db)
-        assert(res)
+
+        assert(checkExistence(dataBase.MAP_TABLE_NAME, db))
+        assert(checkExistence(dataBase.SCAN_TABLE, db))
+        assert(checkExistence(dataBase.INFORMATION_TABLE,db))
     }
 
     @Test
@@ -158,7 +160,7 @@ class ScanDBHelperTest {
 
         db.rawQuery(query, null).use { cursor ->
             if (cursor != null) {
-                if (cursor.getCount() > 0) {
+                if (cursor.getCount() == 1) {
                     return true
                 }
             }

@@ -10,10 +10,10 @@ import java.util.LinkedList
 
 val DATABASE_NAME = "ScansDB"
 val DATABASE_VERSION = 1
-val DATABASE_FACTORY = null
+
 
 class ScanDBHelper(context: Context) :
-    SQLiteOpenHelper(context, DATABASE_NAME, DATABASE_FACTORY, DATABASE_VERSION) {
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     val MAP_TABLE_NAME = "maps"
     val COLUMN_MAP_NAME = "name"
@@ -125,6 +125,10 @@ class ScanDBHelper(context: Context) :
 
         db.close()
     }
+
+    /**
+     *
+     */
     fun insertInformation(id: Int, byte: ByteArray) {
         var db = this.writableDatabase
         var value = ContentValues()
@@ -140,7 +144,6 @@ class ScanDBHelper(context: Context) :
      * If null returned then there are none entries for the timestamp
      * The entries are sorted in relation of index column
      */
-
     @SuppressLint("Range")
     fun readSpecificScan(scanTableName: String, timeStamp: String): List<WiFiScanObject>? {
         var db = this.writableDatabase
