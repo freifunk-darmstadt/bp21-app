@@ -6,7 +6,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import de.freifunk.powa.TextScanner
 import de.freifunk.powa.model.WiFiScanObject
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.* // ktlint-disable no-wildcard-imports
 import org.junit.Before
 
 import org.junit.Test
