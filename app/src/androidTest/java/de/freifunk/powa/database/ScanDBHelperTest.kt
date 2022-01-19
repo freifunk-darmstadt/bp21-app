@@ -42,15 +42,13 @@ class ScanDBHelperTest {
             var line = scanner.decomposeString(it,";")
             var mapName = line[0]
             var expectedValue = line[1].toBoolean()
-            var actualValue = dataBase.createNewTable(mapName)
+            var actualValue = dataBase.insertMaps(mapName)
             var db = dataBase.writableDatabase
-            var res = checkExistence(mapName, db)
             var query = " SELECT * FROM " + dataBase.MAP_TABLE_NAME +
                         " WHERE " + dataBase.COLUMN_MAP_NAME + "='" + mapName + "';"
             var cursor = db.rawQuery(query, null)
 
             assertEquals(1, cursor.count)
-            assert(res,{mapName + " does not exists"})
             assertEquals(expectedValue,actualValue )
         }
 
@@ -59,8 +57,8 @@ class ScanDBHelperTest {
     @Test
     fun insertInMapsTable() {
         var listOfLines = scanner.scan(thisContext, "insertDataTestCase.txt")
-        var tableName = "TestTable"
-        dataBase.createNewTable(tableName)
+        var mapName = "TestTable"
+        dataBase.insertMaps(mapName)
 
         listOfLines.forEach{
             var line = scanner.decomposeString(it, ";")
@@ -78,10 +76,11 @@ class ScanDBHelperTest {
             wifiScanner.level = line[10].toInt()
             wifiScanner.operatorFriendlyName = line[11]
             wifiScanner.venueName = line[12]
-            dataBase.insertInMapsTable(tableName, wifiScanner)
+            wifiScanner.informationID = line[13].toInt()
+            dataBase.insertScans(mapName, wifiScanner)
         }
         var db = dataBase.writableDatabase
-        var query = " SELECT * FROM " + tableName
+        var query = " SELECT * FROM " + dataBase.SCAN_TABLE
         var cursor = db.rawQuery(query, null)
         assertEquals(listOfLines.size, cursor.count)
     }
@@ -89,8 +88,8 @@ class ScanDBHelperTest {
     @Test
     fun readSpecificScan() {
         var listOfLines = scanner.scan(thisContext, "insertDataTestCase.txt")
-        var tableName = "TestTable"
-        dataBase.createNewTable(tableName)
+        var mapName = "TestTable"
+        dataBase.insertMaps(mapName)
 
         listOfLines.forEach{
             var line = scanner.decomposeString(it, ";")
@@ -108,15 +107,16 @@ class ScanDBHelperTest {
             wifiScanner.level = line[10].toInt()
             wifiScanner.operatorFriendlyName = line[11]
             wifiScanner.venueName = line[12]
-            dataBase.insertInMapsTable(tableName, wifiScanner)
+            wifiScanner.informationID = line[13].toInt()
+            dataBase.insertScans(mapName, wifiScanner)
         }
         var db = dataBase.writableDatabase
-        var query = " SELECT * FROM " + tableName
+        var query = " SELECT * FROM " + dataBase.SCAN_TABLE
         var cursor = db.rawQuery(query, null)
         assertEquals(listOfLines.size, cursor.count)
         var timeStampScans = scanner.scan(thisContext, "readDataTestCase.txt")
         var line = scanner.decomposeString(timeStampScans[0], ";")
-        var listOfScans = dataBase.readSpecificScan(tableName, line[0])
+        var listOfScans = dataBase.readSpecificScan(mapName, line[0])
         var index = 0
         timeStampScans.forEach{
             var line = scanner.decomposeString(it, ";")
@@ -133,10 +133,28 @@ class ScanDBHelperTest {
             assertEquals(line[10].toInt(), listOfScans?.get(index)?.level)
             assertEquals(line[11], listOfScans?.get(index)?.operatorFriendlyName)
             assertEquals(line[12], listOfScans?.get(index)?.venueName)
+            assertEquals(line[13].toInt(), listOfScans?.get(index)?.informationID)
             index = index + 1
         }
 
 
+    }
+    @Test
+    fun insertInformation() {
+        var listOfLines = scanner.scan(thisContext, "insertInfTestCase.txt")
+
+
+
+        listOfLines.forEach{
+            var line = scanner.decomposeString(it, ";")
+
+
+            dataBase.insertInformation(line[0].toInt(), line[1].toByteArray(Charsets.UTF_8))
+        }
+        var db = dataBase.writableDatabase
+        var query = " SELECT * FROM " + dataBase.INFORMATION_TABLE
+        var cursor = db.rawQuery(query, null)
+        assertEquals(listOfLines.size, cursor.count)
     }
 
     /**
