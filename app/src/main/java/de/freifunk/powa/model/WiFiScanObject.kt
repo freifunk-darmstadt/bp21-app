@@ -16,8 +16,6 @@ class WiFiScanObject {
     var informationID: Int? = null
     lateinit var timestamp: String // timestamp should have the format "YYYY-MM-DD hh:mm:ss"
 
-    constructor(){
-
+    constructor() {
     }
-
 }

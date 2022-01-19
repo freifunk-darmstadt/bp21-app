@@ -8,13 +8,12 @@ import android.database.sqlite.SQLiteOpenHelper
 import de.freifunk.powa.model.WiFiScanObject
 import java.util.LinkedList
 
-
 val DATABASE_NAME = "ScansDB"
 val DATABASE_VERSION = 1
 val DATABASE_FACTORY = null
 
-class ScanDBHelper(context: Context):
-    SQLiteOpenHelper(context, DATABASE_NAME, DATABASE_FACTORY, DATABASE_VERSION ) {
+class ScanDBHelper(context: Context) :
+    SQLiteOpenHelper(context, DATABASE_NAME, DATABASE_FACTORY, DATABASE_VERSION) {
 
     val MAP_TABLE_NAME = "maps"
     val COLUMN_MAP_NAME = "name"
@@ -35,41 +34,45 @@ class ScanDBHelper(context: Context):
     val INFORMATION_TABLE = "informationtable"
     val INFORMATION_TABLE_ID = "id"
     val INFORMATION_TABLE_BYTES = "bytes"
-    val INFORMATION_TABLE_PK ="pk"
+    val INFORMATION_TABLE_PK = "pk"
     val SCAN_TABLE = "scans"
     val COLUMN_SCANS_MAP_NAME = "mapname"
     val COLUMN_SCANS_INFORMATION_ID = "informationid"
     override fun onCreate(db: SQLiteDatabase?) {
 
-        db?.execSQL("CREATE TABLE " + MAP_TABLE_NAME + " (" +
-                    COLUMN_MAP_NAME + " VARCHAR(256) PRIMARY KEY); ")
-        db?.execSQL("CREATE TABLE " + INFORMATION_TABLE + " (" +
-                        INFORMATION_TABLE_ID + " INTEGER ," +
-                        INFORMATION_TABLE_BYTES + " BLOB ," +
-                        INFORMATION_TABLE_PK + " AUTO_INCREMENT PRIMARY KEY," +
-                        "FOREIGN KEY (" + INFORMATION_TABLE_ID +") " +
-                        "REFERENCES " + SCAN_TABLE + " (" + COLUMN_SCANS_INFORMATION_ID + "));" )
+        db?.execSQL(
+            "CREATE TABLE " + MAP_TABLE_NAME + " (" +
+                COLUMN_MAP_NAME + " VARCHAR(256) PRIMARY KEY); "
+        )
+        db?.execSQL(
+            "CREATE TABLE " + INFORMATION_TABLE + " (" +
+                INFORMATION_TABLE_ID + " INTEGER ," +
+                INFORMATION_TABLE_BYTES + " BLOB ," +
+                INFORMATION_TABLE_PK + " AUTO_INCREMENT PRIMARY KEY," +
+                "FOREIGN KEY (" + INFORMATION_TABLE_ID + ") " +
+                "REFERENCES " + SCAN_TABLE + " (" + COLUMN_SCANS_INFORMATION_ID + "));"
+        )
         db?.execSQL(
             " CREATE TABLE IF NOT EXISTS " + SCAN_TABLE + " (" +
-                    COLUMN_SCANS_MAP_NAME + " VARCHAR(256)," +
-                    COLUMN_SCANS_TIMESTAMP + " TIMESTAMP NOT NULL," + //timeformat is: "YYYY-MM-DD hh:mm:ss"
-                    COLUMN_SCANS_X + " FLOAT NOT NULL," +
-                    COLUMN_SCANS_Y + " FLOAT NOT NULL," +
-                    COLUMN_SCANS_BSSID + " VARCHAR(256) NOT NULL," +  // exact length is still unknown
-                    COLUMN_SCANS_SSID + " VARCHAR(256) NOT NULL," +
-                    COLUMN_SCANS_CAPABILITIES + " TEXT NOT NULL," +
-                    COLUMN_SCANS_CENTERFREQ0 + " INTEGER NOT NULL," +
-                    COLUMN_SCANS_CENTERFREQ1 + " INTEGER NOT NULL," +
-                    COLUMN_SCANS_CHANNEL_WIDTH + " INTEGER NOT NULL," +
-                    COLUMN_SCANS_FREQUENCY + " INTEGER NOT NULL," +
-                    COLUMN_SCANS_LEVEL + " INTEGER NOT NULL," +
-                    COLUMN_SCANS_OPERATOR_FRIENDLY_NAME + " VARCHAR(256) NOT NULL," +
-                    COLUMN_SCANS_VENUE_NAME + " VARCHAR(256) NOT NULL," +
-                    COLUMN_SCANS_INFORMATION_ID + " INTEGER ," +
-                    " CONSTRAINT " + PRIMARY_KEY_NAME + " " +
-                    " PRIMARY KEY ( " + COLUMN_SCANS_TIMESTAMP + "," + COLUMN_SCANS_BSSID + ")" +
-                    " FOREIGN KEY (" + COLUMN_SCANS_MAP_NAME + ") " +
-                    " REFERENCES " + MAP_TABLE_NAME + " (" + COLUMN_MAP_NAME + "));"
+                COLUMN_SCANS_MAP_NAME + " VARCHAR(256)," +
+                COLUMN_SCANS_TIMESTAMP + " TIMESTAMP NOT NULL," + // timeformat is: "YYYY-MM-DD hh:mm:ss"
+                COLUMN_SCANS_X + " FLOAT NOT NULL," +
+                COLUMN_SCANS_Y + " FLOAT NOT NULL," +
+                COLUMN_SCANS_BSSID + " VARCHAR(256) NOT NULL," + // exact length is still unknown
+                COLUMN_SCANS_SSID + " VARCHAR(256) NOT NULL," +
+                COLUMN_SCANS_CAPABILITIES + " TEXT NOT NULL," +
+                COLUMN_SCANS_CENTERFREQ0 + " INTEGER NOT NULL," +
+                COLUMN_SCANS_CENTERFREQ1 + " INTEGER NOT NULL," +
+                COLUMN_SCANS_CHANNEL_WIDTH + " INTEGER NOT NULL," +
+                COLUMN_SCANS_FREQUENCY + " INTEGER NOT NULL," +
+                COLUMN_SCANS_LEVEL + " INTEGER NOT NULL," +
+                COLUMN_SCANS_OPERATOR_FRIENDLY_NAME + " VARCHAR(256) NOT NULL," +
+                COLUMN_SCANS_VENUE_NAME + " VARCHAR(256) NOT NULL," +
+                COLUMN_SCANS_INFORMATION_ID + " INTEGER ," +
+                " CONSTRAINT " + PRIMARY_KEY_NAME + " " +
+                " PRIMARY KEY ( " + COLUMN_SCANS_TIMESTAMP + "," + COLUMN_SCANS_BSSID + ")" +
+                " FOREIGN KEY (" + COLUMN_SCANS_MAP_NAME + ") " +
+                " REFERENCES " + MAP_TABLE_NAME + " (" + COLUMN_MAP_NAME + "));"
         )
     }
 
@@ -80,13 +83,13 @@ class ScanDBHelper(context: Context):
     /**
      * This Method create a new Entry in the Map table
      */
-    fun insertMaps(name: String): Boolean{
+    fun insertMaps(name: String): Boolean {
         var db = this.writableDatabase
         var value = ContentValues()
         var query = "SELECT * FROM " + MAP_TABLE_NAME +
-                    " WHERE " + COLUMN_MAP_NAME + " = '" + name + "' ;"
+            " WHERE " + COLUMN_MAP_NAME + " = '" + name + "' ;"
         var cursor = db.rawQuery(query, null)
-        if(cursor.count == 0) {
+        if (cursor.count == 0) {
             value.put(COLUMN_MAP_NAME, name)
             db.insert(MAP_TABLE_NAME, null, value)
             db.close()
@@ -94,17 +97,13 @@ class ScanDBHelper(context: Context):
         }
         db.close()
         return false
-
     }
-
-
-
 
     /**
      * Only invoke this method after validation of scan-attributes
      * This method insert data with given map into the database
      */
-    fun insertScans(scanTableName: String, scan: WiFiScanObject ){
+    fun insertScans(scanTableName: String, scan: WiFiScanObject) {
         var db = this.writableDatabase
         var value = ContentValues()
         value.put(COLUMN_SCANS_MAP_NAME, scanTableName)
@@ -125,9 +124,8 @@ class ScanDBHelper(context: Context):
         db.insert(SCAN_TABLE, null, value)
 
         db.close()
-
     }
-    fun insertInformation(id: Int, byte: ByteArray){
+    fun insertInformation(id: Int, byte: ByteArray) {
         var db = this.writableDatabase
         var value = ContentValues()
         value.put(INFORMATION_TABLE_ID, id)
@@ -135,7 +133,6 @@ class ScanDBHelper(context: Context):
         db.insert(INFORMATION_TABLE, null, value)
 
         db.close()
-
     }
 
     /**
@@ -145,14 +142,14 @@ class ScanDBHelper(context: Context):
      */
 
     @SuppressLint("Range")
-    fun readSpecificScan(scanTableName: String, timeStamp: String): List<WiFiScanObject>?{
+    fun readSpecificScan(scanTableName: String, timeStamp: String): List<WiFiScanObject>? {
         var db = this.writableDatabase
         var query = " SELECT * FROM " + SCAN_TABLE +
-                    " WHERE " + COLUMN_SCANS_TIMESTAMP + " = '" + timeStamp + "' " +
-                        "AND " + COLUMN_SCANS_MAP_NAME + " = '" + scanTableName + "';"
+            " WHERE " + COLUMN_SCANS_TIMESTAMP + " = '" + timeStamp + "' " +
+            "AND " + COLUMN_SCANS_MAP_NAME + " = '" + scanTableName + "';"
         var cursor = db.rawQuery(query, null)
         var scanLinkedList = LinkedList<WiFiScanObject>()
-        if(cursor.count > 0){
+        if (cursor.count > 0) {
             cursor.moveToFirst()
             do {
                 var scan = WiFiScanObject()
@@ -173,15 +170,12 @@ class ScanDBHelper(context: Context):
                 scan.informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
 
                 scanLinkedList.add(scan)
-            }while(cursor.moveToNext())
-        }
-        else{
+            } while (cursor.moveToNext())
+        } else {
             db.close()
             return null
         }
         db.close()
         return scanLinkedList
     }
-
-
 }

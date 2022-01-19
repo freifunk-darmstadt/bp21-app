@@ -8,7 +8,6 @@ import de.freifunk.powa.model.WiFiScanObject
 import org.junit.After
 import org.junit.Assert.* // ktlint-disable no-wildcard-imports
 import org.junit.Before
-
 import org.junit.Test
 
 class ScanDBHelperTest {
@@ -16,14 +15,14 @@ class ScanDBHelperTest {
     lateinit var dataBase: ScanDBHelper
     lateinit var scanner: TextScanner
     @Before
-    fun setup(){
+    fun setup() {
         scanner = TextScanner()
         thisContext = InstrumentationRegistry.getInstrumentation().targetContext
         dataBase = ScanDBHelper(thisContext)
         thisContext.deleteDatabase(dataBase.databaseName)
     }
     @After
-    fun cleanup(){
+    fun cleanup() {
         thisContext.deleteDatabase(dataBase.databaseName)
     }
     @Test
@@ -32,26 +31,24 @@ class ScanDBHelperTest {
         assertEquals("ScansDB", dataBase.databaseName)
         var res = checkExistence(dataBase.MAP_TABLE_NAME, db)
         assert(res)
-
     }
 
     @Test
     fun createNewTable() {
         var listOflines = scanner.scan(thisContext, "createNewTableTestCase.txt")
-        listOflines.forEach{
-            var line = scanner.decomposeString(it,";")
+        listOflines.forEach {
+            var line = scanner.decomposeString(it, ";")
             var mapName = line[0]
             var expectedValue = line[1].toBoolean()
             var actualValue = dataBase.insertMaps(mapName)
             var db = dataBase.writableDatabase
             var query = " SELECT * FROM " + dataBase.MAP_TABLE_NAME +
-                        " WHERE " + dataBase.COLUMN_MAP_NAME + "='" + mapName + "';"
+                " WHERE " + dataBase.COLUMN_MAP_NAME + "='" + mapName + "';"
             var cursor = db.rawQuery(query, null)
 
             assertEquals(1, cursor.count)
-            assertEquals(expectedValue,actualValue )
+            assertEquals(expectedValue, actualValue)
         }
-
     }
 
     @Test
@@ -60,7 +57,7 @@ class ScanDBHelperTest {
         var mapName = "TestTable"
         dataBase.insertMaps(mapName)
 
-        listOfLines.forEach{
+        listOfLines.forEach {
             var line = scanner.decomposeString(it, ";")
             var wifiScanner = WiFiScanObject()
             wifiScanner.timestamp = line[0]
@@ -91,7 +88,7 @@ class ScanDBHelperTest {
         var mapName = "TestTable"
         dataBase.insertMaps(mapName)
 
-        listOfLines.forEach{
+        listOfLines.forEach {
             var line = scanner.decomposeString(it, ";")
             var wifiScanner = WiFiScanObject()
             wifiScanner.timestamp = line[0]
@@ -118,7 +115,7 @@ class ScanDBHelperTest {
         var line = scanner.decomposeString(timeStampScans[0], ";")
         var listOfScans = dataBase.readSpecificScan(mapName, line[0])
         var index = 0
-        timeStampScans.forEach{
+        timeStampScans.forEach {
             var line = scanner.decomposeString(it, ";")
             assertEquals(line[0], listOfScans?.get(index)?.timestamp)
             assertEquals(line[1].toFloat(), listOfScans?.get(index)?.xCoordinate)
@@ -136,18 +133,13 @@ class ScanDBHelperTest {
             assertEquals(line[13].toInt(), listOfScans?.get(index)?.informationID)
             index = index + 1
         }
-
-
     }
     @Test
     fun insertInformation() {
         var listOfLines = scanner.scan(thisContext, "insertInfTestCase.txt")
 
-
-
-        listOfLines.forEach{
+        listOfLines.forEach {
             var line = scanner.decomposeString(it, ";")
-
 
             dataBase.insertInformation(line[0].toInt(), line[1].toByteArray(Charsets.UTF_8))
         }
@@ -160,7 +152,7 @@ class ScanDBHelperTest {
     /**
      * Checks the existence of the table to a given Database
      */
-    fun checkExistence(name: String, db: SQLiteDatabase): Boolean{
+    fun checkExistence(name: String, db: SQLiteDatabase): Boolean {
         val query =
             "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + name + "'"
 
@@ -173,6 +165,5 @@ class ScanDBHelperTest {
         }
 
         return false
-
     }
 }
