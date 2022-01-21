@@ -64,6 +64,9 @@ fun filterData(scanResults: List<ScanResult>): List<ScanResult> {
 
     return scanResults.filter {
         // only select scan results with an appropriate level
-        it.level in MIN_LEVEL..MAX_LEVEL
+        it.level in MIN_LEVEL..MAX_LEVEL &&
+
+        // do not select scan results with BSSID's 00..0 and ff..f
+        it.BSSID != "00:00:00:00:00:00" && it.BSSID != "ff:ff:ff:ff:ff:ff"
     }
 }
