@@ -66,19 +66,19 @@ class LoadImageActivity : AppCompatActivity() {
      * set the visibility of the imageView and the load image button
      * @param value the value to set the visibility of the imageView to
      */
-    private fun setImageVisibility(value: Boolean) {
+    private fun setImageVisibility(value: Boolean = false) {
         loadImgBtn.isVisible = value
         showImgIv.isInvisible = value
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        var historySize: Int
-        var startX: Float
-        var endX: Float
-        var startY: Float
-        var endY: Float
-        var distanceX: Int
-        var distanceY: Int
+        val historySize: Int
+        val startX: Float
+        val endX: Float
+        val startY: Float
+        val endY: Float
+        val distanceX: Int
+        val distanceY: Int
         if (event?.pointerCount == 2) {
             scaleGesture.onTouchEvent(event)
         }
@@ -103,7 +103,7 @@ class LoadImageActivity : AppCompatActivity() {
     }
 
     fun getHeight(): Int {
-        var rectangle = Rect()
+        val rectangle = Rect()
         window.decorView.getWindowVisibleDisplayFrame(rectangle)
         return rectangle.top
     }
@@ -122,13 +122,13 @@ class LoadImageActivity : AppCompatActivity() {
 
     inner class MarkerGestureListener : GestureDetector.SimpleOnGestureListener() {
         override fun onDoubleTap(e: MotionEvent?): Boolean {
-            var statusBarHeight = getHeight()
+            val statusBarHeight = getHeight()
             markerView.circleShouldDraw = true
-            var middleX = showImgIv.width / 2
-            var middleY = showImgIv.height / 2
-            var vectorX: Float
-            var vectorY: Float
-            var onlyViewHeight = e!!.getY() - statusBarHeight
+            val middleX = showImgIv.width / 2
+            val middleY = showImgIv.height / 2
+            val vectorX: Float
+            val vectorY: Float
+            val onlyViewHeight = e!!.getY() - statusBarHeight
             if (scaleFactor == 1.0f) {
                 markerView.initX = ((e.getX()) + scrollHistoryX) - showImgIv.x
                 markerView.initY = (onlyViewHeight + scrollHistoryY) - showImgIv.y
