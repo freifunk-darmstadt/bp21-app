@@ -1,15 +1,19 @@
 package de.freifunk.powa.image
 
+import android.content.DialogInterface
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
+import android.text.InputType
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -30,7 +34,7 @@ class LoadImageActivity : AppCompatActivity() {
     private var scrollHistoryY: Int = 0
     private var minZoomFactor: Float = 0.25f
     private var maxZoomFactor: Float = 20.0f
-
+    private lateinit var mapName: String
     // create ComponentActivity to load and handle loading the image
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
@@ -59,9 +63,28 @@ class LoadImageActivity : AppCompatActivity() {
         // request permissions on Button press and open system image selector
         loadImgBtn.setOnClickListener {
             getContent.launch("image/*")
+            createDialog()
         }
     }
+    private fun createDialog(){
+        var mapNameDialog =AlertDialog.Builder(this)
+        mapNameDialog.setTitle("Name Image")
+        mapNameDialog.setMessage("Please enter a name for your map")
+        var mapEditText = EditText(this)
+        mapEditText.inputType = InputType.TYPE_CLASS_TEXT
+        mapNameDialog.setView(mapEditText)
+        mapNameDialog.setPositiveButton("Confirm", DialogInterface.OnClickListener{
+            dialog,id ->
+            mapName = mapEditText.text.toString()
 
+        })
+        mapNameDialog.setNegativeButton("Cancel", DialogInterface.OnClickListener{
+            dialog,id -> dialog.cancel()
+        })
+        mapNameDialog.show()
+
+
+    }
     /**
      * set the visibility of the imageView and the load image button
      * @param value the value to set the visibility of the imageView to
