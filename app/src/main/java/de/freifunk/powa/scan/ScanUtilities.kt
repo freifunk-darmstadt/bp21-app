@@ -22,16 +22,13 @@ fun scan(
     filter: (List<ScanResult>) -> List<ScanResult> = (::filterData)
 ) {
 
-    //check for permissions
-    if (!isGPSEnabled(context))
-    {
+    // check for permissions
+    if (!isGPSEnabled(context)) {
         enableLocationServices(context)
     }
-    if (!isWIFIEnabled(context))
-    {
+    if (!isWIFIEnabled(context)) {
         enableWifiServices(context)
     }
-
 
     // wifi manager
     val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -82,4 +79,3 @@ fun filterData(scanResults: List<ScanResult>): List<ScanResult> {
         it.level in MIN_LEVEL..MAX_LEVEL
     }
 }
-
