@@ -13,7 +13,7 @@ import java.lang.Exception
  * @param context the context to create the request in
  */
 fun enableLocationServices(context: Context) {
-    if (isGPSEnabled(context)){
+    if (isGPSEnabled(context)) {
         return
     }
 
@@ -47,7 +47,7 @@ fun enableLocationServices(context: Context) {
  * @param context the context to create the request in
  */
 fun enableWifiServices(context: Context) {
-    if (isWIFIEnabled(context)){
+    if (isWIFIEnabled(context)) {
         return
     }
 
