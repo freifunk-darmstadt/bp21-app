@@ -2,16 +2,12 @@ package de.freifunk.powa.permissions
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import de.freifunk.powa.R
 
-//state all needed permissions here, need to be in manifest
+// state all needed permissions here, need to be in manifest
 val PERMISSIONS = arrayOf(
     Manifest.permission.CAMERA,
     Manifest.permission.ACCESS_COARSE_LOCATION,
