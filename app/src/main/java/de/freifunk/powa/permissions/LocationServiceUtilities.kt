@@ -7,7 +7,16 @@ import android.location.LocationManager
 import android.provider.Settings
 import java.lang.Exception
 
+/**
+ * This function creates and displays a dialog that asks the user to activate the location services
+ *
+ * @param context the context to create the request in
+ */
 fun enableLocationServices(context: Context) {
+    if (isGPSEnabled(context)){
+        return
+    }
+
     val alertDialog = AlertDialog.Builder(context)
 
     // Setting Dialog Title
@@ -32,7 +41,16 @@ fun enableLocationServices(context: Context) {
     alertDialog.show()
 }
 
+/**
+ * This function creates and displays a dialog that asks the user to activate wifi
+ *
+ * @param context the context to create the request in
+ */
 fun enableWifiServices(context: Context) {
+    if (isWIFIEnabled(context)){
+        return
+    }
+
     val alertDialog = AlertDialog.Builder(context)
 
     // Setting Dialog Title
@@ -57,6 +75,12 @@ fun enableWifiServices(context: Context) {
     alertDialog.show()
 }
 
+/**
+ * this function checks whether GPS is enabled or not
+ *
+ * @param context the context to create the request in
+ * @return true if the device has gps services enabled false otherwise
+ */
 fun isGPSEnabled(context: Context): Boolean {
     val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -74,6 +98,12 @@ fun isGPSEnabled(context: Context): Boolean {
     return gps_enabled
 }
 
+/**
+ * this function checks whether WIFI is enabled or not
+ *
+ * @param context the context to create the request in
+ * @return true if the device has wifi services enabled false otherwise
+ */
 fun isWIFIEnabled(context: Context): Boolean {
     val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
