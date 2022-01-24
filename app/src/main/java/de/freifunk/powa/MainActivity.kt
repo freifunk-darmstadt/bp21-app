@@ -64,7 +64,5 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-        requestAllPermissions(this@MainActivity)
     }
 }
