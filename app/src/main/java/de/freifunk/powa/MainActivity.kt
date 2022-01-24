@@ -67,25 +67,4 @@ class MainActivity : AppCompatActivity() {
 
         requestAllPermissions(this@MainActivity)
     }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == GeneralPermissionRequestCode) {
-            for (resultIndex in grantResults.indices) {
-                if (grantResults[resultIndex] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this@MainActivity,
-                        "Permission granted: ${PERMISSIONS[resultIndex]}",
-                        Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this@MainActivity,
-                        "Permission denied: ${PERMISSIONS[resultIndex]}",
-                        Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
 }
