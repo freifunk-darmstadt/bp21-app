@@ -1,0 +1,4 @@
+Piloty;true
+Darmstadtium;true
+McDondalds;true
+Piloty;false

@@ -1,0 +1,5 @@
+name of the Table; returned value if table was created
+String;Boolean
+2 Arguments
+Example:
+Piloty;true

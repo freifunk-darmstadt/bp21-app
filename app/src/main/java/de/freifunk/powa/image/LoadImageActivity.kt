@@ -31,12 +31,12 @@ class LoadImageActivity : AppCompatActivity() {
     private var minZoomFactor: Float = 0.25f
     private var maxZoomFactor: Float = 20.0f
 
-    //create ComponentActivity to load and handle loading the image
+    // create ComponentActivity to load and handle loading the image
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        if (uri != null){
+        if (uri != null) {
             setImageVisibility(false)
 
-            //loads the image from the URI and stores it to the imageview
+            // loads the image from the URI and stores it to the imageview
             val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri))
             showImgIv.setImageBitmap(bitmap)
         }
@@ -56,12 +56,12 @@ class LoadImageActivity : AppCompatActivity() {
 
         showImgIv.isInvisible = true
 
-        //on Button press open system image selector
+        // request permissions on Button press and open system image selector
         loadImgBtn.setOnClickListener {
             getContent.launch("image/*")
         }
     }
-    
+
     /**
      * set the visibility of the imageView and the load image button
      * @param value the value to set the visibility of the imageView to
@@ -70,7 +70,7 @@ class LoadImageActivity : AppCompatActivity() {
         loadImgBtn.isVisible = value
         showImgIv.isInvisible = value
     }
-    
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         val historySize: Int
         val startX: Float
@@ -82,15 +82,15 @@ class LoadImageActivity : AppCompatActivity() {
         if(event?.pointerCount == 2){
             scaleGesture.onTouchEvent(event)
         }
-        if(event?.action == MotionEvent.ACTION_MOVE && event.pointerCount == 1) {
+        if (event?.action == MotionEvent.ACTION_MOVE && event.pointerCount == 1) {
             historySize = event.historySize
-            if(historySize >0){
+            if (historySize > 0) {
                 startX = event.getHistoricalX(0)
-                endX = event.getHistoricalX(historySize-1)
+                endX = event.getHistoricalX(historySize - 1)
                 startY = event.getHistoricalY(0)
-                endY = event.getHistoricalY(historySize -1)
-                distanceX = ((startX - endX)/scaleFactor).toInt()
-                distanceY = ((startY - endY)/scaleFactor).toInt()
+                endY = event.getHistoricalY(historySize - 1)
+                distanceX = ((startX - endX) / scaleFactor).toInt()
+                distanceY = ((startY - endY) / scaleFactor).toInt()
                 scrollHistoryX += distanceX
                 scrollHistoryY += distanceY
 
@@ -108,7 +108,7 @@ class LoadImageActivity : AppCompatActivity() {
         return rectangle.top
     }
 
-    inner class ScaleListener: ScaleGestureDetector.SimpleOnScaleGestureListener(){
+    inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
         override fun onScale(detector: ScaleGestureDetector?): Boolean {
             scaleFactor *= detector!!.scaleFactor
             scaleFactor = max(minZoomFactor, min(scaleFactor, maxZoomFactor))
@@ -120,7 +120,7 @@ class LoadImageActivity : AppCompatActivity() {
         }
     }
 
-    inner class MarkerGestureListener: GestureDetector.SimpleOnGestureListener(){
+    inner class MarkerGestureListener : GestureDetector.SimpleOnGestureListener() {
         override fun onDoubleTap(e: MotionEvent?): Boolean {
             val statusBarHeight = getHeight()
             markerView.circleShouldDraw = true
@@ -143,9 +143,8 @@ class LoadImageActivity : AppCompatActivity() {
             return super.onDoubleTap(e)
         }
 
-        fun dpFromPx(px:Float): Float{
-            return px/ resources.displayMetrics.density
+        fun dpFromPx(px: Float): Float {
+            return px / resources.displayMetrics.density
         }
-
     }
 }

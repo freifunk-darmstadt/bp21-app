@@ -3,8 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Thanh Long/AndroidStudioProjects/bp21-app/app/src/main/res/layout/activity_load_image.xml" value="0.2" />
-        <entry key="..\:/Users/Thanh Long/AndroidStudioProjects/bp21-app/app/src/main/res/layout/activity_main.xml" value="0.2907608695652174" />
+        <entry key="..\:/EntwicklerTools/Workspaces/Android-Projekte/bp21-app/app/src/main/res/layout/activity_load_image.xml" value="0.4" />
+        <entry key="..\:/EntwicklerTools/Workspaces/Android-Projekte/bp21-app/app/src/main/res/layout/activity_main.xml" value="0.4" />
+        <entry key="..\:/EntwicklerTools/Workspaces/Android-Projekte/bp21-app/app/src/main/res/layout/activity_single_scan.xml" value="0.4" />
       </map>
     </option>
   </component>
