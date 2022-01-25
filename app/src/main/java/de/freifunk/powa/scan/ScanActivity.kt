@@ -29,6 +29,11 @@ class ScanActivity {
         yCoordinate = y
         timeStamp = getTime()
     }
+
+    /**
+     * This Method saves the given results in the Sqlite-Database
+     * @param results the List of the ScanResults. Results should be filtered first
+     */
     @RequiresApi(Build.VERSION_CODES.R)
     fun onSuccess(results: List<ScanResult>) {
         results.forEach {
@@ -48,7 +53,8 @@ class ScanActivity {
             scanResults.xCoordinate = xCoordinate
             scanResults.yCoordinate = yCoordinate
             db.insertScans(tableMapName, scanResults)
-            if(false)
+            if(Build.VERSION.SDK_INT >=30)
+                // only available in android API Level 30
             it.informationElements.forEach {
                 var bytes = ByteArray(it.bytes.capacity())
                 db.insertInformation(it.id, bytes)
@@ -56,10 +62,17 @@ class ScanActivity {
             Toast.makeText(scanContext, "Scan was a success", Toast.LENGTH_SHORT).show()
         }
     }
+
+    /**
+     * Gives out a Toast if the scan was not successful
+     */
     fun onFailure() {
         Toast.makeText(scanContext, "Scan failed", Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * @return Returns the current Timestamp in the format: yyyy-MM-dd HH:mm:ss
+     */
     fun getTime(): String {
         val formatter = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -68,6 +81,11 @@ class ScanActivity {
 
         return formatter
     }
+
+    /**
+     * This Method starts the scan.
+     * It depends on the Methods: onSuccess() and onFailure()
+     */
     fun startScan(){
         scan(scanContext,::onSuccess, ::onFailure)
     }

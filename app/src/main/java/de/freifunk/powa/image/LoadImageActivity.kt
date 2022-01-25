@@ -41,6 +41,7 @@ class LoadImageActivity : AppCompatActivity() {
     private lateinit var mapName: String
     private lateinit var scanBtn: Button
     // create ComponentActivity to load and handle loading the image
+    // A Dialog pops up after the User selects a map
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
             setImageVisibility(false)
@@ -77,6 +78,10 @@ class LoadImageActivity : AppCompatActivity() {
             createScanDialog()
         }
     }
+
+    /**
+     * Creates a AlertDialog to ask the User for a name for selected map
+     */
     private fun createDialog(){
         var mapEditText = EditText(this)
         var mapNameDialog =AlertDialog.Builder(this)
@@ -112,6 +117,12 @@ class LoadImageActivity : AppCompatActivity() {
         }
         mapNameDialog.show()
     }
+
+    /**
+     * @param imageName gets the name of the map and saves the image in the imageview under this name
+     * @return true if the image is saved successfully
+     *          false if the image couldn't be saved
+     */
     private fun saveImage(imageName: String): Boolean{
         var drawable = showImgIv.drawable as BitmapDrawable
         var bitmap = drawable.bitmap
@@ -119,6 +130,9 @@ class LoadImageActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Creates a AlertDialog to ask the User if he/she wants to start a scan
+     */
     private fun createScanDialog(){
 
         var scanDialog =AlertDialog.Builder(this)
