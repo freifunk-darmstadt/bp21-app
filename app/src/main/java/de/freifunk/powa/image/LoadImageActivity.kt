@@ -3,6 +3,7 @@ package de.freifunk.powa.image
 import android.content.DialogInterface
 import android.graphics.BitmapFactory
 import android.graphics.Rect
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
@@ -12,6 +13,7 @@ import android.view.ScaleGestureDetector
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +22,7 @@ import androidx.core.view.isVisible
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
+import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
 import kotlin.math.max
 import kotlin.math.min
 
@@ -44,6 +47,7 @@ class LoadImageActivity : AppCompatActivity() {
             // loads the image from the URI and stores it to the imageview
             val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri))
             showImgIv.setImageBitmap(bitmap)
+            createDialog()
         }
     }
 
@@ -64,7 +68,8 @@ class LoadImageActivity : AppCompatActivity() {
         // request permissions on Button press and open system image selector
         loadImgBtn.setOnClickListener {
             getContent.launch("image/*")
-            createDialog()
+
+
         }
     }
     private fun createDialog(){
@@ -87,6 +92,10 @@ class LoadImageActivity : AppCompatActivity() {
                 mapName = mapEditText.text.toString()
                 if(db.insertMaps(mapName)){
                     mapNameDialog.dismiss()
+                    if(saveImage(mapName))
+                        Toast.makeText(this,"Image has been successfully saved", Toast.LENGTH_SHORT).show()
+                    else
+                        Toast.makeText(this,"Image couldn't be saved", Toast.LENGTH_SHORT).show()
                 }else{
                     mapEditText.setError("Name already exist!")
                 }
@@ -97,6 +106,12 @@ class LoadImageActivity : AppCompatActivity() {
             }
         }
         mapNameDialog.show()
+    }
+    private fun saveImage(imageName: String): Boolean{
+        var drawable = showImgIv.drawable as BitmapDrawable
+        var bitmap = drawable.bitmap
+        return saveBitmapToInternalStorage(this,imageName,bitmap)
+
     }
     /**
      * set the visibility of the imageView and the load image button
