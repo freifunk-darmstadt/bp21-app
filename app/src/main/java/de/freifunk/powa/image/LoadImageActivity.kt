@@ -19,6 +19,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
+import de.freifunk.powa.database.ScanDBHelper
 import kotlin.math.max
 import kotlin.math.min
 
@@ -67,23 +68,35 @@ class LoadImageActivity : AppCompatActivity() {
         }
     }
     private fun createDialog(){
-        var mapNameDialog =AlertDialog.Builder(this)
-        mapNameDialog.setTitle("Name Image")
-        mapNameDialog.setMessage("Please enter a name for your map")
         var mapEditText = EditText(this)
+        var mapNameDialog =AlertDialog.Builder(this)
+            .setView(mapEditText)
+            .setTitle("Name Image")
+            .setMessage("Please enter a name for your map")
+            .setPositiveButton("Confirm",null)
+            .setNegativeButton("Cancel",null)
+            .create()
+
         mapEditText.inputType = InputType.TYPE_CLASS_TEXT
-        mapNameDialog.setView(mapEditText)
-        mapNameDialog.setPositiveButton("Confirm", DialogInterface.OnClickListener{
-            dialog,id ->
-            mapName = mapEditText.text.toString()
 
-        })
-        mapNameDialog.setNegativeButton("Cancel", DialogInterface.OnClickListener{
-            dialog,id -> dialog.cancel()
-        })
+        var db = ScanDBHelper(this)
+        mapNameDialog.setOnShowListener{
+            var posBtn = mapNameDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            var negBtn = mapNameDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            posBtn.setOnClickListener{
+                mapName = mapEditText.text.toString()
+                if(db.insertMaps(mapName)){
+                    mapNameDialog.dismiss()
+                }else{
+                    mapEditText.setError("Name already exist!")
+                }
+
+            }
+            negBtn.setOnClickListener{
+                mapNameDialog.dismiss()
+            }
+        }
         mapNameDialog.show()
-
-
     }
     /**
      * set the visibility of the imageView and the load image button
