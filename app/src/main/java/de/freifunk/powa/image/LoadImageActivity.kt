@@ -10,10 +10,7 @@ import android.text.InputType
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -22,7 +19,10 @@ import androidx.core.view.isVisible
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
+import de.freifunk.powa.scan.ScanActivity
+import de.freifunk.powa.scan.scan
 import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
+import kotlin.concurrent.timer
 import kotlin.math.max
 import kotlin.math.min
 
@@ -39,6 +39,7 @@ class LoadImageActivity : AppCompatActivity() {
     private var minZoomFactor: Float = 0.25f
     private var maxZoomFactor: Float = 20.0f
     private lateinit var mapName: String
+    private lateinit var scanBtn: Button
     // create ComponentActivity to load and handle loading the image
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
@@ -58,18 +59,22 @@ class LoadImageActivity : AppCompatActivity() {
         showImgIv = findViewById(R.id.showImgIv)
         loadImgBtn = findViewById(R.id.loadImageBtn)
         markerView = findViewById(R.id.marker_view)
-
+        scanBtn = findViewById(R.id.mapScanBtn)
         scaleGesture = ScaleGestureDetector(this, ScaleListener())
         markerGesture = GestureDetector(this, MarkerGestureListener())
         supportActionBar!!.hide()
 
         showImgIv.isInvisible = true
+        scanBtn.isInvisible = true
 
         // request permissions on Button press and open system image selector
         loadImgBtn.setOnClickListener {
             getContent.launch("image/*")
 
 
+        }
+        scanBtn.setOnClickListener{
+            createScanDialog()
         }
     }
     private fun createDialog(){
@@ -111,6 +116,34 @@ class LoadImageActivity : AppCompatActivity() {
         var drawable = showImgIv.drawable as BitmapDrawable
         var bitmap = drawable.bitmap
         return saveBitmapToInternalStorage(this,imageName,bitmap)
+
+    }
+
+    private fun createScanDialog(){
+
+        var scanDialog =AlertDialog.Builder(this)
+            .setView(null)
+            .setTitle("Scan start")
+            .setMessage("Do you want to start a scan at \n "+ "x:" + markerView.initX + ";y:" + markerView.initY+ "?")
+            .setPositiveButton("Confirm",null)
+            .setNegativeButton("Cancel",null)
+            .create()
+
+        scanDialog.setOnShowListener{
+            var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            posBtn.setOnClickListener{
+                var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
+                scanAct.startScan()
+                scanDialog.dismiss()
+
+            }
+            negBtn.setOnClickListener{
+                scanDialog.dismiss()
+            }
+        }
+        scanDialog.show()
+
 
     }
     /**
@@ -191,6 +224,7 @@ class LoadImageActivity : AppCompatActivity() {
                 markerView.initY = middleY + vectorY / scaleFactor + scrollHistoryY - showImgIv.y / scaleFactor
             }
             markerView.invalidate()
+            scanBtn.isInvisible = false
             return super.onDoubleTap(e)
         }
 
