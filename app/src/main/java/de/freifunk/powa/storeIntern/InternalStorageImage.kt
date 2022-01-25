@@ -1,4 +1,4 @@
-package de.freifunk.powa.store_intern
+package de.freifunk.powa.storeIntern
 
 import android.graphics.Bitmap
 
