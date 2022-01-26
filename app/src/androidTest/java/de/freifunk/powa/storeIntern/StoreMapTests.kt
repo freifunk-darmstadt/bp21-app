@@ -5,27 +5,37 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.core.graphics.set
 import androidx.test.platform.app.InstrumentationRegistry
-import de.freifunk.powa.TextScanner
 import junit.framework.Assert.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.io.File
+import java.nio.ByteBuffer
+import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
-import kotlin.io.path.deleteIfExists
+import java.util.*
+import kotlin.Comparator
 
 class StoreMapTests {
 
     lateinit var thisContext: Context
-    lateinit var scanner: TextScanner
+    fun Bitmap.equals(bitmap2: Bitmap): Boolean {
+        val buffer1: ByteBuffer = ByteBuffer.allocate(this.height * this.rowBytes)
+        this.copyPixelsToBuffer(buffer1)
+        val buffer2: ByteBuffer = ByteBuffer.allocate(bitmap2.height * bitmap2.rowBytes)
+        bitmap2.copyPixelsToBuffer(buffer2)
+        return Arrays.equals(buffer1.array(), buffer2.array())
+    }
     @Before
     fun setup() {
         thisContext = InstrumentationRegistry.getInstrumentation().targetContext
-        Paths.get(thisContext.filesDir.path+ File.separator+ mapDir).deleteIfExists()
+        Files.walk(Paths.get(thisContext.filesDir.path+ File.separator+ mapDir)).sorted(Comparator.reverseOrder()).map(
+            Path::toFile).forEach(File::delete)
     }
     @After
     fun cleanup() {
-        Paths.get(thisContext.filesDir.path+ File.separator+ mapDir).deleteIfExists()
+        Files.walk(Paths.get(thisContext.filesDir.path+ File.separator+ mapDir)).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete)
     }
 
     @Test
