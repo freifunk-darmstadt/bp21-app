@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.RuntimeException
 import java.nio.file.Paths
 
 const val mapDir = "maps"
@@ -36,15 +37,16 @@ fun loadListOfInternalStorageImages(context: Context): List<InternalStorageImage
     }?.map {
         val bytes = it.readBytes()
         val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-        InternalStorageImage(it.name, bitmap)
+        InternalStorageImage(it.name.removeSuffix(".jpg"), bitmap)
     } ?: listOf()
 }
 
 fun deleteFileFromInternalStorage(context: Context, filename: String): Boolean {
-    return try {
-        context.deleteFile("$mapDir${File.separator}$filename.jpg")
-    } catch (e: Exception) {
-        e.printStackTrace()
-        false
+    val fD = context.filesDir
+    val file = Paths.get("${fD.path}${File.separator}$mapDir${File.separator}$filename.jpg").toFile()
+
+    if (file.exists()){
+        return file.delete()
     }
+    return true
 }

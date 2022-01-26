@@ -6,36 +6,39 @@ import android.graphics.BitmapFactory
 import androidx.core.graphics.set
 import androidx.test.platform.app.InstrumentationRegistry
 import junit.framework.Assert.*
+import junit.framework.AssertionFailedError
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.io.File
+import java.io.*
+import java.lang.AssertionError
+import java.lang.RuntimeException
 import java.nio.ByteBuffer
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 import kotlin.Comparator
+import kotlin.io.path.exists
 
 class StoreMapTests {
 
     lateinit var thisContext: Context
-    fun Bitmap.equals(bitmap2: Bitmap): Boolean {
-        val buffer1: ByteBuffer = ByteBuffer.allocate(this.height * this.rowBytes)
-        this.copyPixelsToBuffer(buffer1)
-        val buffer2: ByteBuffer = ByteBuffer.allocate(bitmap2.height * bitmap2.rowBytes)
-        bitmap2.copyPixelsToBuffer(buffer2)
-        return Arrays.equals(buffer1.array(), buffer2.array())
-    }
+
     @Before
     fun setup() {
         thisContext = InstrumentationRegistry.getInstrumentation().targetContext
-        Files.walk(Paths.get(thisContext.filesDir.path+ File.separator+ mapDir)).sorted(Comparator.reverseOrder()).map(
-            Path::toFile).forEach(File::delete)
+        val path = Paths.get(thisContext.filesDir.path+ File.separator+ mapDir)
+        if (path.exists()){
+            Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete)
+        }
     }
     @After
     fun cleanup() {
-        Files.walk(Paths.get(thisContext.filesDir.path+ File.separator+ mapDir)).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete)
+        val path = Paths.get(thisContext.filesDir.path+ File.separator+ mapDir)
+        if (path.exists()){
+            Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete)
+        }
     }
 
     @Test
@@ -46,13 +49,55 @@ class StoreMapTests {
 
 
         saveBitmapToInternalStorage(thisContext, fileName, b1)
-        assertTrue(
-            file.exists()
-        )
+        assertTrue(file.exists())
 
         val bytes = file.readBytes()
         val b2 = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-        assertEquals(b1, b2)
+        assertBitmapEquals(compressBitmap(b1), b2)
+    }
+
+    @Test
+    fun testLoadListOfInternalStorageImages() {
+
+        assertEquals(0, loadListOfInternalStorageImages(thisContext).size)
+
+        val fn0 = "testBitmap0"
+        val b0 = createBitmap()
+        saveBitmapToInternalStorage(thisContext, fn0, b0)
+
+        var fl = loadListOfInternalStorageImages(thisContext)
+        assertEquals(1, fl.size)
+        assertEquals(fn0, fl[0].name)
+        assertBitmapEquals(compressBitmap(b0), fl[0].bitmap)
+
+        val fn1 = "testBitmap1"
+        val b1 = createBitmap()
+        saveBitmapToInternalStorage(thisContext, fn1, b1)
+
+        fl = loadListOfInternalStorageImages(thisContext)
+        assertEquals(2, fl.size)
+        fl = fl.sortedBy { it.name }
+
+        assertEquals(fn0, fl[0].name)
+        assertBitmapEquals(compressBitmap(b0), fl[0].bitmap)
+        assertEquals(fn1, fl[1].name)
+        assertBitmapEquals(compressBitmap(b1), fl[1].bitmap)
+    }
+
+    @Test
+    fun testDeleteFileFromInternalStorage() {
+        val fileName = "testBitmap"
+        val file = Paths.get(thisContext.filesDir.path+ File.separator+ mapDir+File.separator+fileName+".jpg").toFile()
+        val b1 = createBitmap()
+
+
+        saveBitmapToInternalStorage(thisContext, fileName, b1)
+        assertTrue(file.exists())
+
+        assertTrue(deleteFileFromInternalStorage(thisContext, fileName))
+        assertFalse(file.exists())
+
+        assertTrue(deleteFileFromInternalStorage(thisContext, fileName))
     }
 
     private fun createBitmap(): Bitmap {
@@ -65,47 +110,22 @@ class StoreMapTests {
         return bm
     }
 
-    @Test
-    fun testLoadListOfInternalStorageImages() {
-        val fn0 = "testBitmap0"
-        val b0 = createBitmap()
-        saveBitmapToInternalStorage(thisContext, fn0, b0)
-
-        var fl = loadListOfInternalStorageImages(thisContext)
-        assertEquals(1, fl.size)
-        assertEquals(fn0, fl[0].name)
-        assertEquals(b0, fl[0].bitmap)
-
-        val fn1 = "testBitmap1"
-        val b1 = createBitmap()
-        saveBitmapToInternalStorage(thisContext, fn1, b1)
-
-        fl = loadListOfInternalStorageImages(thisContext)
-        assertEquals(2, fl.size)
-        fl.sortedBy { it.name }
-
-        assertEquals(fn0, fl[0].name)
-        assertEquals(b0, fl[0].bitmap)
-        assertEquals(fn1, fl[1].name)
-        assertEquals(b1, fl[1].bitmap)
+    private fun compressBitmap(bitmap: Bitmap): Bitmap {
+        val outStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 95, outStream)
+        val toByteArray = outStream.toByteArray()
+        val inStream: InputStream = ByteArrayInputStream(toByteArray)
+        return BitmapFactory.decodeStream(inStream)
     }
 
-    @Test
-    fun testDeleteFileFromInternalStorage() {
-        val fileName = "testBitmap"
-        val file = Paths.get(thisContext.filesDir.path+ File.separator+ mapDir+File.separator+fileName+".jpg").toFile()
-        val b1 = createBitmap()
+    private fun assertBitmapEquals(bitmap1: Bitmap, bitmap2: Bitmap) {
+        val buffer1: ByteBuffer = ByteBuffer.allocate(bitmap1.height * bitmap1.rowBytes)
+        bitmap1.copyPixelsToBuffer(buffer1)
+        val buffer2: ByteBuffer = ByteBuffer.allocate(bitmap2.height * bitmap2.rowBytes)
+        bitmap2.copyPixelsToBuffer(buffer2)
 
-
-        saveBitmapToInternalStorage(thisContext, fileName, b1)
-        assertTrue(
-            file.exists()
-        )
-
-        deleteFileFromInternalStorage(thisContext, fileName)
-        assertFalse(
-            file.exists()
-        )
+        if (!Arrays.equals(buffer1.array(), buffer2.array())) {
+            throw AssertionFailedError("Expected <${buffer1.array().map { it.toString() }.joinToString()}> but was <${buffer2.array().map { it.toString() }.joinToString()}>")
+        }
     }
-
 }
