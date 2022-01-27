@@ -1,6 +1,6 @@
 package de.freifunk.powa.image
 
-import android.content.DialogInterface
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
@@ -10,7 +10,11 @@ import android.text.InputType
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
-import android.widget.*
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -20,126 +24,72 @@ import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
-import de.freifunk.powa.scan.scan
+import de.freifunk.powa.store_intern.InternalStorageImage
+import de.freifunk.powa.store_intern.loadListOfInternalStorageImages
 import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
-import kotlin.concurrent.timer
+import kotlinx.android.synthetic.main.activity_load_old_image.*
+import kotlinx.coroutines.runBlocking
 import kotlin.math.max
 import kotlin.math.min
 
-class LoadImageActivity : AppCompatActivity() {
-
-    private lateinit var showImgIv: ImageView
-    private lateinit var loadImgBtn: Button
-    private lateinit var scaleGesture: ScaleGestureDetector
+class LoadOldImageActivity: AppCompatActivity() {
+    protected lateinit var showImgIv: ImageView
+    protected lateinit var scaleGesture: ScaleGestureDetector
     private var scaleFactor: Float = 1.0f
-    private lateinit var markerView: MarkerView
-    private lateinit var markerGesture: GestureDetector
+    protected lateinit var markerView: MarkerView
+    protected lateinit var markerGesture: GestureDetector
     private var scrollHistoryX: Int = 0
     private var scrollHistoryY: Int = 0
     private var minZoomFactor: Float = 0.25f
     private var maxZoomFactor: Float = 20.0f
     private lateinit var mapName: String
-    private lateinit var scanBtn: Button
-    // create ComponentActivity to load and handle loading the image
-    // A Dialog pops up after the User selects a map
-    private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        if (uri != null) {
-            setImageVisibility(false)
-
-            // loads the image from the URI and stores it to the imageview
-            val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri))
-            showImgIv.setImageBitmap(bitmap)
-            createDialog()
-        }
-    }
-
+    protected lateinit var scanBtn: Button
+    lateinit var oldMarkers: SavedMarkerView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_load_image)
+        var bitmap = BitmapFactory.decodeByteArray(
+            getIntent()
+                .getByteArrayExtra("mapImage"),0,getIntent()
+                .getByteArrayExtra("mapImage")!!.size)
+        var name = intent.getStringExtra("mapName")
+        var db = ScanDBHelper(this)
+        var crdOfMarkers = db.readCoordinates(name!!)
+        mapName = name!!
+        setContentView(R.layout.activity_load_old_image)
+        showImgIv = findViewById(R.id.showOldImgIv)
+        markerView = findViewById(R.id.old_marker_view)
+        oldMarkers = findViewById(R.id.markerViewOfOldMarkers)
+        scanBtn = findViewById(R.id.oldMapScanBtn)
+        if (crdOfMarkers != null) {
+            oldMarkers.coordinates = crdOfMarkers
+        }
 
-        showImgIv = findViewById(R.id.showImgIv)
-        loadImgBtn = findViewById(R.id.loadImageBtn)
-        markerView = findViewById(R.id.marker_view)
-        scanBtn = findViewById(R.id.mapScanBtn)
+
+
+
+
+
+        showImgIv.setImageBitmap(bitmap)
         scaleGesture = ScaleGestureDetector(this, ScaleListener())
         markerGesture = GestureDetector(this, MarkerGestureListener())
         supportActionBar!!.hide()
 
-        showImgIv.isInvisible = true
+
         scanBtn.isInvisible = true
 
         // request permissions on Button press and open system image selector
-        loadImgBtn.setOnClickListener {
-            getContent.launch("image/*")
 
-
-        }
         scanBtn.setOnClickListener{
             createScanDialog()
         }
-    }
+        oldMarkers.invalidate()
 
-    /**
-     * Creates a AlertDialog to ask the User for a name for selected map
-     */
-    private fun createDialog(){
-        var mapEditText = EditText(this)
-        var mapNameDialog =AlertDialog.Builder(this)
-            .setView(mapEditText)
-            .setTitle("Name Image")
-            .setMessage("Please enter a name for your map")
-            .setPositiveButton("Confirm",null)
-            .setNegativeButton("Cancel",null)
-            .create()
-
-        mapEditText.inputType = InputType.TYPE_CLASS_TEXT
-
-        var db = ScanDBHelper(this)
-        mapNameDialog.setOnShowListener{
-            var posBtn = mapNameDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            var negBtn = mapNameDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-            posBtn.setOnClickListener{
-                mapName = mapEditText.text.toString()
-                if(mapName.get(0) == '.'){
-                    mapEditText.setError("Name shouldn't start with a dot")
-                }
-                else{
-
-
-                if(db.insertMaps(mapName)){
-                    mapNameDialog.dismiss()
-                    if(saveImage(mapName))
-                        Toast.makeText(this,"Image has been successfully saved", Toast.LENGTH_SHORT).show()
-                    else
-                        Toast.makeText(this,"Image couldn't be saved", Toast.LENGTH_SHORT).show()
-                }else{
-                    mapEditText.setError("Name already exist!")
-                }
-
-            }}
-            negBtn.setOnClickListener{
-                mapNameDialog.dismiss()
-            }
-        }
-        mapNameDialog.show()
-    }
-
-    /**
-     * @param imageName gets the name of the map and saves the image in the imageview under this name
-     * @return true if the image is saved successfully
-     *          false if the image couldn't be saved
-     */
-    private fun saveImage(imageName: String): Boolean{
-        var drawable = showImgIv.drawable as BitmapDrawable
-        var bitmap = drawable.bitmap
-        return saveBitmapToInternalStorage(this,imageName,bitmap)
 
     }
-
     /**
      * Creates a AlertDialog to ask the User if he/she wants to start a scan
      */
-    private fun createScanDialog(){
+    protected fun createScanDialog(){
 
         var scanDialog =AlertDialog.Builder(this)
             .setView(null)
@@ -166,14 +116,7 @@ class LoadImageActivity : AppCompatActivity() {
 
 
     }
-    /**
-     * set the visibility of the imageView and the load image button
-     * @param value the value to set the visibility of the imageView to
-     */
-    private fun setImageVisibility(value: Boolean) {
-        loadImgBtn.isVisible = value
-        showImgIv.isInvisible = value
-    }
+
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         var historySize: Int
@@ -199,6 +142,7 @@ class LoadImageActivity : AppCompatActivity() {
                 scrollHistoryY += distanceY
 
                 markerView.scrollBy(distanceX, distanceY)
+                oldMarkers.scrollBy(distanceX,distanceY)
                 showImgIv.scrollBy(distanceX, distanceY)
             }
         }
@@ -220,6 +164,8 @@ class LoadImageActivity : AppCompatActivity() {
             showImgIv.scaleY = scaleFactor
             markerView.scaleX = scaleFactor
             markerView.scaleY = scaleFactor
+            oldMarkers.scaleX = scaleFactor
+            oldMarkers.scaleY = scaleFactor
             return true
         }
     }
@@ -252,4 +198,5 @@ class LoadImageActivity : AppCompatActivity() {
             return px / resources.displayMetrics.density
         }
     }
+
 }

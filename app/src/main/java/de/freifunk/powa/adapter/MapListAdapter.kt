@@ -29,7 +29,9 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
         var textView = mapView.findViewById<TextView>(R.id.mapNameInList)
         var name = listOfImages.get(position)?.name
         imageView.setImageBitmap(listOfImages.get(position).bitmap)
-        textView.setText(name.subSequence(0,name.length - 4)) // subsequence ".jpg" is excluded
+        name = name.removeSuffix(".jpg")
+
+        textView.setText(name) // subsequence ".jpg" is excluded
         return mapView
     }
 

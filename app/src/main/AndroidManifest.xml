@@ -20,6 +20,10 @@
             android:screenOrientation="portrait"
             android:exported="false" />
         <activity
+            android:name=".image.LoadOldImageActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
             android:name=".image.MapListActivity"
             android:screenOrientation="portrait"
             android:exported="false"/>
