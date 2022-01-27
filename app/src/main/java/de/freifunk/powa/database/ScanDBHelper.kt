@@ -16,6 +16,7 @@ class ScanDBHelper(context: Context) :
 
     val MAP_TABLE_NAME = "maps"
     val COLUMN_MAP_NAME = "name"
+    val COLUMN_MAP_LOCATION = "location"
     val COLUMN_SCANS_BSSID = "bssid"
     val COLUMN_SCANS_SSID = "ssid"
     val COLUMN_SCANS_CAPABILITIES = "capabilities"
@@ -41,7 +42,8 @@ class ScanDBHelper(context: Context) :
 
         db?.execSQL(
             "CREATE TABLE " + MAP_TABLE_NAME + " (" +
-                COLUMN_MAP_NAME + " VARCHAR(256) PRIMARY KEY); "
+                COLUMN_MAP_NAME + " VARCHAR(256) PRIMARY KEY," +
+                 COLUMN_MAP_LOCATION + "TEXT); "
         )
         db?.execSQL(
             "CREATE TABLE " + INFORMATION_TABLE + " (" +
@@ -86,7 +88,7 @@ class ScanDBHelper(context: Context) :
         var db = this.writableDatabase
         var value = ContentValues()
         var query = "SELECT * FROM " + MAP_TABLE_NAME +
-            " WHERE " + COLUMN_MAP_NAME + " = '" + name + "' ;"
+                " WHERE " + COLUMN_MAP_NAME + " = '" + name + "' ;"
         var cursor = db.rawQuery(query, null)
         if (cursor.count == 0) {
             value.put(COLUMN_MAP_NAME, name)
@@ -94,6 +96,27 @@ class ScanDBHelper(context: Context) :
             db.close()
             return true
         }
+        db.close()
+        return false
+    }
+
+    /**
+     * This Method adds a location to a Map in the Map table
+     */
+    fun updateLocationInTableMap(name: String, location: String): Boolean {
+        var db = this.writableDatabase
+        var value = ContentValues()
+        var query = "SELECT * FROM " + MAP_TABLE_NAME +
+                " WHERE " + COLUMN_MAP_NAME + " = '" + name + "' ;"
+        var cursor = db.rawQuery(query, null)
+        if (cursor.count != 0) {
+            value.put(COLUMN_MAP_LOCATION, location)
+            db.update(MAP_TABLE_NAME, value, "$COLUMN_MAP_NAME = '?'", arrayOf(name))
+            cursor.close()
+            db.close()
+            return true
+        }
+        cursor.close()
         db.close()
         return false
     }

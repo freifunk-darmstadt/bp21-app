@@ -1,11 +1,23 @@
 package de.freifunk.powa.permissions
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.provider.Settings
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import java.lang.Exception
+import androidx.core.content.ContextCompat.getSystemService
+
+
+
 
 /**
  * This function creates and displays a dialog that asks the user to activate the location services
@@ -119,4 +131,22 @@ fun isWIFIEnabled(context: Context): Boolean {
     }
 
     return network_enabled
+}
+
+@SuppressLint("MissingPermission")
+fun getGpsLocation(context: Context, minTimeIntervalMS: Long = 5000, minDistanceM: Float = 10.0f,locationListener: LocationListener) {
+    if (!isGPSEnabled(context)){
+        enableLocationServices(context)
+    }
+
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+    checkPermissions(context, arrayOf("Manifest.permission.ACCESS_FINE_LOCATION"))
+    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeIntervalMS, minDistanceM, locationListener)
+}
+
+const val LOCATION_STRING_SEPARATOR = "-"
+
+fun locationToString(location: Location): String{
+    return "${location.longitude}$LOCATION_STRING_SEPARATOR${location.latitude}"
 }
