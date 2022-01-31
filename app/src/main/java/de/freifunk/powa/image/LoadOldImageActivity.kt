@@ -47,11 +47,21 @@ class LoadOldImageActivity: AppCompatActivity() {
     lateinit var oldMarkers: SavedMarkerView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var bitmap = BitmapFactory.decodeByteArray(
-            getIntent()
-                .getByteArrayExtra("mapImage"),0,getIntent()
-                .getByteArrayExtra("mapImage")!!.size)
+
         var name = intent.getStringExtra("mapName")
+        var list = listOf<InternalStorageImage>()
+        var loadContext = this
+        var bitmap: Bitmap? = null
+        runBlocking {
+            list = loadListOfInternalStorageImages(loadContext)
+        }
+
+        // TO-DO durchsuche die Liste
+        list.forEach{
+            if(it.name == name){
+                bitmap = it.bitmap
+            }
+        }
         var db = ScanDBHelper(this)
         var crdOfMarkers = db.readCoordinates(name!!)
         mapName = name!!
@@ -63,12 +73,6 @@ class LoadOldImageActivity: AppCompatActivity() {
         if (crdOfMarkers != null) {
             oldMarkers.coordinates = crdOfMarkers
         }
-
-
-
-
-
-
         showImgIv.setImageBitmap(bitmap)
         scaleGesture = ScaleGestureDetector(this, ScaleListener())
         markerGesture = GestureDetector(this, MarkerGestureListener())
@@ -93,11 +97,12 @@ class LoadOldImageActivity: AppCompatActivity() {
 
         var scanDialog =AlertDialog.Builder(this)
             .setView(null)
-            .setTitle("Scan start")
-            .setMessage("Do you want to start a scan at \n "+ "x:" + markerView.initX + ";y:" + markerView.initY+ "?")
-            .setPositiveButton("Confirm",null)
-            .setNegativeButton("Cancel",null)
+            .setTitle("Starte Scan")
+            .setMessage("Möchtest du den Scan starten bei: \n "+ "x:" + markerView.initX + ";y:" + markerView.initY+ "?")
+            .setPositiveButton("Ok",null)
+            .setNegativeButton("Abbrechen",null)
             .create()
+
 
         scanDialog.setOnShowListener{
             var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)

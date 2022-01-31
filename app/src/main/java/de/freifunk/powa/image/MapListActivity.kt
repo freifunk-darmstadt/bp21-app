@@ -44,13 +44,7 @@ class MapListActivity: AppCompatActivity() {
         listView.setOnItemClickListener(OnItemClickListener { list, v, pos, id ->
             var storageImage = mapListadapter.getItem(pos)
             var intent = Intent(this, LoadOldImageActivity::class.java)
-            var bitmap = storageImage?.bitmap
             var name = storageImage?.name
-            var bs = ByteArrayOutputStream()
-            bitmap?.compress(Bitmap.CompressFormat.JPEG, 50, bs)
-
-
-            intent.putExtra("mapImage",bs.toByteArray())
             name = name?.removeSuffix(".jpg")
             intent.putExtra("mapName", name)
             startActivity(intent)
