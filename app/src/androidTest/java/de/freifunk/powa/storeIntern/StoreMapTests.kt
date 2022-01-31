@@ -5,19 +5,22 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.core.graphics.set
 import androidx.test.platform.app.InstrumentationRegistry
-import junit.framework.Assert.*
+import junit.framework.Assert.* // ktlint-disable no-wildcard-imports
 import junit.framework.AssertionFailedError
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.InputStream
 import java.lang.AssertionError
 import java.lang.RuntimeException
 import java.nio.ByteBuffer
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.*
+import java.util.* // ktlint-disable no-wildcard-imports
 import kotlin.Comparator
 import kotlin.io.path.exists
 
