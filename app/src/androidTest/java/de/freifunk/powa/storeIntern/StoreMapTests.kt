@@ -14,8 +14,6 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
-import java.lang.AssertionError
-import java.lang.RuntimeException
 import java.nio.ByteBuffer
 import java.nio.file.Files
 import java.nio.file.Path
@@ -31,15 +29,15 @@ class StoreMapTests {
     @Before
     fun setup() {
         thisContext = InstrumentationRegistry.getInstrumentation().targetContext
-        val path = Paths.get(thisContext.filesDir.path+ File.separator+ mapDir)
-        if (path.exists()){
+        val path = Paths.get(thisContext.filesDir.path + File.separator + mapDir)
+        if (path.exists()) {
             Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete)
         }
     }
     @After
     fun cleanup() {
-        val path = Paths.get(thisContext.filesDir.path+ File.separator+ mapDir)
-        if (path.exists()){
+        val path = Paths.get(thisContext.filesDir.path + File.separator + mapDir)
+        if (path.exists()) {
             Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete)
         }
     }
@@ -47,9 +45,8 @@ class StoreMapTests {
     @Test
     fun testSaveBitmapToInternalStorage() {
         val fileName = "testBitmap"
-        val file = Paths.get(thisContext.filesDir.path+ File.separator+ mapDir+File.separator+fileName+".jpg").toFile()
+        val file = Paths.get(thisContext.filesDir.path + File.separator + mapDir + File.separator + fileName + ".jpg").toFile()
         val b1 = createBitmap()
-
 
         saveBitmapToInternalStorage(thisContext, fileName, b1)
         assertTrue(file.exists())
@@ -90,9 +87,8 @@ class StoreMapTests {
     @Test
     fun testDeleteFileFromInternalStorage() {
         val fileName = "testBitmap"
-        val file = Paths.get(thisContext.filesDir.path+ File.separator+ mapDir+File.separator+fileName+".jpg").toFile()
+        val file = Paths.get(thisContext.filesDir.path + File.separator + mapDir + File.separator + fileName + ".jpg").toFile()
         val b1 = createBitmap()
-
 
         saveBitmapToInternalStorage(thisContext, fileName, b1)
         assertTrue(file.exists())
@@ -106,8 +102,8 @@ class StoreMapTests {
     private fun createBitmap(): Bitmap {
         val bm = Bitmap.createBitmap(8, 8, Bitmap.Config.RGB_565)
         for (x in 0..7) {
-            for (y in 0..7){
-                bm.set(x,y, x+y)
+            for (y in 0..7) {
+                bm.set(x, y, x + y)
             }
         }
         return bm
