@@ -22,6 +22,8 @@ import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
 import de.freifunk.powa.scan.scan
 import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
+import java.io.File
+import java.util.regex.Pattern
 import kotlin.concurrent.timer
 import kotlin.math.max
 import kotlin.math.min
@@ -86,10 +88,10 @@ class LoadImageActivity : AppCompatActivity() {
         var mapEditText = EditText(this)
         var mapNameDialog =AlertDialog.Builder(this)
             .setView(mapEditText)
-            .setTitle("Name Image")
-            .setMessage("Please enter a name for your map")
-            .setPositiveButton("Confirm",null)
-            .setNegativeButton("Cancel",null)
+            .setTitle("Bennene Karte")
+            .setMessage("Bitte gib einen Kartennamen ein")
+            .setPositiveButton("Ok",null)
+            .setNegativeButton("Abbrechen",null)
             .create()
 
         mapEditText.inputType = InputType.TYPE_CLASS_TEXT
@@ -100,8 +102,9 @@ class LoadImageActivity : AppCompatActivity() {
             var negBtn = mapNameDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener{
                 mapName = mapEditText.text.toString()
-                if(mapName.get(0) == '.'){
-                    mapEditText.setError("Name shouldn't start with a dot")
+                var pattern = Pattern.compile("[^a-zA-Z0-9_\\-]")
+                if(pattern.matcher(mapName).find()){
+                    mapEditText.setError("Bitte gib einen gültigen Namen ein")
                 }
                 else{
 
@@ -109,11 +112,11 @@ class LoadImageActivity : AppCompatActivity() {
                 if(db.insertMaps(mapName)){
                     mapNameDialog.dismiss()
                     if(saveImage(mapName))
-                        Toast.makeText(this,"Image has been successfully saved", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this,"Bild wurde erfolgreich gespeichert", Toast.LENGTH_SHORT).show()
                     else
-                        Toast.makeText(this,"Image couldn't be saved", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this,"Bild konnte nicht gespeichert werden", Toast.LENGTH_SHORT).show()
                 }else{
-                    mapEditText.setError("Name already exist!")
+                    mapEditText.setError("Name existiert bereits!")
                 }
 
             }}
@@ -143,10 +146,10 @@ class LoadImageActivity : AppCompatActivity() {
 
         var scanDialog =AlertDialog.Builder(this)
             .setView(null)
-            .setTitle("Scan start")
-            .setMessage("Do you want to start a scan at \n "+ "x:" + markerView.initX + ";y:" + markerView.initY+ "?")
-            .setPositiveButton("Confirm",null)
-            .setNegativeButton("Cancel",null)
+            .setTitle("Starte Scan")
+            .setMessage("Möchtest du den Scan starten bei: \n "+ "x:" + markerView.initX + ";y:" + markerView.initY+ "?")
+            .setPositiveButton("Ok",null)
+            .setNegativeButton("Abbrechen",null)
             .create()
 
         scanDialog.setOnShowListener{

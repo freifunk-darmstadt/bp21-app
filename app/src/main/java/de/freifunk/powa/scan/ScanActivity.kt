@@ -17,11 +17,11 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class ScanActivity {
-    lateinit var tableMapName: String // should be set before scan is invoked
-    lateinit var timeStamp: String // time should be set before scan is invoked
+    var tableMapName: String // should be set before scan is invoked
+    var timeStamp: String // time should be set before scan is invoked
     var xCoordinate: Float = 0f // should be set before scan is invoked
     var yCoordinate: Float = 0f // should be set before scan is invoked
-    lateinit var scanContext: Context
+    var scanContext: Context
     constructor(context: Context, name: String, x: Float, y: Float){
         scanContext = context
         tableMapName = name
@@ -34,7 +34,7 @@ class ScanActivity {
      * This Method saves the given results in the Sqlite-Database
      * @param results the List of the ScanResults. Results should be filtered first
      */
-    @RequiresApi(Build.VERSION_CODES.R)
+
     fun onSuccess(results: List<ScanResult>) {
         results.forEach {
             var db = ScanDBHelper(scanContext)
@@ -59,7 +59,7 @@ class ScanActivity {
                 var bytes = ByteArray(it.bytes.capacity())
                 db.insertInformation(it.id, bytes)
             }
-            Toast.makeText(scanContext, "Scan was a success", Toast.LENGTH_SHORT).show()
+            Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -67,7 +67,7 @@ class ScanActivity {
      * Gives out a Toast if the scan was not successful
      */
     fun onFailure() {
-        Toast.makeText(scanContext, "Scan failed", Toast.LENGTH_SHORT).show()
+        Toast.makeText(scanContext, "Scan fehlgeschlagen", Toast.LENGTH_SHORT).show()
     }
 
     /**
