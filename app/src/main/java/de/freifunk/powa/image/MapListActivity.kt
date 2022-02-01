@@ -45,7 +45,7 @@ class MapListActivity: AppCompatActivity() {
             var storageImage = mapListadapter.getItem(pos)
             var intent = Intent(this, LoadOldImageActivity::class.java)
             var name = storageImage?.name
-            name = name?.removeSuffix(".jpg")
+
             intent.putExtra("mapName", name)
             startActivity(intent)
         })

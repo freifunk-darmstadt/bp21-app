@@ -51,43 +51,38 @@ class LoadOldImageActivity: AppCompatActivity() {
         var name = intent.getStringExtra("mapName")
         var list = listOf<InternalStorageImage>()
         var loadContext = this
-        var bitmap: Bitmap? = null
+        var internStorage: InternalStorageImage? = null
         runBlocking {
             list = loadListOfInternalStorageImages(loadContext)
         }
-
-        // TO-DO durchsuche die Liste
-        list.forEach{
-            if(it.name == name){
-                bitmap = it.bitmap
+        for(it in list){
+            if(it.name == (name)){
+                internStorage = it
+                break
             }
         }
+        name = name?.removeSuffix(".jpg")
         var db = ScanDBHelper(this)
         var crdOfMarkers = db.readCoordinates(name!!)
-        mapName = name!!
+
         setContentView(R.layout.activity_load_old_image)
         showImgIv = findViewById(R.id.showOldImgIv)
         markerView = findViewById(R.id.old_marker_view)
         oldMarkers = findViewById(R.id.markerViewOfOldMarkers)
         scanBtn = findViewById(R.id.oldMapScanBtn)
-        if (crdOfMarkers != null) {
-            oldMarkers.coordinates = crdOfMarkers
-        }
-        showImgIv.setImageBitmap(bitmap)
         scaleGesture = ScaleGestureDetector(this, ScaleListener())
         markerGesture = GestureDetector(this, MarkerGestureListener())
         supportActionBar!!.hide()
-
-
+        if (crdOfMarkers != null) {
+            oldMarkers.coordinates = crdOfMarkers
+        }
         scanBtn.isInvisible = true
-
-        // request permissions on Button press and open system image selector
-
         scanBtn.setOnClickListener{
             createScanDialog()
         }
+        mapName = name!!
+        showImgIv.setImageBitmap(internStorage!!.bitmap)
         oldMarkers.invalidate()
-
 
     }
     /**
@@ -117,6 +112,7 @@ class LoadOldImageActivity: AppCompatActivity() {
                 scanDialog.dismiss()
             }
         }
+
         scanDialog.show()
 
 
