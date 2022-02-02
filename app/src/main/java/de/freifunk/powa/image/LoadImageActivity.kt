@@ -1,6 +1,5 @@
 package de.freifunk.powa.image
 
-import android.content.DialogInterface
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
@@ -23,11 +22,8 @@ import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
-import de.freifunk.powa.scan.scan
 import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
-import java.io.File
 import java.util.regex.Pattern
-import kotlin.concurrent.timer
 import kotlin.math.max
 import kotlin.math.min
 
@@ -76,10 +72,8 @@ class LoadImageActivity : AppCompatActivity() {
         // request permissions on Button press and open system image selector
         loadImgBtn.setOnClickListener {
             getContent.launch("image/*")
-
-
         }
-        scanBtn.setOnClickListener{
+        scanBtn.setOnClickListener {
             createScanDialog()
         }
     }
@@ -87,43 +81,41 @@ class LoadImageActivity : AppCompatActivity() {
     /**
      * Creates a AlertDialog to ask the User for a name for selected map
      */
-    private fun createDialog(){
+    private fun createDialog() {
         var mapEditText = EditText(this)
-        var mapNameDialog =AlertDialog.Builder(this)
+        var mapNameDialog = AlertDialog.Builder(this)
             .setView(mapEditText)
             .setTitle("Bennene Karte")
             .setMessage("Bitte gib einen Kartennamen ein")
-            .setPositiveButton("Ok",null)
-            .setNegativeButton("Abbrechen",null)
+            .setPositiveButton("Ok", null)
+            .setNegativeButton("Abbrechen", null)
             .create()
 
         mapEditText.inputType = InputType.TYPE_CLASS_TEXT
 
         var db = ScanDBHelper(this)
-        mapNameDialog.setOnShowListener{
+        mapNameDialog.setOnShowListener {
             var posBtn = mapNameDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             var negBtn = mapNameDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-            posBtn.setOnClickListener{
+            posBtn.setOnClickListener {
                 mapName = mapEditText.text.toString()
                 var pattern = Pattern.compile("[^a-zA-Z0-9_\\-]")
-                if(pattern.matcher(mapName).find()){
+                if (pattern.matcher(mapName).find()) {
                     mapEditText.setError("Bitte gib einen gültigen Namen ein")
-                }
-                else{
+                } else {
 
-
-                if(db.insertMaps(mapName)){
-                    mapNameDialog.dismiss()
-                    if(saveImage(mapName))
-                        Toast.makeText(this,"Bild wurde erfolgreich gespeichert", Toast.LENGTH_SHORT).show()
-                    else
-                        Toast.makeText(this,"Bild konnte nicht gespeichert werden", Toast.LENGTH_SHORT).show()
-                }else{
-                    mapEditText.setError("Name existiert bereits!")
-                }
-
-            }}
-            negBtn.setOnClickListener{
+                    if (db.insertMaps(mapName)) {
+                        mapNameDialog.dismiss()
+                        if (saveImage(mapName))
+                            Toast.makeText(this, "Bild wurde erfolgreich gespeichert", Toast.LENGTH_SHORT).show()
+                        else
+                            Toast.makeText(this, "Bild konnte nicht gespeichert werden", Toast.LENGTH_SHORT).show()
+                    } else {
+                        mapEditText.setError("Name existiert bereits!")
+                    }
+                } 
+            }
+            negBtn.setOnClickListener {
                 mapNameDialog.dismiss()
             }
         }
@@ -135,42 +127,38 @@ class LoadImageActivity : AppCompatActivity() {
      * @return true if the image is saved successfully
      *          false if the image couldn't be saved
      */
-    private fun saveImage(imageName: String): Boolean{
+    private fun saveImage(imageName: String): Boolean {
         var drawable = showImgIv.drawable as BitmapDrawable
         var bitmap = drawable.bitmap
-        return saveBitmapToInternalStorage(this,imageName,bitmap)
-
+        return saveBitmapToInternalStorage(this, imageName, bitmap)
     }
 
     /**
      * Creates a AlertDialog to ask the User if he/she wants to start a scan
      */
-    private fun createScanDialog(){
+    private fun createScanDialog() {
 
-        var scanDialog =AlertDialog.Builder(this)
+        var scanDialog = AlertDialog.Builder(this)
             .setView(null)
             .setTitle("Starte Scan")
-            .setMessage("Möchtest du den Scan starten bei: \n "+ "x:" + markerView.initX + ";y:" + markerView.initY+ "?")
-            .setPositiveButton("Ok",null)
-            .setNegativeButton("Abbrechen",null)
+            .setMessage("Möchtest du den Scan starten bei: \n " + "x:" + markerView.initX + ";y:" + markerView.initY + "?")
+            .setPositiveButton("Ok", null)
+            .setNegativeButton("Abbrechen", null)
             .create()
 
-        scanDialog.setOnShowListener{
+        scanDialog.setOnShowListener {
             var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-            posBtn.setOnClickListener{
+            posBtn.setOnClickListener {
                 var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
                 scanAct.startScan()
                 scanDialog.dismiss()
-
             }
-            negBtn.setOnClickListener{
+            negBtn.setOnClickListener {
                 scanDialog.dismiss()
             }
         }
         scanDialog.show()
-
-
     }
     /**
      * set the visibility of the imageView and the load image button

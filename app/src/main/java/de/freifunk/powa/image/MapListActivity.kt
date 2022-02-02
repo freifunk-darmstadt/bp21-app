@@ -1,31 +1,19 @@
 package de.freifunk.powa.image
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ListView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import de.freifunk.powa.R
-import de.freifunk.powa.R.drawable
 import de.freifunk.powa.adapter.MapListAdapter
 import de.freifunk.powa.store_intern.InternalStorageImage
 import de.freifunk.powa.store_intern.loadListOfInternalStorageImages
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 
-class MapListActivity: AppCompatActivity() {
+class MapListActivity : AppCompatActivity() {
     lateinit var listView: ListView
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,17 +25,18 @@ class MapListActivity: AppCompatActivity() {
         runBlocking {
 
             listOfMaps = loadListOfInternalStorageImages(mapListContext)
-
         }
-        var mapListadapter = MapListAdapter(mapListContext,R.layout.list_row, listOfMaps)
+        var mapListadapter = MapListAdapter(mapListContext, R.layout.list_row, listOfMaps)
         listView.adapter = mapListadapter
-        listView.setOnItemClickListener(OnItemClickListener { _, _, pos, _ ->
-            var storageImage = mapListadapter.getItem(pos)
-            var intent = Intent(this, LoadOldImageActivity::class.java)
-            var name = storageImage?.name
+        listView.setOnItemClickListener(
+            OnItemClickListener { _, _, pos, _ ->
+                var storageImage = mapListadapter.getItem(pos)
+                var intent = Intent(this, LoadOldImageActivity::class.java)
+                var name = storageImage?.name
 
-            intent.putExtra("mapName", name)
-            startActivity(intent)
-        })
+                intent.putExtra("mapName", name)
+                startActivity(intent)
+            }
+        )
     }
 }

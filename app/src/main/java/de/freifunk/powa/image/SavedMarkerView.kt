@@ -7,15 +7,15 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 
-class SavedMarkerView: View {
+class SavedMarkerView : View {
     constructor(context: Context?) :
-            super(context)
+        super(context)
     constructor(context: Context?, attrs: AttributeSet?) :
-            super(context, attrs)
+        super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) :
-            super(context, attrs, defStyleAttr)
+        super(context, attrs, defStyleAttr)
     lateinit var canvas: Canvas
-    var coordinates: MutableList<Pair<Float,Float>> = mutableListOf()
+    var coordinates: MutableList<Pair<Float, Float>> = mutableListOf()
 
     var rad = 20f
 
@@ -31,14 +31,13 @@ class SavedMarkerView: View {
         canvas?.let {
             this.canvas = canvas
 
-                coordinates.forEach {
-                    drawCircle(it.first, it.second)
-                }
-
+            coordinates.forEach {
+                drawCircle(it.first, it.second)
+            }
         }
     }
 
     fun drawCircle(x: Float, y: Float) {
-        canvas.drawCircle(x,y, rad, linePaint)
+        canvas.drawCircle(x, y, rad, linePaint)
     }
 }

@@ -1,38 +1,27 @@
 package de.freifunk.powa.image
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Rect
-import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Bundle
-import android.text.InputType
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
-import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
 import de.freifunk.powa.store_intern.InternalStorageImage
 import de.freifunk.powa.store_intern.loadListOfInternalStorageImages
-import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
 import kotlinx.android.synthetic.main.activity_load_old_image.*
 import kotlinx.coroutines.runBlocking
 import kotlin.math.max
 import kotlin.math.min
 
-class LoadOldImageActivity: AppCompatActivity() {
+class LoadOldImageActivity : AppCompatActivity() {
     protected lateinit var showImgIv: ImageView
     protected lateinit var scaleGesture: ScaleGestureDetector
     private var scaleFactor: Float = 1.0f
@@ -55,8 +44,8 @@ class LoadOldImageActivity: AppCompatActivity() {
         runBlocking {
             list = loadListOfInternalStorageImages(loadContext)
         }
-        for(it in list){
-            if(it.name == (name)){
+        for (it in list) {
+            if (it.name == (name)) {
                 internStorage = it
                 break
             }
@@ -77,47 +66,41 @@ class LoadOldImageActivity: AppCompatActivity() {
             oldMarkers.coordinates = crdOfMarkers
         }
         scanBtn.isInvisible = true
-        scanBtn.setOnClickListener{
+        scanBtn.setOnClickListener {
             createScanDialog()
         }
         mapName = name
         showImgIv.setImageBitmap(internStorage!!.bitmap)
         oldMarkers.invalidate()
-
     }
     /**
      * Creates a AlertDialog to ask the User if he/she wants to start a scan
      */
-    protected fun createScanDialog(){
+    protected fun createScanDialog() {
 
-        var scanDialog =AlertDialog.Builder(this)
+        var scanDialog = AlertDialog.Builder(this)
             .setView(null)
             .setTitle("Starte Scan")
-            .setMessage("Möchtest du den Scan starten bei: \n "+ "x:" + markerView.initX + ";y:" + markerView.initY+ "?")
-            .setPositiveButton("Ok",null)
-            .setNegativeButton("Abbrechen",null)
+            .setMessage("Möchtest du den Scan starten bei: \n " + "x:" + markerView.initX + ";y:" + markerView.initY + "?")
+            .setPositiveButton("Ok", null)
+            .setNegativeButton("Abbrechen", null)
             .create()
 
-
-        scanDialog.setOnShowListener{
+        scanDialog.setOnShowListener {
             var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-            posBtn.setOnClickListener{
+            posBtn.setOnClickListener {
                 var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
                 scanAct.startScan()
                 scanDialog.dismiss()
-
             }
-            negBtn.setOnClickListener{
+            negBtn.setOnClickListener {
                 scanDialog.dismiss()
             }
         }
 
         scanDialog.show()
-
-
     }
-
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         var historySize: Int
@@ -143,7 +126,7 @@ class LoadOldImageActivity: AppCompatActivity() {
                 scrollHistoryY += distanceY
 
                 markerView.scrollBy(distanceX, distanceY)
-                oldMarkers.scrollBy(distanceX,distanceY)
+                oldMarkers.scrollBy(distanceX, distanceY)
                 showImgIv.scrollBy(distanceX, distanceY)
             }
         }
@@ -199,5 +182,4 @@ class LoadOldImageActivity: AppCompatActivity() {
             return px / resources.displayMetrics.density
         }
     }
-
 }

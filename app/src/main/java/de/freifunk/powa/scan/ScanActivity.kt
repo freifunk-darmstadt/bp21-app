@@ -3,13 +3,7 @@ package de.freifunk.powa.scan
 import android.content.Context
 import android.net.wifi.ScanResult
 import android.os.Build
-import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
-import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.model.WiFiScanObject
 import java.time.Instant
@@ -22,7 +16,7 @@ class ScanActivity {
     var xCoordinate: Float = 0f // should be set before scan is invoked
     var yCoordinate: Float = 0f // should be set before scan is invoked
     var scanContext: Context
-    constructor(context: Context, name: String, x: Float, y: Float){
+    constructor(context: Context, name: String, x: Float, y: Float) {
         scanContext = context
         tableMapName = name
         xCoordinate = x
@@ -53,12 +47,12 @@ class ScanActivity {
             scanResults.xCoordinate = xCoordinate
             scanResults.yCoordinate = yCoordinate
             db.insertScans(tableMapName, scanResults)
-            if(Build.VERSION.SDK_INT >=30)
-                // only available in android API Level 30
-            it.informationElements.forEach {
-                var bytes = ByteArray(it.bytes.capacity())
-                db.insertInformation(it.id, bytes)
-            }
+            if (Build.VERSION.SDK_INT >= 30)
+            // only available in android API Level 30
+                it.informationElements.forEach {
+                    var bytes = ByteArray(it.bytes.capacity())
+                    db.insertInformation(it.id, bytes)
+                }
             Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
         }
     }
@@ -86,7 +80,7 @@ class ScanActivity {
      * This Method starts the scan.
      * It depends on the Methods: onSuccess() and onFailure()
      */
-    fun startScan(){
-        scan(scanContext,::onSuccess, ::onFailure)
+    fun startScan() {
+        scan(scanContext, ::onSuccess, ::onFailure)
     }
 }

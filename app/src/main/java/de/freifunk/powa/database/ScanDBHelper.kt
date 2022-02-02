@@ -186,17 +186,19 @@ class ScanDBHelper(context: Context) :
      * @param mapName name of the Map
      */
     @SuppressLint("Range")
-    fun readCoordinates(mapName: String): MutableList<Pair<Float,Float>>? {
+    fun readCoordinates(mapName: String): MutableList<Pair<Float, Float>>? {
         var db = this.writableDatabase
-        var query = " SELECT "+ COLUMN_SCANS_X + "," + COLUMN_SCANS_Y + " FROM " + SCAN_TABLE +
-                " WHERE " + COLUMN_SCANS_MAP_NAME + " = '" + mapName + "';"
+        var query = " SELECT " + COLUMN_SCANS_X + "," + COLUMN_SCANS_Y + " FROM " + SCAN_TABLE +
+            " WHERE " + COLUMN_SCANS_MAP_NAME + " = '" + mapName + "';"
         var cursor = db.rawQuery(query, null)
-        var scanList = mutableListOf<Pair<Float,Float>>()
+        var scanList = mutableListOf<Pair<Float, Float>>()
         if (cursor.count > 0) {
             cursor.moveToFirst()
             do {
-                var pair = Pair(cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_X)),
-                    cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_Y)))
+                var pair = Pair(
+                    cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_X)),
+                    cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_Y))
+                )
 
                 scanList.add(pair)
             } while (cursor.moveToNext())

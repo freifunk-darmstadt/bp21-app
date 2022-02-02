@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }, ::handleScanFailure)
         }
-        findViewById<Button>(R.id.mainToListBtn).setOnClickListener{
+        findViewById<Button>(R.id.mainToListBtn).setOnClickListener {
             startActivity(Intent(this, MapListActivity::class.java))
         }
 

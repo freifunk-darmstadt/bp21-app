@@ -11,7 +11,7 @@ import java.lang.Exception
 fun saveBitmapToInternalStorage(context: Context, filename: String, bitmap: Bitmap): Boolean {
     return try {
         context.openFileOutput("$filename.jpg", Context.MODE_PRIVATE).use {
-            if(!bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it))
+            if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it))
                 throw IOException("Bitmap of file \"$filename\", couldn't be saved!")
         }
         true
