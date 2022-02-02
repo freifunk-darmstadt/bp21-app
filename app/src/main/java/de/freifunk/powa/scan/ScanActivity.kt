@@ -53,8 +53,9 @@ class ScanActivity {
                     var bytes = ByteArray(it.bytes.capacity())
                     db.insertInformation(it.id, bytes)
                 }
-            Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
+
         }
+        Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
     }
 
     /**
