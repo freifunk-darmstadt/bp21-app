@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.image.LoadImageActivity
+import de.freifunk.powa.image.MapListActivity
 import de.freifunk.powa.permissions.GeneralPermissionRequestCode
 import de.freifunk.powa.permissions.PERMISSIONS
 import de.freifunk.powa.permissions.requestAllPermissions
@@ -36,6 +37,9 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "SSID: ${it.SSID}, Level: ${it.level}", Toast.LENGTH_SHORT).show()
                 }
             }, ::handleScanFailure)
+        }
+        findViewById<Button>(R.id.mainToListBtn).setOnClickListener{
+            startActivity(Intent(this, MapListActivity::class.java))
         }
 
         requestAllPermissions(this@MainActivity)

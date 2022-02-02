@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".image.LoadImageActivity">
+    tools:context=".image.LoadOldImageActivity">
 
     <ImageView
-        android:id="@+id/showImgIv"
+        android:id="@+id/showOldImgIv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -15,27 +15,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_delete" />
-
-    <de.freifunk.powa.MarkerView
-        android:id="@+id/marker_view"
+    <de.freifunk.powa.image.SavedMarkerView
+        android:id="@+id/markerViewOfOldMarkers"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@id/showImgIv"
-        app:layout_constraintEnd_toEndOf="@id/showImgIv"
-        app:layout_constraintStart_toStartOf="@id/showImgIv"
-        app:layout_constraintTop_toTopOf="@id/showImgIv" />
-    <Button
-        android:id="@+id/loadImageBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:text="@string/load_image"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@id/showOldImgIv"
+        app:layout_constraintEnd_toEndOf="@id/showOldImgIv"
+        app:layout_constraintStart_toStartOf="@id/showOldImgIv"
+        app:layout_constraintTop_toTopOf="@id/showOldImgIv" />
+    <de.freifunk.powa.MarkerView
+        android:id="@+id/old_marker_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/showOldImgIv"
+        app:layout_constraintEnd_toEndOf="@id/showOldImgIv"
+        app:layout_constraintStart_toStartOf="@id/showOldImgIv"
+        app:layout_constraintTop_toTopOf="@id/showOldImgIv" />
+
+
+
+
 
     <Button
-        android:id="@+id/mapScanBtn"
+        android:id="@+id/oldMapScanBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="112dp"

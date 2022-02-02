@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
+    id 'kotlin-android-extensions'
 }
 
 android {
