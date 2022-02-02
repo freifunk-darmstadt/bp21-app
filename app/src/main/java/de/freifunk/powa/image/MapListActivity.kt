@@ -33,7 +33,7 @@ class MapListActivity: AppCompatActivity() {
         listView = findViewById(R.id.listView)
         var mapListContext = this
 
-        var listOfMaps: List<InternalStorageImage> = listOf()
+        var listOfMaps: List<InternalStorageImage>
         runBlocking {
 
             listOfMaps = loadListOfInternalStorageImages(mapListContext)
@@ -41,7 +41,7 @@ class MapListActivity: AppCompatActivity() {
         }
         var mapListadapter = MapListAdapter(mapListContext,R.layout.list_row, listOfMaps)
         listView.adapter = mapListadapter
-        listView.setOnItemClickListener(OnItemClickListener { list, v, pos, id ->
+        listView.setOnItemClickListener(OnItemClickListener { _, _, pos, _ ->
             var storageImage = mapListadapter.getItem(pos)
             var intent = Intent(this, LoadOldImageActivity::class.java)
             var name = storageImage?.name

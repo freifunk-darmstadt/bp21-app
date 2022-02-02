@@ -27,7 +27,7 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
         var mapView = layoutInflater.inflate(listResources,parent, false)
         var imageView = mapView.findViewById<ImageView>(R.id.mapImageInList)
         var textView = mapView.findViewById<TextView>(R.id.mapNameInList)
-        var name = listOfImages.get(position)?.name
+        var name = listOfImages.get(position).name
         imageView.setImageBitmap(listOfImages.get(position).bitmap)
         name = name.removeSuffix(".jpg")
 

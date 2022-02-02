@@ -49,7 +49,7 @@ class LoadOldImageActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         var name = intent.getStringExtra("mapName")
-        var list = listOf<InternalStorageImage>()
+        var list: List<InternalStorageImage>
         var loadContext = this
         var internStorage: InternalStorageImage? = null
         runBlocking {
@@ -80,7 +80,7 @@ class LoadOldImageActivity: AppCompatActivity() {
         scanBtn.setOnClickListener{
             createScanDialog()
         }
-        mapName = name!!
+        mapName = name
         showImgIv.setImageBitmap(internStorage!!.bitmap)
         oldMarkers.invalidate()
 
