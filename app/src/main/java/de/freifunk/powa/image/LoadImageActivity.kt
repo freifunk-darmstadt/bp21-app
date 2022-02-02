@@ -113,7 +113,7 @@ class LoadImageActivity : AppCompatActivity() {
                     } else {
                         mapEditText.setError("Name existiert bereits!")
                     }
-                } 
+                }
             }
             negBtn.setOnClickListener {
                 mapNameDialog.dismiss()
