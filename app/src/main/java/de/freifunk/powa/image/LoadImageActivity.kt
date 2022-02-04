@@ -1,5 +1,6 @@
 package de.freifunk.powa.image
 
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import de.freifunk.powa.MainActivity
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
@@ -117,6 +119,7 @@ class LoadImageActivity : AppCompatActivity() {
             }
             negBtn.setOnClickListener {
                 mapNameDialog.dismiss()
+                startActivity(Intent(this, MainActivity::class.java))
             }
         }
         mapNameDialog.show()
