@@ -25,6 +25,7 @@ import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
 import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
+import kotlinx.coroutines.runBlocking
 import java.util.regex.Pattern
 import kotlin.math.max
 import kotlin.math.min
@@ -43,6 +44,7 @@ class LoadImageActivity : AppCompatActivity() {
     private var maxZoomFactor: Float = 20.0f
     private lateinit var mapName: String
     private lateinit var scanBtn: Button
+    var scanIsReady: Boolean = true
     // create ComponentActivity to load and handle loading the image
     // A Dialog pops up after the User selects a map
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -76,7 +78,13 @@ class LoadImageActivity : AppCompatActivity() {
             getContent.launch("image/*")
         }
         scanBtn.setOnClickListener {
-            createScanDialog()
+            if(scanIsReady) {
+                scanIsReady = false
+                createScanDialog()
+            }
+            else{
+                Toast.makeText(this, "Scan is not ready", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -117,6 +125,7 @@ class LoadImageActivity : AppCompatActivity() {
                     }
                 }
             }
+
             negBtn.setOnClickListener {
                 mapNameDialog.dismiss()
                 startActivity(Intent(this, MainActivity::class.java))
@@ -148,13 +157,20 @@ class LoadImageActivity : AppCompatActivity() {
             .setPositiveButton("Ok", null)
             .setNegativeButton("Abbrechen", null)
             .create()
+        scanDialog.setOnDismissListener{
+            scanIsReady = true
 
+        }
         scanDialog.setOnShowListener {
             var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
                 var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
-                scanAct.startScan()
+
+                runBlocking {
+                    scanAct.startScan()
+                }
+
                 scanDialog.dismiss()
             }
             negBtn.setOnClickListener {
