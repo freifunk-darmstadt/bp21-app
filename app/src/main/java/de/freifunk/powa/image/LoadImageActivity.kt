@@ -24,6 +24,7 @@ import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
+import de.freifunk.powa.scan.createThrottlingDialog
 import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
 import java.util.regex.Pattern
 import kotlin.math.max
@@ -58,6 +59,9 @@ class LoadImageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        createThrottlingDialog(this)
+
         setContentView(R.layout.activity_load_image)
 
         showImgIv = findViewById(R.id.showImgIv)

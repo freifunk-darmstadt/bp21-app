@@ -14,9 +14,9 @@ import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
+import de.freifunk.powa.scan.createThrottlingDialog
 import de.freifunk.powa.store_intern.InternalStorageImage
 import de.freifunk.powa.store_intern.loadListOfInternalStorageImages
-import kotlinx.android.synthetic.main.activity_load_old_image.*
 import kotlinx.coroutines.runBlocking
 import kotlin.math.max
 import kotlin.math.min
@@ -36,6 +36,8 @@ class LoadOldImageActivity : AppCompatActivity() {
     lateinit var oldMarkers: SavedMarkerView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        createThrottlingDialog(this)
 
         var name = intent.getStringExtra("mapName")
         var list: List<InternalStorageImage>
