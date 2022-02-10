@@ -167,9 +167,8 @@ class LoadImageActivity : AppCompatActivity() {
             posBtn.setOnClickListener {
                 var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
 
-                runBlocking {
-                    scanAct.startScan()
-                }
+                scanAct.startScan()
+
 
                 scanDialog.dismiss()
             }
