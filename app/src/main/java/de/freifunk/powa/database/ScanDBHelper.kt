@@ -49,7 +49,9 @@ class ScanDBHelper(context: Context) :
                 INFORMATION_TABLE_BYTES + " BLOB ," +
                 INFORMATION_TABLE_PK + " AUTO_INCREMENT PRIMARY KEY," +
                 "FOREIGN KEY (" + INFORMATION_TABLE_ID + ") " +
-                "REFERENCES " + SCAN_TABLE + " (" + COLUMN_SCANS_INFORMATION_ID + "));"
+                "REFERENCES " + SCAN_TABLE + " (" + COLUMN_SCANS_INFORMATION_ID + ")" +
+                    " ON UPDATE CASCADE" +
+                    " ON DELETE CASCADE);"
         )
         db?.execSQL(
             " CREATE TABLE IF NOT EXISTS " + SCAN_TABLE + " (" +
@@ -208,5 +210,32 @@ class ScanDBHelper(context: Context) :
         }
         db.close()
         return scanList
+    }
+
+    /**
+     * This Method updates the MAP
+     * @param oldName the old value to be updated
+     * @param newName the new value that replace oldname
+     */
+    fun updateMapName(oldName: String, newName: String): Boolean{
+        var db = this.writableDatabase
+        //checking for existence of oldName and newName
+        // oldName should exist while newName should not exist
+        var query = "SELECT * FROM " + MAP_TABLE_NAME +
+                " WHERE " + COLUMN_MAP_NAME + " = '" + newName + "' ;"
+        var queryOld = "SELECT * FROM " + MAP_TABLE_NAME +
+                " WHERE " + COLUMN_MAP_NAME + " = '" + oldName + "' ;"
+        var cursor = db.rawQuery(query, null)
+        var cursorOld = db.rawQuery(queryOld, null)
+        if(cursor.count > 0 || cursorOld.count == 0 ){
+            db.close()
+            return false
+        }
+        var values = ContentValues()
+        values.put(COLUMN_MAP_NAME, newName)
+        var whereargs = arrayOf(oldName)
+        db?.update(MAP_TABLE_NAME, values, COLUMN_MAP_NAME + "=?", whereargs)
+        db.close()
+        return true
     }
 }
