@@ -68,7 +68,10 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
     }
 
     fun deleteMap(name: String): Boolean {
-        return false
+        var db = ScanDBHelper(listContext)
+        deleteFileFromInternalStorage(listContext, name)
+        db.deleteMap(name)
+        return true
     }
 
     /**

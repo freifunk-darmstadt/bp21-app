@@ -31,28 +31,21 @@ class ScanDBHelper(context: Context) :
     val COLUMN_SCANS_TIMESTAMP = "timestamp"
     val PRIMARY_KEY_NAME = "pk_scan"
     val INFORMATION_TABLE = "informationtable"
-    val INFORMATION_TABLE_ID = "id"
-    val INFORMATION_TABLE_BYTES = "bytes"
-    val INFORMATION_TABLE_PK = "pk"
+    val COLUMN_INFORMATION_TABLE_ID = "id"
+    val COLUMN_INFORMATION_TABLE_BYTES = "bytes"
+    val COLUMN_INFORMATION_TABLE_PK = "pk"
     val SCAN_TABLE = "scans"
     val COLUMN_SCANS_MAP_NAME = "mapname"
     val COLUMN_SCANS_INFORMATION_ID = "informationid"
     override fun onCreate(db: SQLiteDatabase?) {
-
+        // Create first table in which the mapnames are stored
         db?.execSQL(
             "CREATE TABLE " + MAP_TABLE_NAME + " (" +
-                COLUMN_MAP_NAME + " VARCHAR(256) PRIMARY KEY); "
+                COLUMN_MAP_NAME + " VARCHAR(256) PRIMARY KEY " +
+                    " ON DELETE CASCADE " +
+                    " ON UPDATE CASCADE );"
         )
-        db?.execSQL(
-            "CREATE TABLE " + INFORMATION_TABLE + " (" +
-                INFORMATION_TABLE_ID + " INTEGER ," +
-                INFORMATION_TABLE_BYTES + " BLOB ," +
-                INFORMATION_TABLE_PK + " AUTO_INCREMENT PRIMARY KEY," +
-                "FOREIGN KEY (" + INFORMATION_TABLE_ID + ") " +
-                "REFERENCES " + SCAN_TABLE + " (" + COLUMN_SCANS_INFORMATION_ID + ")" +
-                    " ON UPDATE CASCADE" +
-                    " ON DELETE CASCADE);"
-        )
+        // Create second table in which the scanresults to a map are stored
         db?.execSQL(
             " CREATE TABLE IF NOT EXISTS " + SCAN_TABLE + " (" +
                 COLUMN_SCANS_MAP_NAME + " VARCHAR(256)," +
@@ -73,7 +66,20 @@ class ScanDBHelper(context: Context) :
                 " CONSTRAINT " + PRIMARY_KEY_NAME + " " +
                 " PRIMARY KEY ( " + COLUMN_SCANS_TIMESTAMP + "," + COLUMN_SCANS_BSSID + ")" +
                 " FOREIGN KEY (" + COLUMN_SCANS_MAP_NAME + ") " +
-                " REFERENCES " + MAP_TABLE_NAME + " (" + COLUMN_MAP_NAME + "));"
+                " REFERENCES " + MAP_TABLE_NAME + " (" + COLUMN_MAP_NAME + ")" +
+                    " ON DELETE CASCADE " +
+                    " ON UPDATE CASCADE );"
+        )
+        // Create third table in which the Information Elements to a existing scanresult are stored
+        db?.execSQL(
+            "CREATE TABLE " + INFORMATION_TABLE + " (" +
+                    COLUMN_INFORMATION_TABLE_ID + " INTEGER ," +
+                    COLUMN_INFORMATION_TABLE_BYTES + " BLOB ," +
+                    COLUMN_INFORMATION_TABLE_PK + " AUTO_INCREMENT PRIMARY KEY," +
+                    "FOREIGN KEY (" + COLUMN_INFORMATION_TABLE_ID + ") " +
+                    "REFERENCES " + SCAN_TABLE + " (" + COLUMN_SCANS_INFORMATION_ID + ")" +
+                    " ON DELETE CASCADE " +
+                    " ON UPDATE CASCADE );"
         )
     }
 
@@ -133,8 +139,8 @@ class ScanDBHelper(context: Context) :
     fun insertInformation(id: Int, byte: ByteArray) {
         var db = this.writableDatabase
         var value = ContentValues()
-        value.put(INFORMATION_TABLE_ID, id)
-        value.put(INFORMATION_TABLE_BYTES, byte)
+        value.put(COLUMN_INFORMATION_TABLE_ID, id)
+        value.put(COLUMN_INFORMATION_TABLE_BYTES, byte)
         db.insert(INFORMATION_TABLE, null, value)
 
         db.close()
@@ -235,7 +241,34 @@ class ScanDBHelper(context: Context) :
         values.put(COLUMN_MAP_NAME, newName)
         var whereargs = arrayOf(oldName)
         db?.update(MAP_TABLE_NAME, values, COLUMN_MAP_NAME + "=?", whereargs)
+
+        var scanValues = ContentValues()
+        scanValues.put(COLUMN_SCANS_MAP_NAME, newName)
+        db?.update(SCAN_TABLE, scanValues, COLUMN_SCANS_MAP_NAME + "=?", whereargs)
         db.close()
         return true
+    }
+
+    @SuppressLint("Range")
+    fun deleteMap(mapName:String){
+        var db = writableDatabase
+        var query = "SELECT " + COLUMN_SCANS_INFORMATION_ID + " FROM " + SCAN_TABLE +
+                " WHERE " + COLUMN_SCANS_MAP_NAME + " = '" + mapName + "' ;"
+        var cursor = db.rawQuery(query, null)
+        // deleting the information elements of the deleted scanresults
+        if (cursor.count > 0) {
+            cursor.moveToFirst()
+            do {
+                var informationID =  cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
+                db?.delete(INFORMATION_TABLE,COLUMN_INFORMATION_TABLE_ID + "=?", arrayOf(informationID.toString()))
+
+
+            } while (cursor.moveToNext())
+        }
+        //deleting the scanresults of the deleted maps
+        db?.delete(SCAN_TABLE, COLUMN_SCANS_MAP_NAME + "=?", arrayOf(mapName))
+        //deleting the map to the given mapname
+        db?.delete(MAP_TABLE_NAME, COLUMN_MAP_NAME + "=?", arrayOf(mapName))
+        db.close()
     }
 }
