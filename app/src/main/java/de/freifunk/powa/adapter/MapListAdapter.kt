@@ -45,19 +45,19 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
 
             var drawable = imageView.drawable as BitmapDrawable
             var bitmap = drawable.bitmap
-            showPopup(mapView, textView.text.toString(), bitmap)
+            showPopup(mapView, textView.text.toString(), bitmap, position)
 
        }
 
         return mapView
     }
-    fun showPopup(v: View, name: String, bitmap: Bitmap) {
-        val popup = PopupMenu(listContext ,v)
+    fun showPopup(view: View, name: String, bitmap: Bitmap, pos: Int) {
+        val popup = PopupMenu(listContext ,view)
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.list_row_menu, popup.menu)
         popup.setOnMenuItemClickListener{
             when(it.itemId){
-                R.id.delete_option -> deleteMap(name)
+                R.id.delete_option -> deleteMap(name, view, pos)
 
                 R.id.rewrite_option -> createRenameDialog(name, bitmap)
 
@@ -67,10 +67,12 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
         popup.show()
     }
 
-    fun deleteMap(name: String): Boolean {
+    fun deleteMap(name: String, view: View, pos: Int): Boolean {
         var db = ScanDBHelper(listContext)
-        deleteFileFromInternalStorage(listContext, name)
+
+        deleteFileFromInternalStorage(listContext, name + ".jpg")
         db.deleteMap(name)
+        Toast.makeText(listContext, "Karte wurde gelöscht", Toast.LENGTH_SHORT).show()
         return true
     }
 
@@ -118,12 +120,14 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
                         mapEditText.setError("Name existiert bereits!")
                     }
                 }
+                notifyDataSetChanged()
             }
             negBtn.setOnClickListener {
                 mapNameDialog.dismiss()
             }
         }
         mapNameDialog.show()
+
         return returnValue
     }
 
