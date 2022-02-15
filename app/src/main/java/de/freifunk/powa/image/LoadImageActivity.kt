@@ -83,7 +83,7 @@ class LoadImageActivity : AppCompatActivity() {
                 createScanDialog()
             }
             else{
-                Toast.makeText(this, "Scan is not ready", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Scan läuft bereits", Toast.LENGTH_SHORT).show()
             }
         }
     }

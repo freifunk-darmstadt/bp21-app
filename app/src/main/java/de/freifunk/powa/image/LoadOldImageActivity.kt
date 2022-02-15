@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
@@ -34,6 +35,7 @@ class LoadOldImageActivity : AppCompatActivity() {
     private lateinit var mapName: String
     protected lateinit var scanBtn: Button
     lateinit var oldMarkers: SavedMarkerView
+    var scanIsReady = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -67,8 +69,15 @@ class LoadOldImageActivity : AppCompatActivity() {
         }
         scanBtn.isInvisible = true
         scanBtn.setOnClickListener {
-            createScanDialog()
+            if(scanIsReady) {
+                scanIsReady = false
+                createScanDialog()
+            }
+            else{
+                Toast.makeText(this, "Scan läuft bereits", Toast.LENGTH_SHORT).show()
+            }
         }
+
         mapName = name
         showImgIv.setImageBitmap(internStorage!!.bitmap)
         oldMarkers.invalidate()
@@ -85,12 +94,16 @@ class LoadOldImageActivity : AppCompatActivity() {
             .setPositiveButton("Ok", null)
             .setNegativeButton("Abbrechen", null)
             .create()
+        scanDialog.setOnDismissListener{
+            scanIsReady = true
 
+        }
         scanDialog.setOnShowListener {
             var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
                 var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
+
                 scanAct.startScan()
                 scanDialog.dismiss()
             }
