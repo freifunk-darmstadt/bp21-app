@@ -12,7 +12,7 @@ import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import kotlin.io.path.createTempDirectory
 
-class PowaApi (context: Context){
+class PowaApi(context: Context){
 
     val maps = mutableListOf<Map>()
     val exporter = mutableListOf<ExportConsumer>()

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import de.freifunk.powa.api.ExportActivity
 import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.image.MapListActivity
 import de.freifunk.powa.permissions.GeneralPermissionRequestCode
@@ -21,6 +22,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //TODO remove
+        startActivity(Intent(this, ExportActivity::class.java))
+
         setContentView(R.layout.activity_main)
 
         goToLoadImgActivityBtn = findViewById(R.id.goToLoadImageActivityBtn)
