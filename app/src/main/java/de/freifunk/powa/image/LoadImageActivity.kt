@@ -78,13 +78,10 @@ class LoadImageActivity : AppCompatActivity() {
             getContent.launch("image/*")
         }
         scanBtn.setOnClickListener {
-            if(scanIsReady) {
-                scanIsReady = false
-                createScanDialog()
-            }
-            else{
-                Toast.makeText(this, "Scan läuft bereits", Toast.LENGTH_SHORT).show()
-            }
+            var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
+            scanAct.scanBtn = scanBtn
+            scanBtn.isVisible = false
+            createScanDialog(scanAct)
         }
     }
 
@@ -102,7 +99,7 @@ class LoadImageActivity : AppCompatActivity() {
             .create()
 
         mapEditText.inputType = InputType.TYPE_CLASS_TEXT
-
+        mapNameDialog.setCanceledOnTouchOutside(false)
         var db = ScanDBHelper(this)
         mapNameDialog.setOnShowListener {
             var posBtn = mapNameDialog.getButton(AlertDialog.BUTTON_POSITIVE)
@@ -148,7 +145,7 @@ class LoadImageActivity : AppCompatActivity() {
     /**
      * Creates a AlertDialog to ask the User if he/she wants to start a scan
      */
-    private fun createScanDialog() {
+    private fun createScanDialog(scanAct: ScanActivity) {
 
         var scanDialog = AlertDialog.Builder(this)
             .setView(null)
@@ -157,22 +154,16 @@ class LoadImageActivity : AppCompatActivity() {
             .setPositiveButton("Ok", null)
             .setNegativeButton("Abbrechen", null)
             .create()
-        scanDialog.setOnDismissListener{
-            scanIsReady = true
-
-        }
+        scanDialog.setCanceledOnTouchOutside(false)
         scanDialog.setOnShowListener {
             var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
-                var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
-
                 scanAct.startScan()
-
-
                 scanDialog.dismiss()
             }
             negBtn.setOnClickListener {
+                scanBtn.isVisible = true
                 scanDialog.dismiss()
             }
         }
