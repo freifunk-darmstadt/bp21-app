@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.location.Location
 import android.location.LocationListener
+import android.os.Looper
 import de.freifunk.powa.model.WiFiScanObject
 import de.freifunk.powa.permissions.getGpsLocation
 import de.freifunk.powa.permissions.locationToString
@@ -48,7 +49,7 @@ class ScanDBHelper(val context: Context) :
         db?.execSQL(
             "CREATE TABLE " + MAP_TABLE_NAME + " (" +
                 COLUMN_MAP_NAME + " VARCHAR(256) PRIMARY KEY," +
-                 COLUMN_MAP_LOCATION + "TEXT); "
+                 COLUMN_MAP_LOCATION + " VARCHAR(256)); "
         )
         db?.execSQL(
             "CREATE TABLE " + INFORMATION_TABLE + " (" +
@@ -102,6 +103,7 @@ class ScanDBHelper(val context: Context) :
         var cursor = db.rawQuery(query, null)
         if (cursor.count == 0) {
             value.put(COLUMN_MAP_NAME, name)
+            value.put(COLUMN_MAP_LOCATION, gpsLocation)
             db.insert(MAP_TABLE_NAME, null, value)
             db.close()
             return true

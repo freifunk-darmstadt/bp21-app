@@ -145,7 +145,7 @@ fun getGpsLocation(context: Context,locationListener: LocationListener, minTimeI
     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeIntervalMS, minDistanceM, locationListener)
 }
 
-const val LOCATION_STRING_SEPARATOR = "-"
+const val LOCATION_STRING_SEPARATOR = ":"
 
 fun locationToString(location: Location): String{
     return "${location.longitude}$LOCATION_STRING_SEPARATOR${location.latitude}"
