@@ -147,8 +147,50 @@ class ScanDBHelper(context: Context) :
     fun readSpecificScan(scanTableName: String, timeStamp: String): List<WiFiScanObject>? {
         var db = this.writableDatabase
         var query = " SELECT * FROM " + SCAN_TABLE +
-            " WHERE " + COLUMN_SCANS_TIMESTAMP + " = '" + timeStamp + "' " +
-            "AND " + COLUMN_SCANS_MAP_NAME + " = '" + scanTableName + "';"
+                " WHERE " + COLUMN_SCANS_TIMESTAMP + " = '" + timeStamp + "' " +
+                "AND " + COLUMN_SCANS_MAP_NAME + " = '" + scanTableName + "';"
+        var cursor = db.rawQuery(query, null)
+        var scanLinkedList = LinkedList<WiFiScanObject>()
+        if (cursor.count > 0) {
+            cursor.moveToFirst()
+            do {
+                var scan = WiFiScanObject()
+
+                scan.bssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_BSSID))
+                scan.ssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_SSID))
+                scan.capabilities = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_CAPABILITIES))
+                scan.centerFreq0 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ0))
+                scan.centerFreq1 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ1))
+                scan.channelWidth = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CHANNEL_WIDTH))
+                scan.frequency = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_FREQUENCY))
+                scan.level = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_LEVEL))
+                scan.operatorFriendlyName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_OPERATOR_FRIENDLY_NAME))
+                scan.timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_TIMESTAMP))
+                scan.venueName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_VENUE_NAME))
+                scan.xCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_X))
+                scan.yCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_Y))
+                scan.informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
+
+                scanLinkedList.add(scan)
+            } while (cursor.moveToNext())
+        } else {
+            db.close()
+            return null
+        }
+        db.close()
+        return scanLinkedList
+    }
+
+    /**
+     * Get all entries to given map
+     * If null returned then there are none entries for the timestamp
+     * The entries are sorted in relation of index column
+     */
+    @SuppressLint("Range")
+    fun readScans(scanTableName: String): List<WiFiScanObject>? {
+        var db = this.writableDatabase
+        var query = " SELECT * FROM " + SCAN_TABLE +
+                " WHERE " + COLUMN_SCANS_MAP_NAME + " = '" + scanTableName + "';"
         var cursor = db.rawQuery(query, null)
         var scanLinkedList = LinkedList<WiFiScanObject>()
         if (cursor.count > 0) {

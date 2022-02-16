@@ -1,5 +1,7 @@
 package de.freifunk.powa.model
 
+import android.net.wifi.ScanResult
+
 class WiFiScanObject {
     lateinit var bssid: String
     lateinit var ssid: String
@@ -14,6 +16,7 @@ class WiFiScanObject {
     var xCoordinate: Float? = null
     var yCoordinate: Float? = null
     var informationID: Int? = null
+    var scanInformation: ScanInformation? = null
     lateinit var timestamp: String // timestamp should have the format "YYYY-MM-DD hh:mm:ss"
 
     constructor() {
