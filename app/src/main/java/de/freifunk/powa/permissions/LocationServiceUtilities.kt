@@ -134,7 +134,7 @@ fun isWIFIEnabled(context: Context): Boolean {
 }
 
 @SuppressLint("MissingPermission")
-fun getGpsLocation(context: Context, minTimeIntervalMS: Long = 5000, minDistanceM: Float = 10.0f,locationListener: LocationListener) {
+fun getGpsLocation(context: Context,locationListener: LocationListener, minTimeIntervalMS: Long = 5000, minDistanceM: Float = 10.0f) {
     if (!isGPSEnabled(context)){
         enableLocationServices(context)
     }

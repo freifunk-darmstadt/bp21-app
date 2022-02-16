@@ -5,13 +5,18 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.location.Location
+import android.location.LocationListener
 import de.freifunk.powa.model.WiFiScanObject
+import de.freifunk.powa.permissions.getGpsLocation
+import de.freifunk.powa.permissions.locationToString
 import java.util.LinkedList
+import kotlin.coroutines.coroutineContext
 
 val DATABASE_NAME = "ScansDB"
 val DATABASE_VERSION = 1
 
-class ScanDBHelper(context: Context) :
+class ScanDBHelper(val context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     val MAP_TABLE_NAME = "maps"
@@ -85,6 +90,11 @@ class ScanDBHelper(context: Context) :
      * This Method create a new Entry in the Map table
      */
     fun insertMaps(name: String): Boolean {
+        var gpsLocation: String? = null
+        getGpsLocation(context,
+            { location -> gpsLocation = locationToString(location) })
+
+
         var db = this.writableDatabase
         var value = ContentValues()
         var query = "SELECT * FROM " + MAP_TABLE_NAME +
