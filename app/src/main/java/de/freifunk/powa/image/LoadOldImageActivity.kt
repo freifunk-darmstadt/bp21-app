@@ -10,13 +10,14 @@ import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
+import de.freifunk.powa.scan.createThrottlingDialog
 import de.freifunk.powa.store_intern.InternalStorageImage
 import de.freifunk.powa.store_intern.loadListOfInternalStorageImages
-import kotlinx.android.synthetic.main.activity_load_old_image.*
 import kotlinx.coroutines.runBlocking
 import kotlin.math.max
 import kotlin.math.min
@@ -34,8 +35,11 @@ class LoadOldImageActivity : AppCompatActivity() {
     private lateinit var mapName: String
     protected lateinit var scanBtn: Button
     lateinit var oldMarkers: SavedMarkerView
+    var scanIsReady = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        createThrottlingDialog(this)
 
         var name = intent.getStringExtra("mapName")
         var list: List<InternalStorageImage>
@@ -67,8 +71,12 @@ class LoadOldImageActivity : AppCompatActivity() {
         }
         scanBtn.isInvisible = true
         scanBtn.setOnClickListener {
-            createScanDialog()
+            var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
+            scanAct.scanBtn = scanBtn
+            scanBtn.isVisible = false
+            createScanDialog(scanAct)
         }
+
         mapName = name
         showImgIv.setImageBitmap(internStorage!!.bitmap)
         oldMarkers.invalidate()
@@ -76,7 +84,7 @@ class LoadOldImageActivity : AppCompatActivity() {
     /**
      * Creates a AlertDialog to ask the User if he/she wants to start a scan
      */
-    protected fun createScanDialog() {
+    protected fun createScanDialog(scanAct: ScanActivity) {
 
         var scanDialog = AlertDialog.Builder(this)
             .setView(null)
@@ -85,16 +93,16 @@ class LoadOldImageActivity : AppCompatActivity() {
             .setPositiveButton("Ok", null)
             .setNegativeButton("Abbrechen", null)
             .create()
-
+        scanDialog.setCanceledOnTouchOutside(false)
         scanDialog.setOnShowListener {
             var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
-                var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
                 scanAct.startScan()
                 scanDialog.dismiss()
             }
             negBtn.setOnClickListener {
+                scanBtn.isVisible = true
                 scanDialog.dismiss()
             }
         }
