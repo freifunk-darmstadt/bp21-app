@@ -2,6 +2,7 @@ package de.freifunk.powa.permissions
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -16,7 +17,7 @@ val PERMISSIONS = arrayOf(
 )
 const val GeneralPermissionRequestCode = 13
 
-fun checkAllPermissions(context: Activity) {
+fun checkAllPermissions(context: Context) {
     val notGrantedPermissions = ArrayList<String> (PERMISSIONS.size)
 
     // go through all needed permissions
@@ -40,10 +41,9 @@ fun checkAllPermissions(context: Activity) {
             ).show()
         }
     }
-    requestSelectedPermissions(context, notGrantedPermissions.toTypedArray())
 }
 
-fun checkPermissions(context: Activity, permissions: Array<String>) {
+fun checkPermissions(context: Context, permissions: Array<String>) {
     val notGrantedPermissions = ArrayList<String> (permissions.size)
 
     // go through all needed permissions
@@ -67,7 +67,6 @@ fun checkPermissions(context: Activity, permissions: Array<String>) {
             ).show()
         }
     }
-    requestSelectedPermissions(context, notGrantedPermissions.toTypedArray())
 }
 
 fun requestAllPermissions(context: Activity) {
