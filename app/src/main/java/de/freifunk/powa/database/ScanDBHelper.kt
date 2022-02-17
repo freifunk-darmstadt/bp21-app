@@ -5,17 +5,24 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.location.Location
+import android.location.LocationListener
+import android.os.Looper
 import de.freifunk.powa.model.WiFiScanObject
+import de.freifunk.powa.permissions.getGpsLocation
+import de.freifunk.powa.permissions.locationToString
 import java.util.LinkedList
+import kotlin.coroutines.coroutineContext
 
 val DATABASE_NAME = "ScansDB"
 val DATABASE_VERSION = 1
 
-class ScanDBHelper(context: Context) :
+class ScanDBHelper(val context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     val MAP_TABLE_NAME = "maps"
     val COLUMN_MAP_NAME = "name"
+    val COLUMN_MAP_LOCATION = "location"
     val COLUMN_SCANS_BSSID = "bssid"
     val COLUMN_SCANS_SSID = "ssid"
     val COLUMN_SCANS_CAPABILITIES = "capabilities"
@@ -41,7 +48,8 @@ class ScanDBHelper(context: Context) :
 
         db?.execSQL(
             "CREATE TABLE " + MAP_TABLE_NAME + " (" +
-                COLUMN_MAP_NAME + " VARCHAR(256) PRIMARY KEY); "
+                COLUMN_MAP_NAME + " VARCHAR(256) PRIMARY KEY," +
+                 COLUMN_MAP_LOCATION + " VARCHAR(256)); "
         )
         db?.execSQL(
             "CREATE TABLE " + INFORMATION_TABLE + " (" +
@@ -83,17 +91,44 @@ class ScanDBHelper(context: Context) :
      * This Method create a new Entry in the Map table
      */
     fun insertMaps(name: String): Boolean {
+        var gpsLocation: String? = null
+        getGpsLocation(context,
+            { location -> gpsLocation = locationToString(location) })
+
+
         var db = this.writableDatabase
         var value = ContentValues()
         var query = "SELECT * FROM " + MAP_TABLE_NAME +
-            " WHERE " + COLUMN_MAP_NAME + " = '" + name + "' ;"
+                " WHERE " + COLUMN_MAP_NAME + " = '" + name + "' ;"
         var cursor = db.rawQuery(query, null)
         if (cursor.count == 0) {
             value.put(COLUMN_MAP_NAME, name)
+            value.put(COLUMN_MAP_LOCATION, gpsLocation)
             db.insert(MAP_TABLE_NAME, null, value)
             db.close()
             return true
         }
+        db.close()
+        return false
+    }
+
+    /**
+     * This Method adds a location to a Map in the Map table
+     */
+    fun updateLocationInTableMap(name: String, location: String): Boolean {
+        var db = this.writableDatabase
+        var value = ContentValues()
+        var query = "SELECT * FROM " + MAP_TABLE_NAME +
+                " WHERE " + COLUMN_MAP_NAME + " = '" + name + "' ;"
+        var cursor = db.rawQuery(query, null)
+        if (cursor.count != 0) {
+            value.put(COLUMN_MAP_LOCATION, location)
+            db.update(MAP_TABLE_NAME, value, "$COLUMN_MAP_NAME = '?'", arrayOf(name))
+            cursor.close()
+            db.close()
+            return true
+        }
+        cursor.close()
         db.close()
         return false
     }
