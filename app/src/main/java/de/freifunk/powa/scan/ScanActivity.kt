@@ -7,7 +7,6 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.core.view.isVisible
 import de.freifunk.powa.database.ScanDBHelper
-import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.model.WiFiScanObject
 import java.time.Instant
 import java.time.ZoneOffset
