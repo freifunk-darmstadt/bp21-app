@@ -31,7 +31,7 @@ class LoadOldImageActivity : AppCompatActivity() {
     protected lateinit var markerGesture: GestureDetector
     private var scrollHistoryX: Int = 0
     private var scrollHistoryY: Int = 0
-    private var minZoomFactor: Float = 0.25f
+    private var minZoomFactor: Float = 1f
     private var maxZoomFactor: Float = 20.0f
     private lateinit var mapName: String
     protected lateinit var scanBtn: Button
