@@ -56,7 +56,7 @@ class ScanDBHelper(context: Context) :
         db?.execSQL(
             " CREATE TABLE IF NOT EXISTS " + SCAN_TABLE + " (" +
                 COLUMN_SCANS_MAP_NAME + " VARCHAR(256)," +
-                COLUMN_SCANS_TIMESTAMP + " TIMESTAMP NOT NULL," + // timeformat is: "YYYY-MM-DD hh:mm:ss"
+                COLUMN_SCANS_TIMESTAMP + " TIMESTAMP NOT NULL," + // timeformat is: "YYYY-MM-DD hh:mm:ss.SSSSSS"
                 COLUMN_SCANS_X + " FLOAT NOT NULL," +
                 COLUMN_SCANS_Y + " FLOAT NOT NULL," +
                 COLUMN_SCANS_BSSID + " VARCHAR(256) NOT NULL," + // exact length is still unknown

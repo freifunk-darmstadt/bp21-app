@@ -70,7 +70,7 @@ class ScanActivity {
      */
     fun getTime(): String {
         val formatter = DateTimeFormatter
-            .ofPattern("yyyy-MM-dd HH:mm:ss")
+            .ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
             .withZone(ZoneOffset.UTC)
             .format(Instant.now())
 
