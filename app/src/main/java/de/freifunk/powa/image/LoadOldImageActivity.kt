@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Switch
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
@@ -35,7 +36,8 @@ class LoadOldImageActivity : AppCompatActivity() {
     private lateinit var mapName: String
     protected lateinit var scanBtn: Button
     lateinit var oldMarkers: SavedMarkerView
-    var scanIsReady = true
+    lateinit var markerSwitch: Switch
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -63,6 +65,7 @@ class LoadOldImageActivity : AppCompatActivity() {
         markerView = findViewById(R.id.old_marker_view)
         oldMarkers = findViewById(R.id.markerViewOfOldMarkers)
         scanBtn = findViewById(R.id.oldMapScanBtn)
+        markerSwitch = findViewById(R.id.switchMarkers)
         scaleGesture = ScaleGestureDetector(this, ScaleListener())
         markerGesture = GestureDetector(this, MarkerGestureListener())
         supportActionBar!!.hide()
@@ -75,6 +78,10 @@ class LoadOldImageActivity : AppCompatActivity() {
             scanAct.scanBtn = scanBtn
             scanBtn.isVisible = false
             createScanDialog(scanAct)
+        }
+
+        markerSwitch.setOnClickListener {
+            oldMarkers.isInvisible = markerSwitch.isChecked
         }
 
         mapName = name
