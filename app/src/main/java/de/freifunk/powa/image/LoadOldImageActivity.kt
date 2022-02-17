@@ -80,7 +80,7 @@ class LoadOldImageActivity : AppCompatActivity() {
             createScanDialog(scanAct)
         }
 
-        markerSwitch.setOnClickListener{
+        markerSwitch.setOnClickListener {
             oldMarkers.isInvisible = markerSwitch.isChecked
         }
 
