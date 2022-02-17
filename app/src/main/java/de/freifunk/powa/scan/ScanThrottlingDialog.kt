@@ -6,8 +6,8 @@ import android.text.Html
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.PreferenceManager
 
-fun createThrottlingDialog(context: Context){
-    if (Build.VERSION.SDK_INT < 28 || PreferenceManager.getDefaultSharedPreferences(context).getBoolean("scanThrottle", false)){
+fun createThrottlingDialog(context: Context) {
+    if (Build.VERSION.SDK_INT < 28 || PreferenceManager.getDefaultSharedPreferences(context).getBoolean("scanThrottle", false)) {
         return
     }
 
@@ -15,7 +15,8 @@ fun createThrottlingDialog(context: Context){
         .setView(null)
         .setTitle("Scan Limit")
         .setMessage(
-            Html.fromHtml("""Ab Android 9 existiert eine Drosselung des Wlan-Scans.
+            Html.fromHtml(
+                """Ab Android 9 existiert eine Drosselung des Wlan-Scans.
                 <br/><br/>
                 Durch diese können nur 4 Scans innerhalb von 2 Minuten durchgeführt werden.
                 <br/><br/>
@@ -25,8 +26,10 @@ fun createThrottlingDialog(context: Context){
                     (Einstellungen > Entwickleroptionen > Netzwerk > Drosselung des Wlan-scans)
                 </font>deaktivieren können.<br/>
                 Für diese Option muss der Entwicklermodus aktiv sein.<br/><br/>
-                """, Html.FROM_HTML_MODE_COMPACT)
+                """,
+                Html.FROM_HTML_MODE_COMPACT
             )
+        )
         .setPositiveButton("Nichtmehr anzeigen", null)
         .setNegativeButton("OK", null)
         .create()

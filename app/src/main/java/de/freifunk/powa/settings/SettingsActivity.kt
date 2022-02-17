@@ -1,10 +1,7 @@
 package de.freifunk.powa.settings
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceManager
+import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.R
 
 class SettingsActivity : AppCompatActivity() {
