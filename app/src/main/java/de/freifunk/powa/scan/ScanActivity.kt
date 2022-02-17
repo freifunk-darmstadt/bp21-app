@@ -54,7 +54,8 @@ class ScanActivity {
             // only available in android API Level 30
                 it.informationElements.forEach {
                     var bytes = ByteArray(it.bytes.capacity())
-                    db.insertInformation(it.id, bytes)
+                    it.bytes.get(bytes)
+                    db.insertInformation(it.id, bytes, timeStamp)
                 }
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
@@ -74,7 +75,7 @@ class ScanActivity {
      */
     fun getTime(): String {
         val formatter = DateTimeFormatter
-            .ofPattern("yyyy-MM-dd HH:mm:ss")
+            .ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
             .withZone(ZoneOffset.UTC)
             .format(Instant.now())
 

@@ -34,6 +34,7 @@ class ScanDBHelper(val context: Context) :
     val COLUMN_SCANS_TIMESTAMP = "timestamp"
     val PRIMARY_KEY_NAME = "pk_scan"
     val INFORMATION_TABLE = "informationtable"
+    val COLUMN_INFORMTION_TABLE_TIMESTAMP = "timestamp"
     val COLUMN_INFORMATION_TABLE_ID = "id"
     val COLUMN_INFORMATION_TABLE_BYTES = "bytes"
     val COLUMN_INFORMATION_TABLE_PK = "pk"
@@ -44,14 +45,16 @@ class ScanDBHelper(val context: Context) :
         // Create first table in which the mapnames are stored
         db?.execSQL(
             "CREATE TABLE " + MAP_TABLE_NAME + " (" +
+
                 COLUMN_MAP_NAME + " VARCHAR(256) PRIMARY KEY, " +
                 COLUMN_MAP_LOCATION + " VARCHAR(256)); "
+
         )
         // Create second table in which the scanresults to a map are stored
         db?.execSQL(
             " CREATE TABLE IF NOT EXISTS " + SCAN_TABLE + " (" +
                 COLUMN_SCANS_MAP_NAME + " VARCHAR(256)," +
-                COLUMN_SCANS_TIMESTAMP + " TIMESTAMP NOT NULL," + // timeformat is: "YYYY-MM-DD hh:mm:ss"
+                COLUMN_SCANS_TIMESTAMP + " TIMESTAMP NOT NULL," + // timeformat is: "YYYY-MM-DD hh:mm:ss.SSSSSS"
                 COLUMN_SCANS_X + " FLOAT NOT NULL," +
                 COLUMN_SCANS_Y + " FLOAT NOT NULL," +
                 COLUMN_SCANS_BSSID + " VARCHAR(256) NOT NULL," + // exact length is still unknown
@@ -166,13 +169,13 @@ class ScanDBHelper(val context: Context) :
     /**
      *
      */
-    fun insertInformation(id: Int, byte: ByteArray) {
+    fun insertInformation(id: Int, byte: ByteArray, timeStamp: String) {
         var db = this.writableDatabase
         var value = ContentValues()
+        value.put(COLUMN_INFORMTION_TABLE_TIMESTAMP, timeStamp)
         value.put(COLUMN_INFORMATION_TABLE_ID, id)
         value.put(COLUMN_INFORMATION_TABLE_BYTES, byte)
         db.insert(INFORMATION_TABLE, null, value)
-
         db.close()
     }
 
