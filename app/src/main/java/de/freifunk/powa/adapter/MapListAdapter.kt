@@ -1,7 +1,6 @@
 package de.freifunk.powa.adapter
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.text.InputType
@@ -10,14 +9,13 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Toast
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
-import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import de.freifunk.powa.MainActivity
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.store_intern.InternalStorageImage
@@ -47,22 +45,21 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
         name = name.removeSuffix(".jpg")
 
         textView.setText(name) // subsequence ".jpg" is excluded
-        menuBtn.setOnClickListener{
+        menuBtn.setOnClickListener {
 
             var drawable = imageView.drawable as BitmapDrawable
             var bitmap = drawable.bitmap
             showPopup(mapView, textView.text.toString(), bitmap, position)
-
-       }
+        }
 
         return mapView
     }
     fun showPopup(view: View, name: String, bitmap: Bitmap, pos: Int) {
-        val popup = PopupMenu(listContext ,view)
+        val popup = PopupMenu(listContext, view)
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.list_row_menu, popup.menu)
-        popup.setOnMenuItemClickListener{
-            when(it.itemId){
+        popup.setOnMenuItemClickListener {
+            when (it.itemId) {
                 R.id.delete_option -> deleteMap(name, view, pos)
 
                 R.id.rewrite_option -> createRenameDialog(name, bitmap)
@@ -85,7 +82,7 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
     /**
      * Creates a AlertDialog to ask the User for a name for selected map
      */
-    private fun createRenameDialog(oldName: String, bitmap: Bitmap): Boolean{
+    private fun createRenameDialog(oldName: String, bitmap: Bitmap): Boolean {
         var mapEditText = EditText(listContext)
         var mapNameDialog = AlertDialog.Builder(listContext)
             .setView(mapEditText)
@@ -117,11 +114,9 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
                                 "Name wurde geändert",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            deleteFileFromInternalStorage(listContext, oldName+".jpg")
-                        }
-                        else
+                            deleteFileFromInternalStorage(listContext, oldName + ".jpg")
+                        } else
                             Toast.makeText(listContext, "Bild konnte nicht gespeichert werden", Toast.LENGTH_SHORT).show()
-
                     } else {
                         mapEditText.setError("Name existiert bereits!")
                     }
@@ -136,9 +131,4 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
 
         return returnValue
     }
-
-
-
-
-
 }
