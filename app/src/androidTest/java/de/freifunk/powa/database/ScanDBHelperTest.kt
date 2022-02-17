@@ -2,6 +2,7 @@ package de.freifunk.powa.database
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.os.Looper
 import androidx.test.platform.app.InstrumentationRegistry
 import de.freifunk.powa.TextScanner
 import de.freifunk.powa.model.WiFiScanObject
@@ -38,6 +39,7 @@ class ScanDBHelperTest {
     @Test
     fun createNewTable() {
         var listOflines = scanner.scan(thisContext, "createNewTableTestCase.txt")
+
         listOflines.forEach {
             var line = scanner.decomposeString(it, ";")
             var mapName = line[0]
@@ -50,6 +52,24 @@ class ScanDBHelperTest {
 
             assertEquals(1, cursor.count)
             assertEquals(expectedValue, actualValue)
+        }
+    }
+    @Test
+    fun insertMaps() {
+        var listOflines = scanner.scan(thisContext, "gpsTestCase.txt")
+        Looper.prepare()
+        listOflines.forEach {
+            var line = scanner.decomposeString(it, ";")
+            var mapName = line[0]
+            var expectedValue = line[1].toBoolean()
+            var location = line[2]
+            dataBase.insertMaps(mapName)
+            var db = dataBase.writableDatabase
+            var query = " SELECT * FROM " + dataBase.MAP_TABLE_NAME +
+                " WHERE " + dataBase.COLUMN_MAP_NAME + "='" + mapName + "';"
+            var cursor = db.rawQuery(query, null)
+
+            assertEquals(location, cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_LOCATION)), cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_LOCATION)))
         }
     }
 

@@ -1,31 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="16dp"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="100dp">
+    android:layout_height="100dp"
+    android:background="#FFFFFF"
+    android:backgroundTint="#FFFFFF"
+    android:padding="16dp"
+    android:descendantFocusability="blocksDescendants">
 
     <ImageView
         android:id="@+id/mapImageInList"
+
         android:layout_width="127dp"
+
         android:layout_height="84dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="15dp"
         android:layout_marginTop="0dp"
+
         android:layout_marginEnd="37dp"
         android:layout_marginBottom="0dp"
         android:layout_toStartOf="@+id/mapNameInList" />
 
+
     <TextView
         android:id="@+id/mapNameInList"
         style="@style/TextAppearance.AppCompat.Title"
+
         android:layout_width="199dp"
         android:layout_height="84dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="2dp"
         android:layout_marginBottom="0dp"
+        android:layout_toStartOf="@+id/threeDotMenuBtn"
+        android:layout_toEndOf="@+id/mapImageInList"
         android:text="Name of Map" />
+
+    <ImageButton
+        android:id="@+id/threeDotMenuBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="83dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="7dp"
+        android:layout_marginBottom="1dp"
+        android:backgroundTint="#FFFFFF"
+        app:srcCompat="@drawable/ic_baseline_more_vert_24" />
 </RelativeLayout>

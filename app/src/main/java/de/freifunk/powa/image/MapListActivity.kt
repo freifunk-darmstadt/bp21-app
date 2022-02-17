@@ -28,15 +28,13 @@ class MapListActivity : AppCompatActivity() {
         }
         var mapListadapter = MapListAdapter(mapListContext, R.layout.list_row, listOfMaps)
         listView.adapter = mapListadapter
-        listView.setOnItemClickListener(
-            OnItemClickListener { _, _, pos, _ ->
-                var storageImage = mapListadapter.getItem(pos)
-                var intent = Intent(this, LoadOldImageActivity::class.java)
-                var name = storageImage?.name
+        listView.onItemClickListener = OnItemClickListener { _, _, pos, _ ->
+            var storageImage = mapListadapter.getItem(pos)
+            var intent = Intent(this, LoadOldImageActivity::class.java)
+            var name = storageImage?.name
 
-                intent.putExtra("mapName", name)
-                startActivity(intent)
-            }
-        )
+            intent.putExtra("mapName", name)
+            startActivity(intent)
+        }
     }
 }
