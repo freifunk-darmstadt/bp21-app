@@ -55,10 +55,10 @@ class ScanDBHelperTest {
         }
     }
     @Test
-    fun insertMaps(){
+    fun insertMaps() {
         var listOflines = scanner.scan(thisContext, "gpsTestCase.txt")
         Looper.prepare()
-        listOflines.forEach{
+        listOflines.forEach {
             var line = scanner.decomposeString(it, ";")
             var mapName = line[0]
             var expectedValue = line[1].toBoolean()
@@ -66,10 +66,10 @@ class ScanDBHelperTest {
             dataBase.insertMaps(mapName)
             var db = dataBase.writableDatabase
             var query = " SELECT * FROM " + dataBase.MAP_TABLE_NAME +
-                    " WHERE " + dataBase.COLUMN_MAP_NAME + "='" + mapName + "';"
+                " WHERE " + dataBase.COLUMN_MAP_NAME + "='" + mapName + "';"
             var cursor = db.rawQuery(query, null)
 
-            assertEquals(location, cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_LOCATION)),cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_LOCATION)) )
+            assertEquals(location, cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_LOCATION)), cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_LOCATION)))
         }
     }
 

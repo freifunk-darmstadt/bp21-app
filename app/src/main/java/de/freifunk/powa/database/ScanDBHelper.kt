@@ -5,14 +5,10 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.location.Location
-import android.location.LocationListener
-import android.os.Looper
 import de.freifunk.powa.model.WiFiScanObject
 import de.freifunk.powa.permissions.getGpsLocation
 import de.freifunk.powa.permissions.locationToString
 import java.util.LinkedList
-import kotlin.coroutines.coroutineContext
 
 val DATABASE_NAME = "ScansDB"
 val DATABASE_VERSION = 1
@@ -49,7 +45,7 @@ class ScanDBHelper(val context: Context) :
         db?.execSQL(
             "CREATE TABLE " + MAP_TABLE_NAME + " (" +
                 COLUMN_MAP_NAME + " VARCHAR(256) PRIMARY KEY," +
-                 COLUMN_MAP_LOCATION + " VARCHAR(256)); "
+                COLUMN_MAP_LOCATION + " VARCHAR(256)); "
         )
         db?.execSQL(
             "CREATE TABLE " + INFORMATION_TABLE + " (" +
@@ -92,14 +88,15 @@ class ScanDBHelper(val context: Context) :
      */
     fun insertMaps(name: String): Boolean {
         var gpsLocation: String? = null
-        getGpsLocation(context,
-            { location -> gpsLocation = locationToString(location) })
-
+        getGpsLocation(
+            context,
+            { location -> gpsLocation = locationToString(location) }
+        )
 
         var db = this.writableDatabase
         var value = ContentValues()
         var query = "SELECT * FROM " + MAP_TABLE_NAME +
-                " WHERE " + COLUMN_MAP_NAME + " = '" + name + "' ;"
+            " WHERE " + COLUMN_MAP_NAME + " = '" + name + "' ;"
         var cursor = db.rawQuery(query, null)
         if (cursor.count == 0) {
             value.put(COLUMN_MAP_NAME, name)
@@ -119,7 +116,7 @@ class ScanDBHelper(val context: Context) :
         var db = this.writableDatabase
         var value = ContentValues()
         var query = "SELECT * FROM " + MAP_TABLE_NAME +
-                " WHERE " + COLUMN_MAP_NAME + " = '" + name + "' ;"
+            " WHERE " + COLUMN_MAP_NAME + " = '" + name + "' ;"
         var cursor = db.rawQuery(query, null)
         if (cursor.count != 0) {
             value.put(COLUMN_MAP_LOCATION, location)
