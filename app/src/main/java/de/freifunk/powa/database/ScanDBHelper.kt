@@ -34,6 +34,7 @@ class ScanDBHelper(context: Context) :
     val INFORMATION_TABLE_ID = "id"
     val INFORMATION_TABLE_BYTES = "bytes"
     val INFORMATION_TABLE_PK = "pk"
+    val COLUMN_INFORMTION_TABLE_TIMESTAMP = "timestamp"
     val SCAN_TABLE = "scans"
     val COLUMN_SCANS_MAP_NAME = "mapname"
     val COLUMN_SCANS_INFORMATION_ID = "informationid"
@@ -47,6 +48,7 @@ class ScanDBHelper(context: Context) :
             "CREATE TABLE " + INFORMATION_TABLE + " (" +
                 INFORMATION_TABLE_ID + " INTEGER ," +
                 INFORMATION_TABLE_BYTES + " BLOB ," +
+                COLUMN_INFORMTION_TABLE_TIMESTAMP + " TIMESTAMP NOT NULL," +
                 INFORMATION_TABLE_PK + " AUTO_INCREMENT PRIMARY KEY," +
                 "FOREIGN KEY (" + INFORMATION_TABLE_ID + ") " +
                 "REFERENCES " + SCAN_TABLE + " (" + COLUMN_SCANS_INFORMATION_ID + "));"
@@ -128,13 +130,13 @@ class ScanDBHelper(context: Context) :
     /**
      *
      */
-    fun insertInformation(id: Int, byte: ByteArray) {
+    fun insertInformation(id: Int, byte: ByteArray, timeStamp: String) {
         var db = this.writableDatabase
         var value = ContentValues()
         value.put(INFORMATION_TABLE_ID, id)
         value.put(INFORMATION_TABLE_BYTES, byte)
+        value.put(COLUMN_INFORMTION_TABLE_TIMESTAMP, timeStamp)
         db.insert(INFORMATION_TABLE, null, value)
-
         db.close()
     }
 
