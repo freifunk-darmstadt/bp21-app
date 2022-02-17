@@ -51,6 +51,8 @@ class ScanActivity {
             // only available in android API Level 30
                 it.informationElements.forEach {
                     var bytes = ByteArray(it.bytes.capacity())
+                    it.bytes.get(bytes)
+                    Toast.makeText(scanContext, bytes.toString(), Toast.LENGTH_SHORT).show()
                     db.insertInformation(it.id, bytes)
                 }
         }
