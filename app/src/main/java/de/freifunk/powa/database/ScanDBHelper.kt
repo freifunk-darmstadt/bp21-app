@@ -171,7 +171,7 @@ class ScanDBHelper(val context: Context) :
      */
     fun insertInformation(id: Int, byte: ByteArray, timeStamp: String) {
         var db = this.writableDatabase
-        var value = ContentValues()     
+        var value = ContentValues()
         value.put(COLUMN_INFORMTION_TABLE_TIMESTAMP, timeStamp)
         value.put(COLUMN_INFORMATION_TABLE_ID, id)
         value.put(COLUMN_INFORMATION_TABLE_BYTES, byte)
