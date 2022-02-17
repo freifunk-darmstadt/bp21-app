@@ -21,6 +21,10 @@
             android:screenOrientation="portrait"
             android:exported="false" />
         <activity
+            android:name=".api.ExportActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
             android:name=".image.LoadOldImageActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
