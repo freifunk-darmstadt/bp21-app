@@ -96,6 +96,7 @@ class ScanDBHelper(val context: Context) :
      * This Method create a new Entry in the Map table
      */
     fun insertMaps(name: String): Boolean {
+        //TODO: Es existiert die Vermutung, dass dieses Code-Fragment(nächsten 5 Zeilen) hier nicht verwendet werden kann.
         var gpsLocation: String? = null
         getGpsLocation(
             context,
