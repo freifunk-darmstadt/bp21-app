@@ -5,9 +5,11 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.os.Build
 import de.freifunk.powa.model.WiFiScanObject
 import de.freifunk.powa.permissions.getGpsLocation
 import de.freifunk.powa.permissions.locationToString
+import de.freifunk.powa.scan.scan
 import java.util.LinkedList
 
 val DATABASE_NAME = "ScansDB"
@@ -38,9 +40,11 @@ class ScanDBHelper(val context: Context) :
     val COLUMN_INFORMATION_TABLE_ID = "id"
     val COLUMN_INFORMATION_TABLE_BYTES = "bytes"
     val COLUMN_INFORMATION_TABLE_PK = "pk"
+    val COLUMN_INFORMATION_TABLE_SCAN_ID = "scanid"
     val SCAN_TABLE = "scans"
     val COLUMN_SCANS_MAP_NAME = "mapname"
     val COLUMN_SCANS_INFORMATION_ID = "informationid"
+    val COLUMN_SCANS_WIFISTANDARD = "wifistandard"
     override fun onCreate(db: SQLiteDatabase?) {
         // Create first table in which the mapnames are stored
         db?.execSQL(
@@ -67,7 +71,8 @@ class ScanDBHelper(val context: Context) :
                 COLUMN_SCANS_LEVEL + " INTEGER NOT NULL," +
                 COLUMN_SCANS_OPERATOR_FRIENDLY_NAME + " VARCHAR(256) NOT NULL," +
                 COLUMN_SCANS_VENUE_NAME + " VARCHAR(256) NOT NULL," +
-                COLUMN_SCANS_INFORMATION_ID + " INTEGER ," +
+                COLUMN_SCANS_WIFISTANDARD + " INTEGER, " +
+                COLUMN_SCANS_INFORMATION_ID + " AUTO_INCREMENT," +
                 " CONSTRAINT " + PRIMARY_KEY_NAME + " " +
                 " PRIMARY KEY ( " + COLUMN_SCANS_TIMESTAMP + "," + COLUMN_SCANS_BSSID + ")" +
                 " FOREIGN KEY (" + COLUMN_SCANS_MAP_NAME + ") " +
@@ -80,8 +85,10 @@ class ScanDBHelper(val context: Context) :
             "CREATE TABLE " + INFORMATION_TABLE + " (" +
                 COLUMN_INFORMATION_TABLE_ID + " INTEGER ," +
                 COLUMN_INFORMATION_TABLE_BYTES + " BLOB ," +
+                COLUMN_INFORMTION_TABLE_TIMESTAMP + " TIMESTAMP NOT NULL," +
+                COLUMN_INFORMATION_TABLE_SCAN_ID + " INTEGER NOT NULL," +
                 COLUMN_INFORMATION_TABLE_PK + " AUTO_INCREMENT PRIMARY KEY," +
-                "FOREIGN KEY (" + COLUMN_INFORMATION_TABLE_ID + ") " +
+                "FOREIGN KEY (" + COLUMN_INFORMATION_TABLE_SCAN_ID + ") " +
                 "REFERENCES " + SCAN_TABLE + " (" + COLUMN_SCANS_INFORMATION_ID + ")" +
                 " ON DELETE CASCADE " +
                 " ON UPDATE CASCADE );"
@@ -160,7 +167,7 @@ class ScanDBHelper(val context: Context) :
         value.put(COLUMN_SCANS_VENUE_NAME, scan.venueName)
         value.put(COLUMN_SCANS_X, scan.xCoordinate)
         value.put(COLUMN_SCANS_Y, scan.yCoordinate)
-        value.put(COLUMN_SCANS_INFORMATION_ID, scan.informationID)
+        value.put(COLUMN_SCANS_WIFISTANDARD, scan.wifiStandard)
         db.insert(SCAN_TABLE, null, value)
 
         db.close()
@@ -169,9 +176,17 @@ class ScanDBHelper(val context: Context) :
     /**
      *
      */
+    @SuppressLint("Range")
     fun insertInformation(id: Int, byte: ByteArray, timeStamp: String) {
         var db = this.writableDatabase
         var value = ContentValues()
+        var scanID: Int?
+        var query = " SELECT MAX("+ COLUMN_SCANS_INFORMATION_ID + ")"+
+                " FROM " + SCAN_TABLE + ";"
+        var cursor = db.rawQuery(query, null)
+        cursor.moveToFirst()
+        scanID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
+        value.put(COLUMN_INFORMATION_TABLE_SCAN_ID, scanID)
         value.put(COLUMN_INFORMTION_TABLE_TIMESTAMP, timeStamp)
         value.put(COLUMN_INFORMATION_TABLE_ID, id)
         value.put(COLUMN_INFORMATION_TABLE_BYTES, byte)
@@ -211,7 +226,7 @@ class ScanDBHelper(val context: Context) :
                 scan.xCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_X))
                 scan.yCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_Y))
                 scan.informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
-
+                scan.wifiStandard = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_WIFISTANDARD))
                 scanLinkedList.add(scan)
             } while (cursor.moveToNext())
         } else {
@@ -293,7 +308,7 @@ class ScanDBHelper(val context: Context) :
             cursor.moveToFirst()
             do {
                 var informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
-                db?.delete(INFORMATION_TABLE, COLUMN_INFORMATION_TABLE_ID + "=?", arrayOf(informationID.toString()))
+                db?.delete(INFORMATION_TABLE, COLUMN_INFORMATION_TABLE_SCAN_ID + "=?", arrayOf(informationID.toString()))
             } while (cursor.moveToNext())
         }
         // deleting the scanresults of the deleted maps
