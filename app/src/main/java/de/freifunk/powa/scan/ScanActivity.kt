@@ -3,7 +3,9 @@ package de.freifunk.powa.scan
 import android.content.Context
 import android.net.wifi.ScanResult
 import android.os.Build
+import android.widget.Button
 import android.widget.Toast
+import androidx.core.view.isVisible
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.model.WiFiScanObject
 import java.time.Instant
@@ -16,6 +18,7 @@ class ScanActivity {
     var xCoordinate: Float = 0f // should be set before scan is invoked
     var yCoordinate: Float = 0f // should be set before scan is invoked
     var scanContext: Context
+    lateinit var scanBtn: Button
     constructor(context: Context, name: String, x: Float, y: Float) {
         scanContext = context
         tableMapName = name
@@ -51,10 +54,12 @@ class ScanActivity {
             // only available in android API Level 30
                 it.informationElements.forEach {
                     var bytes = ByteArray(it.bytes.capacity())
-                    db.insertInformation(it.id, bytes)
+                    it.bytes.get(bytes)
+                    db.insertInformation(it.id, bytes, timeStamp)
                 }
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
+        scanBtn.isVisible = true
     }
 
     /**
@@ -62,6 +67,7 @@ class ScanActivity {
      */
     fun onFailure() {
         Toast.makeText(scanContext, "Scan fehlgeschlagen", Toast.LENGTH_SHORT).show()
+        scanBtn.isVisible = true
     }
 
     /**
@@ -69,7 +75,7 @@ class ScanActivity {
      */
     fun getTime(): String {
         val formatter = DateTimeFormatter
-            .ofPattern("yyyy-MM-dd HH:mm:ss")
+            .ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
             .withZone(ZoneOffset.UTC)
             .format(Instant.now())
 

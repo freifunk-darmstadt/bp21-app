@@ -24,6 +24,7 @@ import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
+import de.freifunk.powa.scan.createThrottlingDialog
 import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
 import java.util.regex.Pattern
 import kotlin.math.max
@@ -39,10 +40,11 @@ class LoadImageActivity : AppCompatActivity() {
     private lateinit var markerGesture: GestureDetector
     private var scrollHistoryX: Int = 0
     private var scrollHistoryY: Int = 0
-    private var minZoomFactor: Float = 0.25f
+    private var minZoomFactor: Float = 1f
     private var maxZoomFactor: Float = 20.0f
     private lateinit var mapName: String
     private lateinit var scanBtn: Button
+    var scanIsReady: Boolean = true
     // create ComponentActivity to load and handle loading the image
     // A Dialog pops up after the User selects a map
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -58,6 +60,9 @@ class LoadImageActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        createThrottlingDialog(this)
+
         setContentView(R.layout.activity_load_image)
 
         showImgIv = findViewById(R.id.showImgIv)
@@ -76,7 +81,10 @@ class LoadImageActivity : AppCompatActivity() {
             getContent.launch("image/*")
         }
         scanBtn.setOnClickListener {
-            createScanDialog()
+            var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
+            scanAct.scanBtn = scanBtn
+            scanBtn.isVisible = false
+            createScanDialog(scanAct)
         }
     }
 
@@ -94,7 +102,7 @@ class LoadImageActivity : AppCompatActivity() {
             .create()
 
         mapEditText.inputType = InputType.TYPE_CLASS_TEXT
-
+        mapNameDialog.setCanceledOnTouchOutside(false)
         var db = ScanDBHelper(this)
         mapNameDialog.setOnShowListener {
             var posBtn = mapNameDialog.getButton(AlertDialog.BUTTON_POSITIVE)
@@ -117,6 +125,7 @@ class LoadImageActivity : AppCompatActivity() {
                     }
                 }
             }
+
             negBtn.setOnClickListener {
                 mapNameDialog.dismiss()
                 startActivity(Intent(this, MainActivity::class.java))
@@ -139,7 +148,7 @@ class LoadImageActivity : AppCompatActivity() {
     /**
      * Creates a AlertDialog to ask the User if he/she wants to start a scan
      */
-    private fun createScanDialog() {
+    private fun createScanDialog(scanAct: ScanActivity) {
 
         var scanDialog = AlertDialog.Builder(this)
             .setView(null)
@@ -148,16 +157,16 @@ class LoadImageActivity : AppCompatActivity() {
             .setPositiveButton("Ok", null)
             .setNegativeButton("Abbrechen", null)
             .create()
-
+        scanDialog.setCanceledOnTouchOutside(false)
         scanDialog.setOnShowListener {
             var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
-                var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
                 scanAct.startScan()
                 scanDialog.dismiss()
             }
             negBtn.setOnClickListener {
+                scanBtn.isVisible = true
                 scanDialog.dismiss()
             }
         }
