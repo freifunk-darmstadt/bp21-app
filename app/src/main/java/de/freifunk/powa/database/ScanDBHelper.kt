@@ -262,11 +262,8 @@ class ScanDBHelper(val context: Context) :
         // oldName should exist while newName should not exist
         var query = "SELECT * FROM " + MAP_TABLE_NAME +
             " WHERE " + COLUMN_MAP_NAME + " = '" + newName + "' ;"
-        var queryOld = "SELECT * FROM " + MAP_TABLE_NAME +
-            " WHERE " + COLUMN_MAP_NAME + " = '" + oldName + "' ;"
         var cursor = db.rawQuery(query, null)
-        var cursorOld = db.rawQuery(queryOld, null)
-        if (cursor.count > 0 || cursorOld.count == 0) {
+        if (cursor.count > 0) {
             db.close()
             return false
         }
