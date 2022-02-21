@@ -74,8 +74,7 @@ class LoadOldImageActivity : AppCompatActivity() {
         }
         scanBtn.isInvisible = true
         scanBtn.setOnClickListener {
-            var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
-            scanAct.scanBtn = scanBtn
+            var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY, scanBtn)
             scanBtn.isVisible = false
             createScanDialog(scanAct)
         }
