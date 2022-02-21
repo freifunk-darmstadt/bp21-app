@@ -147,7 +147,7 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
 
     /**
      * This Method checks if the given name is valid, already exists and a new map can be saved with parameter name
-     *  @param oldName old name of the map which will be renamed
+     * @param oldName old name of the map which will be renamed
      * @param name new name for the map
      * @param bitmap  bitmap to the corresponding name
      * @param db database in which the new data are saved
