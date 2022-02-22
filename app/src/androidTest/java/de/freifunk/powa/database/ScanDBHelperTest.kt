@@ -81,22 +81,23 @@ class ScanDBHelperTest {
 
         listOfLines.forEach {
             var line = scanner.decomposeString(it, ";")
-            var wifiScanner = WiFiScanObject()
-            wifiScanner.timestamp = line[0]
-            wifiScanner.xCoordinate = line[1].toFloat()
-            wifiScanner.yCoordinate = line[2].toFloat()
-            wifiScanner.bssid = line[3]
-            wifiScanner.ssid = line[4]
-            wifiScanner.capabilities = line[5]
-            wifiScanner.centerFreq0 = line[6].toInt()
-            wifiScanner.centerFreq1 = line[7].toInt()
-            wifiScanner.channelWidth = line[8].toInt()
-            wifiScanner.frequency = line[9].toInt()
-            wifiScanner.level = line[10].toInt()
-            wifiScanner.operatorFriendlyName = line[11]
-            wifiScanner.venueName = line[12]
-            wifiScanner.informationID = line[13].toInt()
-            dataBase.insertScans(mapName, wifiScanner)
+            TODO("Fix error")
+            //var wifiScanner = WiFiScanObject()
+            //wifiScanner.timestamp = line[0]
+            //wifiScanner.xCoordinate = line[1].toFloat()
+            //wifiScanner.yCoordinate = line[2].toFloat()
+            //wifiScanner.bssid = line[3]
+            //wifiScanner.ssid = line[4]
+            //wifiScanner.capabilities = line[5]
+            //wifiScanner.centerFreq0 = line[6].toInt()
+            //wifiScanner.centerFreq1 = line[7].toInt()
+            //wifiScanner.channelWidth = line[8].toInt()
+            //wifiScanner.frequency = line[9].toInt()
+            //wifiScanner.level = line[10].toInt()
+            //wifiScanner.operatorFriendlyName = line[11]
+            //wifiScanner.venueName = line[12]
+            //wifiScanner.informationID = line[13].toInt()
+            //dataBase.insertScans(mapName, wifiScanner)
         }
         var db = dataBase.writableDatabase
         var query = " SELECT * FROM " + dataBase.SCAN_TABLE
@@ -112,22 +113,23 @@ class ScanDBHelperTest {
 
         listOfLines.forEach {
             var line = scanner.decomposeString(it, ";")
-            var wifiScanner = WiFiScanObject()
-            wifiScanner.timestamp = line[0]
-            wifiScanner.xCoordinate = line[1].toFloat()
-            wifiScanner.yCoordinate = line[2].toFloat()
-            wifiScanner.bssid = line[3]
-            wifiScanner.ssid = line[4]
-            wifiScanner.capabilities = line[5]
-            wifiScanner.centerFreq0 = line[6].toInt()
-            wifiScanner.centerFreq1 = line[7].toInt()
-            wifiScanner.channelWidth = line[8].toInt()
-            wifiScanner.frequency = line[9].toInt()
-            wifiScanner.level = line[10].toInt()
-            wifiScanner.operatorFriendlyName = line[11]
-            wifiScanner.venueName = line[12]
-            wifiScanner.informationID = line[13].toInt()
-            dataBase.insertScans(mapName, wifiScanner)
+            TODO("Fix error")
+            //var wifiScanner = WiFiScanObject()
+            //wifiScanner.timestamp = line[0]
+            //wifiScanner.xCoordinate = line[1].toFloat()
+            //wifiScanner.yCoordinate = line[2].toFloat()
+            //wifiScanner.bssid = line[3]
+            //wifiScanner.ssid = line[4]
+            //wifiScanner.capabilities = line[5]
+            //wifiScanner.centerFreq0 = line[6].toInt()
+            //wifiScanner.centerFreq1 = line[7].toInt()
+            //wifiScanner.channelWidth = line[8].toInt()
+            //wifiScanner.frequency = line[9].toInt()
+            //wifiScanner.level = line[10].toInt()
+            //wifiScanner.operatorFriendlyName = line[11]
+            //wifiScanner.venueName = line[12]
+            //wifiScanner.informationID = line[13].toInt()
+            //dataBase.insertScans(mapName, wifiScanner)
         }
         var db = dataBase.writableDatabase
         var query = " SELECT * FROM " + dataBase.SCAN_TABLE
@@ -163,7 +165,7 @@ class ScanDBHelperTest {
         listOfLines.forEach {
             var line = scanner.decomposeString(it, ";")
 
-            dataBase.insertInformation(line[0].toInt(), line[1].toByteArray(Charsets.UTF_8))
+            dataBase.insertInformation(line[0].toInt(), line[1].toByteArray(Charsets.UTF_8), "")
         }
         var db = dataBase.writableDatabase
         var query = " SELECT * FROM " + dataBase.INFORMATION_TABLE

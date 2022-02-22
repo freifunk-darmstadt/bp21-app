@@ -28,11 +28,11 @@ class ExportActivity : AppCompatActivity() {
         listView = findViewById(R.id.listView)
         var mapListContext = this
 
-        PowaApi.initialize(this)
-        val api = PowaApi
+
+        val api = PowaApi.getInstance(this)
 
         for (i in 0..5){
-            api.registerExporter(object: ExportConsumer("test $i", "test description $i"){
+            api.registerExporter(object: ExportConsumer("test $i", "json","test description $i"){
                 override fun export(file: File, maps: List<Map>) {
                     Toast.makeText(this@ExportActivity, "Writing $i to File", Toast.LENGTH_SHORT).show()
 
@@ -62,7 +62,6 @@ class ExportActivity : AppCompatActivity() {
 
             setResult(Activity.RESULT_OK, result)
             finish()
-            //api.exportData(this, api.maps, api.exporter[pos])
         }
     }
 }

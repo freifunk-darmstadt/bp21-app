@@ -24,13 +24,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        PowaApi.initialize(this)
-        PowaApi.selectExporter(this){
-            PowaApi.exportData(this, consumer = it).readLines().forEach{
+        val api = PowaApi.getInstance(this)
+        api.selectExporter(this){
+            api.exportData(this, consumer = it).readLines().forEach{
                 Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()
             }
+            api.shareData(this, api.exportData(this, consumer = it))
         }
-
 
         setContentView(R.layout.activity_main)
 

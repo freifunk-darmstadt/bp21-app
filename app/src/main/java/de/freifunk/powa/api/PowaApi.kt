@@ -2,14 +2,12 @@ package de.freifunk.powa.api
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.net.wifi.ScanResult
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
+import de.freifunk.powa.BuildConfig
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.image.LoadOldImageActivity
 import de.freifunk.powa.model.Map
@@ -18,25 +16,31 @@ import de.freifunk.powa.scan.scan
 import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import java.io.File
-import java.io.FileInputStream
+import java.lang.IllegalStateException
 import java.net.URLConnection
 
-object PowaApi{
+class PowaApi private constructor(context: Context){
+
+    companion object{
+        @Volatile
+        internal var instance: PowaApi? = null
+
+        fun getInstance(context: Context): PowaApi =
+            instance ?: synchronized(this) {
+                instance ?: PowaApi(context).also { instance = it }
+            }
+    }
 
     val maps = mutableListOf<Map>()
     val exporter = mutableListOf<ExportConsumer>()
-    val exportDir = "exports"
 
-    var initialized = false
-
-    fun initialize(context: Context) {
+    init{
         val dbHelper = ScanDBHelper(context)
         loadListOfInternalStorageImages(context).forEach{
             val scanData = dbHelper.readScans(it.name)
 
-            maps.add(Map(scanData ?: listOf(), it.name, TODO(), it.bitmap))
+            maps.add(Map(scanData ?: listOf(), it.name, dbHelper.readMapLocation(it.name), it.bitmap))
         }
-        initialized = true
     }
 
     fun getMapByName(mapName: String): Map? {
@@ -52,7 +56,8 @@ object PowaApi{
             dbHelper.insertScans(mapToAdd.name, it)
         }
         saveBitmapToInternalStorage(context, mapToAdd.name, mapToAdd.image)
-        TODO("Add map coordinates")
+
+        mapToAdd.location?.let { dbHelper.updateLocationInTableMap(mapToAdd.name, it) }
     }
 
     fun runScan(context: Context,
@@ -99,9 +104,9 @@ object PowaApi{
         }.launch(Unit)
     }
 
-    fun exportData(context: Context, maps : List<Map> = this.maps, consumer: ExportConsumer): File {
-        val suffix = "json"
-        val tempFile = File(context.filesDir, exportDir + File.separator + "exportedData.$suffix")
+    fun exportData(context: Context, consumer: ExportConsumer, maps : List<Map> = this.maps): File {
+        val suffix = consumer.fileType
+        val tempFile = File(context.filesDir, "exports" + File.separator + "exportedData.$suffix")
 
         tempFile.mkdirs()
 
@@ -122,8 +127,11 @@ object PowaApi{
     fun shareData(context: Context, file: File){
         val intent = Intent(Intent.ACTION_SEND)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        TODO("Use Content Provider")
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file))
+
+        val uri = FileProvider.getUriForFile(context.applicationContext,
+            BuildConfig.APPLICATION_ID + ".provider", file)
+
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
 
         intent.setType(URLConnection.guessContentTypeFromName(file.getName()))
 

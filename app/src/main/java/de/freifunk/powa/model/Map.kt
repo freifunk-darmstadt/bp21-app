@@ -11,6 +11,6 @@ import de.freifunk.powa.model.WiFiScanObject
 data class Map (
     val scans: List<WiFiScanObject>,
     val name: String,
-    val location: String,
+    val location: String?,
     val image: Bitmap
 )
