@@ -69,7 +69,8 @@ class ScanDBHelperTest {
                 " WHERE " + dataBase.COLUMN_MAP_NAME + "='" + mapName + "';"
             var cursor = db.rawQuery(query, null)
             cursor.moveToFirst()
-            assertEquals(location, cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_LOCATION)), cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_LOCATION)))
+            var actualValue = cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_LOCATION))
+            assertEquals(location, actualValue, actualValue)
         }
     }
 
