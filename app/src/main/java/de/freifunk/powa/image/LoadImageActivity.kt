@@ -13,6 +13,7 @@ import android.view.ScaleGestureDetector
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Switch
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -25,31 +26,34 @@ import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
 import de.freifunk.powa.scan.createThrottlingDialog
+import de.freifunk.powa.store_intern.InternalStorageImage
+import de.freifunk.powa.store_intern.loadListOfInternalStorageImages
 import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
+import kotlinx.coroutines.runBlocking
 import java.util.regex.Pattern
 import kotlin.math.max
 import kotlin.math.min
 
 class LoadImageActivity : AppCompatActivity() {
-
-    private lateinit var showImgIv: ImageView
-    private lateinit var loadImgBtn: Button
-    private lateinit var scaleGesture: ScaleGestureDetector
+    protected lateinit var showImgIv: ImageView
+    protected lateinit var scaleGesture: ScaleGestureDetector
     private var scaleFactor: Float = 1.0f
-    private lateinit var markerView: MarkerView
-    private lateinit var markerGesture: GestureDetector
+    protected lateinit var markerView: MarkerView
+    protected lateinit var markerGesture: GestureDetector
     private var scrollHistoryX: Int = 0
     private var scrollHistoryY: Int = 0
     private var minZoomFactor: Float = 1f
     private var maxZoomFactor: Float = 20.0f
     private lateinit var mapName: String
-    private lateinit var scanBtn: Button
-    var scanIsReady: Boolean = true
+    protected lateinit var scanBtn: Button
+    lateinit var oldMarkers: SavedMarkerView
+    lateinit var markerSwitch: Switch
+
     // create ComponentActivity to load and handle loading the image
     // A Dialog pops up after the User selects a map
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         if (uri != null) {
-            setImageVisibility(false)
+            showImgIv.isVisible = true
 
             // loads the image from the URI and stores it to the imageview
             val bitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(uri))
@@ -58,33 +62,179 @@ class LoadImageActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        createThrottlingDialog(this)
 
         setContentView(R.layout.activity_load_image)
 
         showImgIv = findViewById(R.id.showImgIv)
-        loadImgBtn = findViewById(R.id.loadImageBtn)
         markerView = findViewById(R.id.marker_view)
-        scanBtn = findViewById(R.id.mapScanBtn)
+        scanBtn = findViewById(R.id.ScanBtn)
         scaleGesture = ScaleGestureDetector(this, ScaleListener())
         markerGesture = GestureDetector(this, MarkerGestureListener())
-        supportActionBar!!.hide()
+        oldMarkers = findViewById(R.id.old_markers_view)
+        markerSwitch = findViewById(R.id.switchMarkers)
+        createThrottlingDialog(this)
 
-        showImgIv.isInvisible = true
-        scanBtn.isInvisible = true
+        var name = intent.getStringExtra("mapName")
 
-        // request permissions on Button press and open system image selector
-        loadImgBtn.setOnClickListener {
-            getContent.launch("image/*")
+        if (name != null) {
+            //load old image
+            var list: List<InternalStorageImage>
+            var loadContext = this
+            var internStorage: InternalStorageImage? = null
+            runBlocking {
+                list = loadListOfInternalStorageImages(loadContext)
+            }
+            for (it in list) {
+                if (it.name == (name)) {
+                    internStorage = it
+                    break
+                }
+            }
+            name = name.removeSuffix(".jpg")
+            val db = ScanDBHelper(this)
+            val crdOfMarkers = db.readCoordinates(name)
+
+            if (crdOfMarkers != null) {
+                oldMarkers.coordinates = crdOfMarkers
+            }
+
+            mapName = name
+            showImgIv.setImageBitmap(internStorage!!.bitmap)
+            oldMarkers.invalidate()
+            scanBtn.isInvisible = true
+        } else {
+            scanBtn.text = resources.getString(R.string.load_image)
+            showImgIv.isInvisible = true
         }
+
+        supportActionBar!!.hide()
         scanBtn.setOnClickListener {
-            var scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
-            scanAct.scanBtn = scanBtn
-            scanBtn.isVisible = false
-            createScanDialog(scanAct)
+            if (scanBtn.text == resources.getString(R.string.start_scan)){
+                val scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
+                scanAct.scanBtn = scanBtn
+                scanBtn.isVisible = false
+                createScanDialog(scanAct)
+            } else {
+                getContent.launch("image/*")
+                scanBtn.text = resources.getString(R.string.start_scan)
+            }
+        }
+
+        markerSwitch.setOnClickListener {
+            oldMarkers.isInvisible = markerSwitch.isChecked
+        }
+    }
+
+    /**
+     * Creates a AlertDialog to ask the User if he/she wants to start a scan
+     */
+    protected fun createScanDialog(scanAct: ScanActivity) {
+
+        var scanDialog = AlertDialog.Builder(this)
+            .setView(null)
+            .setTitle("Starte Scan")
+            .setMessage("Möchtest du den Scan starten bei: \n " + "x:" + markerView.initX + ";y:" + markerView.initY + "?")
+            .setPositiveButton("Ok", null)
+            .setNegativeButton("Abbrechen", null)
+            .create()
+        scanDialog.setCanceledOnTouchOutside(false)
+        scanDialog.setOnShowListener {
+            var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            posBtn.setOnClickListener {
+                scanAct.startScan()
+                scanDialog.dismiss()
+            }
+            negBtn.setOnClickListener {
+                scanBtn.isVisible = true
+                scanDialog.dismiss()
+            }
+        }
+
+        scanDialog.show()
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        var historySize: Int
+        var startX: Float
+        var endX: Float
+        var startY: Float
+        var endY: Float
+        var distanceX: Int
+        var distanceY: Int
+        if (event?.pointerCount == 2) {
+            scaleGesture.onTouchEvent(event)
+        }
+        if (event?.action == MotionEvent.ACTION_MOVE && event.pointerCount == 1) {
+            historySize = event.historySize
+            if (historySize > 0) {
+                startX = event.getHistoricalX(0)
+                endX = event.getHistoricalX(historySize - 1)
+                startY = event.getHistoricalY(0)
+                endY = event.getHistoricalY(historySize - 1)
+                distanceX = ((startX - endX) / scaleFactor).toInt()
+                distanceY = ((startY - endY) / scaleFactor).toInt()
+                scrollHistoryX += distanceX
+                scrollHistoryY += distanceY
+
+                markerView.scrollBy(distanceX, distanceY)
+                oldMarkers.scrollBy(distanceX, distanceY)
+                showImgIv.scrollBy(distanceX, distanceY)
+            }
+        }
+        markerGesture.onTouchEvent(event)
+        return super.onTouchEvent(event)
+    }
+
+    fun getHeight(): Int {
+        var rectangle = Rect()
+        window.decorView.getWindowVisibleDisplayFrame(rectangle)
+        return rectangle.top
+    }
+
+    inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        override fun onScale(detector: ScaleGestureDetector?): Boolean {
+            scaleFactor *= detector!!.scaleFactor
+            scaleFactor = max(minZoomFactor, min(scaleFactor, maxZoomFactor))
+            showImgIv.scaleX = scaleFactor
+            showImgIv.scaleY = scaleFactor
+            markerView.scaleX = scaleFactor
+            markerView.scaleY = scaleFactor
+            oldMarkers.scaleX = scaleFactor
+            oldMarkers.scaleY = scaleFactor
+            return true
+        }
+    }
+
+    inner class MarkerGestureListener : GestureDetector.SimpleOnGestureListener() {
+        override fun onDoubleTap(e: MotionEvent?): Boolean {
+            val statusBarHeight = getHeight()
+            markerView.circleShouldDraw = true
+            val middleX = showImgIv.width / 2
+            val middleY = showImgIv.height / 2
+            val vectorX: Float
+            val vectorY: Float
+            val onlyViewHeight = e!!.getY() - statusBarHeight
+            if (scaleFactor == 1.0f) {
+                markerView.initX = ((e.getX()) + scrollHistoryX) - showImgIv.x
+                markerView.initY = (onlyViewHeight + scrollHistoryY) - showImgIv.y
+                // subtraction with the position of showImgIv because it is not positioned in the origin
+            } else {
+                vectorX = (e.getX()) - middleX
+                vectorY = onlyViewHeight - middleY
+                markerView.initX = middleX + vectorX / scaleFactor + scrollHistoryX - showImgIv.x / scaleFactor
+                markerView.initY = middleY + vectorY / scaleFactor + scrollHistoryY - showImgIv.y / scaleFactor
+            }
+            markerView.invalidate()
+            scanBtn.isInvisible = false
+            return super.onDoubleTap(e)
+        }
+
+        fun dpFromPx(px: Float): Float {
+            return px / resources.displayMetrics.density
         }
     }
 
@@ -143,119 +293,5 @@ class LoadImageActivity : AppCompatActivity() {
         var drawable = showImgIv.drawable as BitmapDrawable
         var bitmap = drawable.bitmap
         return saveBitmapToInternalStorage(this, imageName, bitmap)
-    }
-
-    /**
-     * Creates a AlertDialog to ask the User if he/she wants to start a scan
-     */
-    private fun createScanDialog(scanAct: ScanActivity) {
-
-        var scanDialog = AlertDialog.Builder(this)
-            .setView(null)
-            .setTitle("Starte Scan")
-            .setMessage("Möchtest du den Scan starten bei: \n " + "x:" + markerView.initX + ";y:" + markerView.initY + "?")
-            .setPositiveButton("Ok", null)
-            .setNegativeButton("Abbrechen", null)
-            .create()
-        scanDialog.setCanceledOnTouchOutside(false)
-        scanDialog.setOnShowListener {
-            var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-            posBtn.setOnClickListener {
-                scanAct.startScan()
-                scanDialog.dismiss()
-            }
-            negBtn.setOnClickListener {
-                scanBtn.isVisible = true
-                scanDialog.dismiss()
-            }
-        }
-        scanDialog.show()
-    }
-    /**
-     * set the visibility of the imageView and the load image button
-     * @param value the value to set the visibility of the imageView to
-     */
-    private fun setImageVisibility(value: Boolean = false) {
-        loadImgBtn.isVisible = value
-        showImgIv.isInvisible = value
-    }
-
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        val historySize: Int
-        val startX: Float
-        val endX: Float
-        val startY: Float
-        val endY: Float
-        val distanceX: Int
-        val distanceY: Int
-        if (event?.pointerCount == 2) {
-            scaleGesture.onTouchEvent(event)
-        }
-        if (event?.action == MotionEvent.ACTION_MOVE && event.pointerCount == 1) {
-            historySize = event.historySize
-            if (historySize > 0) {
-                startX = event.getHistoricalX(0)
-                endX = event.getHistoricalX(historySize - 1)
-                startY = event.getHistoricalY(0)
-                endY = event.getHistoricalY(historySize - 1)
-                distanceX = ((startX - endX) / scaleFactor).toInt()
-                distanceY = ((startY - endY) / scaleFactor).toInt()
-                scrollHistoryX += distanceX
-                scrollHistoryY += distanceY
-
-                markerView.scrollBy(distanceX, distanceY)
-                showImgIv.scrollBy(distanceX, distanceY)
-            }
-        }
-        markerGesture.onTouchEvent(event)
-        return super.onTouchEvent(event)
-    }
-
-    fun getHeight(): Int {
-        val rectangle = Rect()
-        window.decorView.getWindowVisibleDisplayFrame(rectangle)
-        return rectangle.top
-    }
-
-    inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-        override fun onScale(detector: ScaleGestureDetector?): Boolean {
-            scaleFactor *= detector!!.scaleFactor
-            scaleFactor = max(minZoomFactor, min(scaleFactor, maxZoomFactor))
-            showImgIv.scaleX = scaleFactor
-            showImgIv.scaleY = scaleFactor
-            markerView.scaleX = scaleFactor
-            markerView.scaleY = scaleFactor
-            return true
-        }
-    }
-
-    inner class MarkerGestureListener : GestureDetector.SimpleOnGestureListener() {
-        override fun onDoubleTap(e: MotionEvent?): Boolean {
-            val statusBarHeight = getHeight()
-            markerView.circleShouldDraw = true
-            val middleX = showImgIv.width / 2
-            val middleY = showImgIv.height / 2
-            val vectorX: Float
-            val vectorY: Float
-            val onlyViewHeight = e!!.getY() - statusBarHeight
-            if (scaleFactor == 1.0f) {
-                markerView.initX = ((e.getX()) + scrollHistoryX) - showImgIv.x
-                markerView.initY = (onlyViewHeight + scrollHistoryY) - showImgIv.y
-                // subtraction with the position of showImgIv because it is not positioned in the origin
-            } else {
-                vectorX = (e.getX()) - middleX
-                vectorY = onlyViewHeight - middleY
-                markerView.initX = middleX + vectorX / scaleFactor + scrollHistoryX - showImgIv.x / scaleFactor
-                markerView.initY = middleY + vectorY / scaleFactor + scrollHistoryY - showImgIv.y / scaleFactor
-            }
-            markerView.invalidate()
-            scanBtn.isInvisible = false
-            return super.onDoubleTap(e)
-        }
-
-        fun dpFromPx(px: Float): Float {
-            return px / resources.displayMetrics.density
-        }
     }
 }
