@@ -23,6 +23,8 @@ import de.freifunk.powa.MainActivity
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
+import de.freifunk.powa.permissions.getGpsLocation
+import de.freifunk.powa.permissions.locationToString
 import de.freifunk.powa.scan.ScanActivity
 import de.freifunk.powa.scan.createThrottlingDialog
 import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
@@ -115,6 +117,10 @@ class LoadImageActivity : AppCompatActivity() {
                 } else {
 
                     if (db.insertMaps(mapName)) {
+                        getGpsLocation(this) { location ->
+                            db.updateLocationInTableMap(mapName, locationToString(location))
+                        }
+
                         mapNameDialog.dismiss()
                         if (saveImage(mapName))
                             Toast.makeText(this, "Bild wurde erfolgreich gespeichert", Toast.LENGTH_SHORT).show()

@@ -96,12 +96,6 @@ class ScanDBHelper(val context: Context) :
      * This Method create a new Entry in the Map table
      */
     fun insertMaps(name: String): Boolean {
-        var gpsLocation: String? = null
-        getGpsLocation(
-            context,
-            { location -> gpsLocation = locationToString(location) }
-        )
-
         var db = this.writableDatabase
         var value = ContentValues()
         var query = "SELECT * FROM " + MAP_TABLE_NAME +
@@ -109,7 +103,6 @@ class ScanDBHelper(val context: Context) :
         var cursor = db.rawQuery(query, null)
         if (cursor.count == 0) {
             value.put(COLUMN_MAP_NAME, name)
-            value.put(COLUMN_MAP_LOCATION, gpsLocation)
             db.insert(MAP_TABLE_NAME, null, value)
             db.close()
             return true
@@ -129,7 +122,7 @@ class ScanDBHelper(val context: Context) :
         var cursor = db.rawQuery(query, null)
         if (cursor.count != 0) {
             value.put(COLUMN_MAP_LOCATION, location)
-            db.update(MAP_TABLE_NAME, value, "$COLUMN_MAP_NAME = '?'", arrayOf(name))
+            db.update(MAP_TABLE_NAME, value, "$COLUMN_MAP_NAME = ?", arrayOf(name))
             cursor.close()
             db.close()
             return true
