@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.IllegalArgumentException
 import java.nio.file.Paths
 
 const val mapDir = "maps"
@@ -16,10 +17,15 @@ fun saveBitmapToInternalStorage(context: Context, filename: String, bitmap: Bitm
 
         dir.mkdirs()
 
-        val fileOutputStream = FileOutputStream(File(dir, "$filename.jpg"))
+        var filenameVar = filename
+        if (!filenameVar.endsWith(".jpg")){
+            filenameVar = "$filename.jpg"
+        }
+
+        val fileOutputStream = FileOutputStream(File(dir, filenameVar))
         fileOutputStream.use {
             if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 95, it))
-                throw IOException("Bitmap of file \"$filename\", couldn't be saved!")
+                throw IOException("Bitmap of file \"$filenameVar\", couldn't be saved!")
         }
         true
     } catch (e: IOException) {
@@ -40,9 +46,43 @@ fun loadListOfInternalStorageImages(context: Context): List<InternalStorageImage
     } ?: listOf()
 }
 
+fun renameFileInInternalStorage(context: Context, filename: String, newName: String){
+    val fD = context.filesDir
+    var path = "${fD.path}${File.separator}$mapDir${File.separator}$filename"
+
+    if (!path.endsWith(".jpg")){
+        path = "$path.jpg"
+    }
+    val fileOld = Paths.get("${fD.path}${File.separator}$mapDir${File.separator}$path").toFile()
+
+    if(!fileOld.exists()){
+        return
+    }
+
+    path = "${fD.path}${File.separator}$mapDir${File.separator}$newName"
+
+    if (!path.endsWith(".jpg")){
+        path = "$path.jpg"
+    }
+
+    val fileNew = Paths.get("${fD.path}${File.separator}$mapDir${File.separator}$path").toFile()
+
+    if (fileNew.exists()){
+        throw IllegalArgumentException("File with new name already exists")
+    }
+
+    fileOld.renameTo(fileNew)
+}
+
 fun deleteFileFromInternalStorage(context: Context, filename: String): Boolean {
     val fD = context.filesDir
-    val file = Paths.get("${fD.path}${File.separator}$mapDir${File.separator}$filename.jpg").toFile()
+    var path = "${fD.path}${File.separator}$mapDir${File.separator}$filename"
+
+    if (!path.endsWith(".jpg")){
+        path = "$path.jpg"
+    }
+
+    val file = Paths.get(path).toFile()
 
     if (file.exists()) {
         return file.delete()
