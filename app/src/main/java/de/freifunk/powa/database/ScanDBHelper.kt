@@ -72,9 +72,9 @@ class ScanDBHelper(val context: Context) :
                 COLUMN_SCANS_OPERATOR_FRIENDLY_NAME + " VARCHAR(256) NOT NULL," +
                 COLUMN_SCANS_VENUE_NAME + " VARCHAR(256) NOT NULL," +
                 COLUMN_SCANS_WIFISTANDARD + " INTEGER, " +
-                COLUMN_SCANS_INFORMATION_ID + " AUTO_INCREMENT," +
+                COLUMN_SCANS_INFORMATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 " CONSTRAINT " + PRIMARY_KEY_NAME + " " +
-                " PRIMARY KEY ( " + COLUMN_SCANS_TIMESTAMP + "," + COLUMN_SCANS_BSSID + ")" +
+             //   " PRIMARY KEY ( " + COLUMN_SCANS_TIMESTAMP + "," + COLUMN_SCANS_BSSID + ")" + Could also be a primary key
                 " FOREIGN KEY (" + COLUMN_SCANS_MAP_NAME + ") " +
                 " REFERENCES " + MAP_TABLE_NAME + " (" + COLUMN_MAP_NAME + ")" +
                 " ON DELETE CASCADE " +
@@ -87,7 +87,7 @@ class ScanDBHelper(val context: Context) :
                 COLUMN_INFORMATION_TABLE_BYTES + " BLOB ," +
                 COLUMN_INFORMTION_TABLE_TIMESTAMP + " TIMESTAMP NOT NULL," +
                 COLUMN_INFORMATION_TABLE_SCAN_ID + " INTEGER NOT NULL," +
-                COLUMN_INFORMATION_TABLE_PK + " AUTO_INCREMENT PRIMARY KEY," +
+                COLUMN_INFORMATION_TABLE_PK + " INTEGER PRIMARY KEY AUTOINCREMENT ," +
                 "FOREIGN KEY (" + COLUMN_INFORMATION_TABLE_SCAN_ID + ") " +
                 "REFERENCES " + SCAN_TABLE + " (" + COLUMN_SCANS_INFORMATION_ID + ")" +
                 " ON DELETE CASCADE " +
@@ -181,11 +181,12 @@ class ScanDBHelper(val context: Context) :
         var db = this.writableDatabase
         var value = ContentValues()
         var scanID: Int?
-        var query = " SELECT MAX("+ COLUMN_SCANS_INFORMATION_ID + ")"+
-                " FROM " + SCAN_TABLE + ";"
+        var query = " SELECT MAX("+ COLUMN_SCANS_INFORMATION_ID +")"+
+                " FROM " + SCAN_TABLE + " ;"
         var cursor = db.rawQuery(query, null)
-        cursor.moveToFirst()
-        scanID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
+        cursor.moveToNext()
+        var index = cursor.getColumnIndex("MAX("+ COLUMN_SCANS_INFORMATION_ID +")")
+        scanID = cursor.getInt(index)
         value.put(COLUMN_INFORMATION_TABLE_SCAN_ID, scanID)
         value.put(COLUMN_INFORMTION_TABLE_TIMESTAMP, timeStamp)
         value.put(COLUMN_INFORMATION_TABLE_ID, id)

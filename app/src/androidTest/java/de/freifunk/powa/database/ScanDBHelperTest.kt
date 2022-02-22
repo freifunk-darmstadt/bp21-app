@@ -39,7 +39,7 @@ class ScanDBHelperTest {
     @Test
     fun createNewTable() {
         var listOflines = scanner.scan(thisContext, "createNewTableTestCase.txt")
-
+        Looper.prepare()
         listOflines.forEach {
             var line = scanner.decomposeString(it, ";")
             var mapName = line[0]
@@ -57,7 +57,7 @@ class ScanDBHelperTest {
     @Test
     fun insertMaps() {
         var listOflines = scanner.scan(thisContext, "gpsTestCase.txt")
-        Looper.prepare()
+
         listOflines.forEach {
             var line = scanner.decomposeString(it, ";")
             var mapName = line[0]
@@ -68,7 +68,7 @@ class ScanDBHelperTest {
             var query = " SELECT * FROM " + dataBase.MAP_TABLE_NAME +
                 " WHERE " + dataBase.COLUMN_MAP_NAME + "='" + mapName + "';"
             var cursor = db.rawQuery(query, null)
-
+            cursor.moveToFirst()
             assertEquals(location, cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_LOCATION)), cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_LOCATION)))
         }
     }
@@ -159,11 +159,33 @@ class ScanDBHelperTest {
     @Test
     fun insertInformation() {
         var listOfLines = scanner.scan(thisContext, "insertInfTestCase.txt")
+        var listOflines = scanner.scan(thisContext, "insertDataTestCase.txt")
+        var mapName = "TestTable"
+        dataBase.insertMaps(mapName)
 
+        listOflines.forEach {
+            var line = scanner.decomposeString(it, ";")
+            var wifiScanner = WiFiScanObject()
+            wifiScanner.timestamp = line[0]
+            wifiScanner.xCoordinate = line[1].toFloat()
+            wifiScanner.yCoordinate = line[2].toFloat()
+            wifiScanner.bssid = line[3]
+            wifiScanner.ssid = line[4]
+            wifiScanner.capabilities = line[5]
+            wifiScanner.centerFreq0 = line[6].toInt()
+            wifiScanner.centerFreq1 = line[7].toInt()
+            wifiScanner.channelWidth = line[8].toInt()
+            wifiScanner.frequency = line[9].toInt()
+            wifiScanner.level = line[10].toInt()
+            wifiScanner.operatorFriendlyName = line[11]
+            wifiScanner.venueName = line[12]
+            wifiScanner.informationID = line[13].toInt()
+            dataBase.insertScans(mapName, wifiScanner)
+        }
         listOfLines.forEach {
             var line = scanner.decomposeString(it, ";")
 
-            dataBase.insertInformation(line[0].toInt(), line[1].toByteArray(Charsets.UTF_8))
+            dataBase.insertInformation(line[0].toInt(), line[1].toByteArray(Charsets.UTF_8), line[2])
         }
         var db = dataBase.writableDatabase
         var query = " SELECT * FROM " + dataBase.INFORMATION_TABLE
