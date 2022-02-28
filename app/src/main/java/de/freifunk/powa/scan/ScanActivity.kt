@@ -19,12 +19,13 @@ class ScanActivity {
     var yCoordinate: Float = 0f // should be set before scan is invoked
     var scanContext: Context
     lateinit var scanBtn: Button
-    constructor(context: Context, name: String, x: Float, y: Float) {
+    constructor(context: Context, name: String, x: Float, y: Float, btn: Button) {
         scanContext = context
         tableMapName = name
         xCoordinate = x
         yCoordinate = y
         timeStamp = getTime()
+        scanBtn = btn
     }
 
     /**
