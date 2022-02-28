@@ -24,6 +24,7 @@ import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
 import de.freifunk.powa.scan.createThrottlingDialog
 import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
+import kotlinx.coroutines.runBlocking
 import java.util.regex.Pattern
 import kotlin.math.max
 import kotlin.math.min
@@ -75,7 +76,7 @@ class LoadImageActivity : AppCompatActivity() {
 
         showImgIv.isInvisible = true
         scanBtn.isInvisible = true
-        multiScanTextfield.isInvisible = false
+        multiScanTextfield.isInvisible = true
         multiScanTextfield.addTextChangedListener {
             var count = multiScanTextfield.text.toString().toInt()
             if( count > 4 || count <1 ){
@@ -168,7 +169,9 @@ class LoadImageActivity : AppCompatActivity() {
             var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
-                scanAct.startMultiScan(multiScanTextfield.text.toString().toInt())
+                runBlocking {
+                    scanAct.startMultiScan(multiScanTextfield.text.toString().toInt())
+                }
                 //scanAct.startScan()
                 scanDialog.dismiss()
             }

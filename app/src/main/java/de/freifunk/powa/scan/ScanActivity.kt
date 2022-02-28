@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.model.WiFiScanObject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -88,12 +90,17 @@ class ScanActivity {
      */
     fun startScan() {
         scan(scanContext, ::onSuccess, ::onFailure)
+
     }
-    fun startMultiScan(count: Int){
+    suspend fun startMultiScan(count: Int){
         var i = count
         while(i>0){
-            scan(scanContext, ::onSuccess, :: onFailure)
-            while (!scanBtn.isVisible){} // awaiting for scan to be ready
+            var scan = withContext(Dispatchers.Default){startScan()}
+           // scan(scanContext, ::onSuccess, :: onFailure)
+           // while (!scanBtn.isVisible){
+            //    if(scanBtn.isVisible)
+             //       break
+           // } // awaiting for scan to be ready
             i--
         }
     }
