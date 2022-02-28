@@ -20,7 +20,8 @@ import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.storeIntern.InternalStorageImage
 import de.freifunk.powa.storeIntern.deleteFileFromInternalStorage
-import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
+import de.freifunk.powa.storeIntern.renameFileInInternalStorage
+import java.io.IOException
 import java.util.regex.Pattern
 
 class MapListAdapter : ArrayAdapter<InternalStorageImage> {
@@ -124,14 +125,13 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
             var negBtn = mapNameDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
                 newMapName = mapEditText.text.toString()
-                returnValue = checkForValidName(oldName, newMapName, bitmap, db, mapEditText)
+                returnValue = checkAndUpdateName(oldName, newMapName, bitmap, db, mapEditText)
                 if(returnValue){
                     Toast.makeText(
                         listContext,
                         "Name wurde geändert",
                         Toast.LENGTH_SHORT
                     ).show()
-                    deleteFileFromInternalStorage(listContext, oldName + ".jpg")
                     mapNameDialog.dismiss()
                 }
 
@@ -154,7 +154,7 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
      * @param mapEditText textfield in which the new name is given
      * @return false if name doesn't match the pattern, already exists or the map couldn't be saved
      */
-    fun checkForValidName(oldName: String, name: String, bitmap: Bitmap, db: ScanDBHelper, mapEditText: EditText ): Boolean{
+   private fun checkAndUpdateName(oldName: String, name: String, bitmap: Bitmap, db: ScanDBHelper, mapEditText: EditText ): Boolean{
         var pattern = Pattern.compile("[^a-zA-Z0-9_\\-]")
         if (pattern.matcher(name).find()) {
             mapEditText.setError("Bitte gib einen gültigen Namen ein")
@@ -165,8 +165,9 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
             mapEditText.setError("Name existiert bereits!")
             return false
         }
-        var bitmapIsSaved = saveBitmapToInternalStorage(listContext, name, bitmap)
-        if(!(bitmapIsSaved)){
+        try {
+            renameFileInInternalStorage(listContext, oldName, name )
+        }catch (e: IOException){
             Toast.makeText(listContext, "Bild konnte nicht gespeichert werden", Toast.LENGTH_SHORT).show()
             return false
         }
