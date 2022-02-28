@@ -25,7 +25,7 @@ import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
 import de.freifunk.powa.scan.createThrottlingDialog
-import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
+import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import java.util.regex.Pattern
 import kotlin.math.max
 import kotlin.math.min
