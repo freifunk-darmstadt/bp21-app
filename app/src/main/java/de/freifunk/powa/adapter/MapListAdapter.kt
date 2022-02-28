@@ -20,7 +20,8 @@ import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.storeIntern.InternalStorageImage
 import de.freifunk.powa.storeIntern.deleteFileFromInternalStorage
-import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
+import de.freifunk.powa.storeIntern.renameFileInInternalStorage
+import java.io.IOException
 import java.util.regex.Pattern
 
 class MapListAdapter : ArrayAdapter<InternalStorageImage> {
@@ -34,6 +35,13 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
         listOfImages = objects
     }
 
+    /**
+     * This Method defines all the views inside the listview
+     * @param position is the position of the view from 0 to n
+     * @param convertView the converted view
+     * @param parent the parentview of the defined view
+     * @return the defined view at the given position
+     */
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var layoutInflater = LayoutInflater.from(listContext)
         var mapView = layoutInflater.inflate(listResources, parent, false)
@@ -54,13 +62,21 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
 
         return mapView
     }
+
+    /**
+     * This Method creates a popupmenu
+     * @param view the view in which the popupmenu is created
+     * @param name name of listelement to reference a map
+     * @param bitmap map in the listview as a bitmap
+     * @param pos position of the view in the listview
+     */
     fun showPopup(view: View, name: String, bitmap: Bitmap, pos: Int) {
         val popup = PopupMenu(listContext, view)
         val inflater: MenuInflater = popup.menuInflater
         inflater.inflate(R.menu.list_row_menu, popup.menu)
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.delete_option -> deleteMap(name, view, pos)
+                R.id.delete_option -> deleteMap(name)
 
                 R.id.rewrite_option -> createRenameDialog(name, bitmap)
 
@@ -70,17 +86,25 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
         popup.show()
     }
 
-    fun deleteMap(name: String, view: View, pos: Int): Boolean {
+    /**
+     * This Method deletes a entry with the given name in the listview
+     * @param name name of the map in the listview to be deleted
+     * @return true if the entry was successfully deleted
+     */
+    fun deleteMap(name: String): Boolean {
         var db = ScanDBHelper(listContext)
 
-        deleteFileFromInternalStorage(listContext, name + ".jpg")
+        val returnVal = deleteFileFromInternalStorage(listContext, name + ".jpg")
         db.deleteMap(name)
         Toast.makeText(listContext, "Karte wurde gelöscht", Toast.LENGTH_SHORT).show()
-        return true
+        return returnVal
     }
 
     /**
-     * Creates a AlertDialog to ask the User for a name for selected map
+     * Creates a AlertDialog to ask the User for a new name for selected map
+     * @param oldName old name of the map which will be renamed
+     * @param bitmap  bitmap to the corresponding name   // TODO loeschen von bitmap wenn funktion von StoreImageUtilities zu renamen exisitiert
+     * @return true if the map is successfully renamed, false if not
      */
     private fun createRenameDialog(oldName: String, bitmap: Bitmap): Boolean {
         var mapEditText = EditText(listContext)
@@ -101,27 +125,15 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
             var negBtn = mapNameDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
                 newMapName = mapEditText.text.toString()
-                var pattern = Pattern.compile("[^a-zA-Z0-9_\\-]")
-                if (pattern.matcher(newMapName).find()) {
-                    mapEditText.setError("Bitte gib einen gültigen Namen ein")
-                } else {
-                    returnValue = db.updateMapName(oldName, newMapName)
-                    if (returnValue) {
-                        mapNameDialog.dismiss()
-                        if (saveBitmapToInternalStorage(listContext, newMapName, bitmap)) {
-                            Toast.makeText(
-                                listContext,
-                                "Name wurde geändert",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            deleteFileFromInternalStorage(listContext, oldName + ".jpg")
-                        } else
-                            Toast.makeText(listContext, "Bild konnte nicht gespeichert werden", Toast.LENGTH_SHORT).show()
-                    } else {
-                        mapEditText.setError("Name existiert bereits!")
-                    }
+                returnValue = checkAndUpdateName(oldName, newMapName, bitmap, db, mapEditText)
+                if (returnValue) {
+                    Toast.makeText(
+                        listContext,
+                        "Name wurde geändert",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    mapNameDialog.dismiss()
                 }
-                notifyDataSetChanged()
             }
             negBtn.setOnClickListener {
                 mapNameDialog.dismiss()
@@ -130,5 +142,34 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
         mapNameDialog.show()
 
         return returnValue
+    }
+
+    /**
+     * This Method checks if the given name is valid, already exists and a new map can be saved with parameter name
+     * @param oldName old name of the map which will be renamed
+     * @param name new name for the map
+     * @param bitmap  bitmap to the corresponding name
+     * @param db database in which the new data are saved
+     * @param mapEditText textfield in which the new name is given
+     * @return false if name doesn't match the pattern, already exists or the map couldn't be saved
+     */
+    private fun checkAndUpdateName(oldName: String, name: String, bitmap: Bitmap, db: ScanDBHelper, mapEditText: EditText): Boolean {
+        var pattern = Pattern.compile("[^a-zA-Z0-9_\\-]")
+        if (pattern.matcher(name).find()) {
+            mapEditText.setError("Bitte gib einen gültigen Namen ein")
+            return false
+        }
+        var returnValue = db.updateMapName(oldName, name)
+        if (!(returnValue)) {
+            mapEditText.setError("Name existiert bereits!")
+            return false
+        }
+        try {
+            renameFileInInternalStorage(listContext, oldName, name)
+        } catch (e: IOException) {
+            Toast.makeText(listContext, "Bild konnte nicht gespeichert werden", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        return true
     }
 }
