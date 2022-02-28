@@ -54,15 +54,14 @@ class ScanActivity {
                 scanResults.wifiStandard = it.wifiStandard // this order is important because of autoincrement in Scantable
 
             db.insertScans(tableMapName, scanResults)
-            if (Build.VERSION.SDK_INT >= 30){
-            // only available in android API Level 30
+            if (Build.VERSION.SDK_INT >= 30) {
+                // only available in android API Level 30
                 it.informationElements.forEach {
                     var bytes = ByteArray(it.bytes.capacity())
                     it.bytes.get(bytes)
                     db.insertInformation(it.id, bytes, timeStamp)
                 }
             }
-
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
         scanBtn.isVisible = true
