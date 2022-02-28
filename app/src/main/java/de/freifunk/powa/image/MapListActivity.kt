@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.get
 import de.freifunk.powa.R
 import de.freifunk.powa.adapter.MapListAdapter
 import de.freifunk.powa.storeIntern.InternalStorageImage
@@ -30,7 +29,7 @@ class MapListActivity : AppCompatActivity() {
         listView.adapter = mapListadapter
         listView.onItemClickListener = OnItemClickListener { _, _, pos, _ ->
             var storageImage = mapListadapter.getItem(pos)
-            var intent = Intent(this, LoadOldImageActivity::class.java)
+            var intent = Intent(this, LoadImageActivity::class.java)
             var name = storageImage?.name
 
             intent.putExtra("mapName", name)
