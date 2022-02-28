@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.net.wifi.ScanResult
 import de.freifunk.powa.model.ScanInformation
 import de.freifunk.powa.model.WiFiScanObject
-import de.freifunk.powa.permissions.getGpsLocation
-import de.freifunk.powa.permissions.locationToString
 import java.util.LinkedList
 
 val DATABASE_NAME = "ScansDB"
@@ -40,9 +38,11 @@ class ScanDBHelper(val context: Context) :
     val COLUMN_INFORMATION_TABLE_ID = "id"
     val COLUMN_INFORMATION_TABLE_BYTES = "bytes"
     val COLUMN_INFORMATION_TABLE_PK = "pk"
+    val COLUMN_INFORMATION_TABLE_SCAN_ID = "scanid"
     val SCAN_TABLE = "scans"
     val COLUMN_SCANS_MAP_NAME = "mapname"
     val COLUMN_SCANS_INFORMATION_ID = "informationid"
+    val COLUMN_SCANS_WIFISTANDARD = "wifistandard"
     override fun onCreate(db: SQLiteDatabase?) {
         // Create first table in which the mapnames are stored
         db?.execSQL(
@@ -69,9 +69,10 @@ class ScanDBHelper(val context: Context) :
                 COLUMN_SCANS_LEVEL + " INTEGER NOT NULL," +
                 COLUMN_SCANS_OPERATOR_FRIENDLY_NAME + " VARCHAR(256) NOT NULL," +
                 COLUMN_SCANS_VENUE_NAME + " VARCHAR(256) NOT NULL," +
-                COLUMN_SCANS_INFORMATION_ID + " INTEGER ," +
+                COLUMN_SCANS_WIFISTANDARD + " INTEGER, " +
+                COLUMN_SCANS_INFORMATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 " CONSTRAINT " + PRIMARY_KEY_NAME + " " +
-                " PRIMARY KEY ( " + COLUMN_SCANS_TIMESTAMP + "," + COLUMN_SCANS_BSSID + ")" +
+                //   " PRIMARY KEY ( " + COLUMN_SCANS_TIMESTAMP + "," + COLUMN_SCANS_BSSID + ")" + Could also be a primary key
                 " FOREIGN KEY (" + COLUMN_SCANS_MAP_NAME + ") " +
                 " REFERENCES " + MAP_TABLE_NAME + " (" + COLUMN_MAP_NAME + ")" +
                 " ON DELETE CASCADE " +
@@ -82,8 +83,10 @@ class ScanDBHelper(val context: Context) :
             "CREATE TABLE " + INFORMATION_TABLE + " (" +
                 COLUMN_INFORMATION_TABLE_ID + " INTEGER ," +
                 COLUMN_INFORMATION_TABLE_BYTES + " BLOB ," +
-                COLUMN_INFORMATION_TABLE_PK + " AUTO_INCREMENT PRIMARY KEY," +
-                "FOREIGN KEY (" + COLUMN_INFORMATION_TABLE_ID + ") " +
+                COLUMN_INFORMTION_TABLE_TIMESTAMP + " TIMESTAMP NOT NULL," +
+                COLUMN_INFORMATION_TABLE_SCAN_ID + " INTEGER NOT NULL," +
+                COLUMN_INFORMATION_TABLE_PK + " INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                "FOREIGN KEY (" + COLUMN_INFORMATION_TABLE_SCAN_ID + ") " +
                 "REFERENCES " + SCAN_TABLE + " (" + COLUMN_SCANS_INFORMATION_ID + ")" +
                 " ON DELETE CASCADE " +
                 " ON UPDATE CASCADE );"
@@ -98,12 +101,6 @@ class ScanDBHelper(val context: Context) :
      * This Method create a new Entry in the Map table
      */
     fun insertMaps(name: String): Boolean {
-        var gpsLocation: String? = null
-        getGpsLocation(
-            context,
-            { location -> gpsLocation = locationToString(location) }
-        )
-
         var db = this.writableDatabase
         var value = ContentValues()
         var query = "SELECT * FROM " + MAP_TABLE_NAME +
@@ -111,7 +108,6 @@ class ScanDBHelper(val context: Context) :
         var cursor = db.rawQuery(query, null)
         if (cursor.count == 0) {
             value.put(COLUMN_MAP_NAME, name)
-            value.put(COLUMN_MAP_LOCATION, gpsLocation)
             db.insert(MAP_TABLE_NAME, null, value)
             db.close()
             return true
@@ -131,7 +127,7 @@ class ScanDBHelper(val context: Context) :
         var cursor = db.rawQuery(query, null)
         if (cursor.count != 0) {
             value.put(COLUMN_MAP_LOCATION, location)
-            db.update(MAP_TABLE_NAME, value, "$COLUMN_MAP_NAME = '?'", arrayOf(name))
+            db.update(MAP_TABLE_NAME, value, "$COLUMN_MAP_NAME = ?", arrayOf(name))
             cursor.close()
             db.close()
             return true
@@ -162,18 +158,30 @@ class ScanDBHelper(val context: Context) :
         value.put(COLUMN_SCANS_VENUE_NAME, scan.venueName)
         value.put(COLUMN_SCANS_X, scan.xCoordinate)
         value.put(COLUMN_SCANS_Y, scan.yCoordinate)
-        value.put(COLUMN_SCANS_INFORMATION_ID, scan.informationID)
+        value.put(COLUMN_SCANS_WIFISTANDARD, scan.wifiStandard)
         db.insert(SCAN_TABLE, null, value)
 
         db.close()
     }
 
     /**
-     *
+     * This Method insert information elements into the database
+     * @param id id of the Informationlement
+     * @param byte the data of the Informationelement
+     * @param timeStamp timestamp of the corresponding scanresult
      */
+    @SuppressLint("Range")
     fun insertInformation(id: Int, byte: ByteArray, timeStamp: String) {
         var db = this.writableDatabase
         var value = ContentValues()
+        var scanID: Int?
+        var query = " SELECT MAX(" + COLUMN_SCANS_INFORMATION_ID + ")" +
+            " FROM " + SCAN_TABLE + " ;"
+        var cursor = db.rawQuery(query, null)
+        cursor.moveToNext()
+        var index = cursor.getColumnIndex("MAX(" + COLUMN_SCANS_INFORMATION_ID + ")")
+        scanID = cursor.getInt(index)
+        value.put(COLUMN_INFORMATION_TABLE_SCAN_ID, scanID)
         value.put(COLUMN_INFORMTION_TABLE_TIMESTAMP, timeStamp)
         value.put(COLUMN_INFORMATION_TABLE_ID, id)
         value.put(COLUMN_INFORMATION_TABLE_BYTES, byte)
@@ -197,25 +205,24 @@ class ScanDBHelper(val context: Context) :
         if (cursor.count > 0) {
             cursor.moveToFirst()
             do {
-                TODO("Fix error")
-                //var scan = WiFiScanObject()
+                var scan = WiFiScanObject()
 
-                //scan.bssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_BSSID))
-                //scan.ssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_SSID))
-                //scan.capabilities = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_CAPABILITIES))
-                //scan.centerFreq0 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ0))
-                //scan.centerFreq1 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ1))
-                //scan.channelWidth = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CHANNEL_WIDTH))
-                //scan.frequency = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_FREQUENCY))
-                //scan.level = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_LEVEL))
-                //scan.operatorFriendlyName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_OPERATOR_FRIENDLY_NAME))
-                //scan.timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_TIMESTAMP))
-                //scan.venueName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_VENUE_NAME))
-                //scan.xCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_X))
-                //scan.yCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_Y))
-                //scan.informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
-
-                //scanLinkedList.add(scan)
+                scan.bssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_BSSID))
+                scan.ssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_SSID))
+                scan.capabilities = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_CAPABILITIES))
+                scan.centerFreq0 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ0))
+                scan.centerFreq1 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ1))
+                scan.channelWidth = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CHANNEL_WIDTH))
+                scan.frequency = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_FREQUENCY))
+                scan.level = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_LEVEL))
+                scan.operatorFriendlyName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_OPERATOR_FRIENDLY_NAME))
+                scan.timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_TIMESTAMP))
+                scan.venueName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_VENUE_NAME))
+                scan.xCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_X))
+                scan.yCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_Y))
+                scan.informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
+                scan.wifiStandard = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_WIFISTANDARD))
+                scanLinkedList.add(scan)
             } while (cursor.moveToNext())
         } else {
             db.close()
@@ -226,10 +233,10 @@ class ScanDBHelper(val context: Context) :
     }
 
     /**
-     * Get all entries to given map
-     * If null returned then there are none entries for the timestamp
-     * The entries are sorted in relation of index column
-     */
+    * Get all entries to given map
+    * If null returned then there are none entries for the timestamp
+    * The entries are sorted in relation of index column
+    */
     @SuppressLint("Range")
     fun readScans(scanTableName: String): List<WiFiScanObject>? {
         var db = this.writableDatabase
@@ -240,27 +247,24 @@ class ScanDBHelper(val context: Context) :
         if (cursor.count > 0) {
             cursor.moveToFirst()
             do {
-                TODO("Fix error")
-                //var scan = WiFiScanObject()
+                var scan = WiFiScanObject()
 
-                //scan.bssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_BSSID))
-                //scan.ssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_SSID))
-                //scan.capabilities = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_CAPABILITIES))
-                //scan.centerFreq0 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ0))
-                //scan.centerFreq1 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ1))
-                //scan.channelWidth = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CHANNEL_WIDTH))
-                //scan.frequency = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_FREQUENCY))
-                //scan.level = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_LEVEL))
-                //scan.operatorFriendlyName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_OPERATOR_FRIENDLY_NAME))
-                //scan.timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_TIMESTAMP))
-                //scan.venueName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_VENUE_NAME))
-                //scan.xCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_X))
-                //scan.yCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_Y))
-                //scan.informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
-
-                //scan.scanInformation = readInformationElement(scan.timestamp)
-
-                //scanLinkedList.add(scan)
+                scan.bssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_BSSID))
+                scan.ssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_SSID))
+                scan.capabilities = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_CAPABILITIES))
+                scan.centerFreq0 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ0))
+                scan.centerFreq1 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ1))
+                scan.channelWidth = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CHANNEL_WIDTH))
+                scan.frequency = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_FREQUENCY))
+                scan.level = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_LEVEL))
+                scan.operatorFriendlyName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_OPERATOR_FRIENDLY_NAME))
+                scan.timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_TIMESTAMP))
+                scan.venueName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_VENUE_NAME))
+                scan.xCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_X))
+                scan.yCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_Y))
+                scan.informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
+                scan.wifiStandard = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_WIFISTANDARD))
+                scanLinkedList.add(scan)
             } while (cursor.moveToNext())
         } else {
             db.close()
@@ -355,11 +359,8 @@ class ScanDBHelper(val context: Context) :
         // oldName should exist while newName should not exist
         var query = "SELECT * FROM " + MAP_TABLE_NAME +
             " WHERE " + COLUMN_MAP_NAME + " = '" + newName + "' ;"
-        var queryOld = "SELECT * FROM " + MAP_TABLE_NAME +
-            " WHERE " + COLUMN_MAP_NAME + " = '" + oldName + "' ;"
         var cursor = db.rawQuery(query, null)
-        var cursorOld = db.rawQuery(queryOld, null)
-        if (cursor.count > 0 || cursorOld.count == 0) {
+        if (cursor.count > 0) {
             db.close()
             return false
         }
@@ -375,6 +376,10 @@ class ScanDBHelper(val context: Context) :
         return true
     }
 
+    /**
+     * This Method deletes a map from the database
+     * @param mapName the name of the map to be deleted
+     */
     @SuppressLint("Range")
     fun deleteMap(mapName: String) {
         var db = writableDatabase

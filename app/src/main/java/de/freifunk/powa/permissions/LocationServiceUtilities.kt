@@ -125,20 +125,45 @@ fun isWIFIEnabled(context: Context): Boolean {
     return network_enabled
 }
 
+/**
+ * This function registers a location listener that will be called once a location is available.
+ * @param context the context from which this function is called
+ * @param locationListener the locationListener that should get called once a location is available
+ */
 @SuppressLint("MissingPermission")
-fun getGpsLocation(context: Context, locationListener: LocationListener, minTimeIntervalMS: Long = 5000, minDistanceM: Float = 10.0f) {
+fun getGpsLocation(context: Context, locationListener: (Location) -> Unit) {
     if (!isGPSEnabled(context)) {
         enableLocationServices(context)
     }
 
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
+    // check permissions
     checkPermissions(context, arrayOf("Manifest.permission.ACCESS_FINE_LOCATION"))
-    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeIntervalMS, minDistanceM, locationListener)
+
+    val listener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            locationListener(location)
+            // unregister location listener after called once
+            locationManager.removeUpdates(this)
+        }
+    }
+
+    locationManager.requestLocationUpdates(
+        LocationManager.GPS_PROVIDER,
+        2000, 0.0f, listener
+    )
 }
 
+/**
+ * the Char that should be used to separate longitude and latitude in locationToString()
+ */
 const val LOCATION_STRING_SEPARATOR = ":"
 
+/**
+ * @param location the location parameter, you want to get returned as a String.
+ * @return the location as a string
+ */
 fun locationToString(location: Location): String {
     return "${location.longitude}$LOCATION_STRING_SEPARATOR${location.latitude}"
 }

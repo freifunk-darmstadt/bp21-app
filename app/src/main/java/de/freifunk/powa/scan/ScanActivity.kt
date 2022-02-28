@@ -19,12 +19,13 @@ class ScanActivity {
     var yCoordinate: Float = 0f // should be set before scan is invoked
     var scanContext: Context
     lateinit var scanBtn: Button
-    constructor(context: Context, name: String, x: Float, y: Float) {
+    constructor(context: Context, name: String, x: Float, y: Float, btn: Button) {
         scanContext = context
         tableMapName = name
         xCoordinate = x
         yCoordinate = y
         timeStamp = getTime()
+        scanBtn = btn
     }
 
     /**
@@ -35,19 +36,32 @@ class ScanActivity {
     fun onSuccess(results: List<ScanResult>) {
         results.forEach {
             var db = ScanDBHelper(scanContext)
-            var scanResults = WiFiScanObject(it.BSSID, it.SSID, it.capabilities, it.centerFreq0,
-                it.centerFreq1, it.channelWidth, it.frequency, it.level,
-                it.operatorFriendlyName as String, it.venueName as String, xCoordinate,
-                yCoordinate, listOf(), timeStamp
-            )
+            var scanResults = WiFiScanObject()
+            scanResults.bssid = it.BSSID
+            scanResults.ssid = it.SSID
+            scanResults.venueName = it.venueName as String
+            scanResults.operatorFriendlyName = it.operatorFriendlyName as String
+            scanResults.level = it.level
+            scanResults.frequency = it.frequency
+            scanResults.channelWidth = it.channelWidth
+            scanResults.centerFreq0 = it.centerFreq0
+            scanResults.centerFreq1 = it.centerFreq1
+            scanResults.capabilities = it.capabilities
+            scanResults.timestamp = timeStamp
+            scanResults.xCoordinate = xCoordinate
+            scanResults.yCoordinate = yCoordinate
+            if (Build.VERSION.SDK_INT >= 30) // only available in android API Level 30
+                scanResults.wifiStandard = it.wifiStandard // this order is important because of autoincrement in Scantable
+
             db.insertScans(tableMapName, scanResults)
-            if (Build.VERSION.SDK_INT >= 30)
-            // only available in android API Level 30
+            if (Build.VERSION.SDK_INT >= 30) {
+                // only available in android API Level 30
                 it.informationElements.forEach {
                     var bytes = ByteArray(it.bytes.capacity())
                     it.bytes.get(bytes)
                     db.insertInformation(it.id, bytes, timeStamp)
                 }
+            }
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
         scanBtn.isVisible = true
