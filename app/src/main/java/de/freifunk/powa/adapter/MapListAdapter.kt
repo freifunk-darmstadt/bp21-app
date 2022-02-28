@@ -18,9 +18,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
-import de.freifunk.powa.store_intern.InternalStorageImage
-import de.freifunk.powa.store_intern.deleteFileFromInternalStorage
-import de.freifunk.powa.store_intern.saveBitmapToInternalStorage
+import de.freifunk.powa.storeIntern.InternalStorageImage
+import de.freifunk.powa.storeIntern.deleteFileFromInternalStorage
+import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import java.util.regex.Pattern
 
 class MapListAdapter : ArrayAdapter<InternalStorageImage> {
