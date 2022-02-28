@@ -26,6 +26,8 @@ import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.scan.ScanActivity
 import de.freifunk.powa.scan.createThrottlingDialog
+import de.freifunk.powa.storeIntern.InternalStorageImage
+import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import kotlinx.coroutines.runBlocking
 import java.util.regex.Pattern
@@ -80,7 +82,7 @@ class LoadImageActivity : AppCompatActivity() {
         if (name != null) {
             //load old image
             var list: List<InternalStorageImage>
-            var loadContext = this
+            val loadContext = this
             var internStorage: InternalStorageImage? = null
             runBlocking {
                 list = loadListOfInternalStorageImages(loadContext)
@@ -111,7 +113,7 @@ class LoadImageActivity : AppCompatActivity() {
         supportActionBar!!.hide()
         scanBtn.setOnClickListener {
             if (scanBtn.text == resources.getString(R.string.start_scan)){
-                val scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY)
+                val scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY, scanBtn)
                 scanAct.scanBtn = scanBtn
                 scanBtn.isVisible = false
                 createScanDialog(scanAct)
@@ -131,7 +133,7 @@ class LoadImageActivity : AppCompatActivity() {
      */
     protected fun createScanDialog(scanAct: ScanActivity) {
 
-        var scanDialog = AlertDialog.Builder(this)
+        val scanDialog = AlertDialog.Builder(this)
             .setView(null)
             .setTitle("Starte Scan")
             .setMessage("Möchtest du den Scan starten bei: \n " + "x:" + markerView.initX + ";y:" + markerView.initY + "?")
@@ -140,8 +142,8 @@ class LoadImageActivity : AppCompatActivity() {
             .create()
         scanDialog.setCanceledOnTouchOutside(false)
         scanDialog.setOnShowListener {
-            var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            val posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            val negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
                 scanAct.startScan()
                 scanDialog.dismiss()
@@ -156,13 +158,13 @@ class LoadImageActivity : AppCompatActivity() {
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        var historySize: Int
-        var startX: Float
-        var endX: Float
-        var startY: Float
-        var endY: Float
-        var distanceX: Int
-        var distanceY: Int
+        val historySize: Int
+        val startX: Float
+        val endX: Float
+        val startY: Float
+        val endY: Float
+        val distanceX: Int
+        val distanceY: Int
         if (event?.pointerCount == 2) {
             scaleGesture.onTouchEvent(event)
         }
@@ -188,7 +190,7 @@ class LoadImageActivity : AppCompatActivity() {
     }
 
     fun getHeight(): Int {
-        var rectangle = Rect()
+        val rectangle = Rect()
         window.decorView.getWindowVisibleDisplayFrame(rectangle)
         return rectangle.top
     }
@@ -240,8 +242,8 @@ class LoadImageActivity : AppCompatActivity() {
      * Creates a AlertDialog to ask the User for a name for selected map
      */
     private fun createDialog() {
-        var mapEditText = EditText(this)
-        var mapNameDialog = AlertDialog.Builder(this)
+        val mapEditText = EditText(this)
+        val mapNameDialog = AlertDialog.Builder(this)
             .setView(mapEditText)
             .setTitle("Bennene Karte")
             .setMessage("Bitte gib einen Kartennamen ein")
@@ -251,13 +253,13 @@ class LoadImageActivity : AppCompatActivity() {
 
         mapEditText.inputType = InputType.TYPE_CLASS_TEXT
         mapNameDialog.setCanceledOnTouchOutside(false)
-        var db = ScanDBHelper(this)
+        val db = ScanDBHelper(this)
         mapNameDialog.setOnShowListener {
-            var posBtn = mapNameDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            var negBtn = mapNameDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            val posBtn = mapNameDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            val negBtn = mapNameDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
                 mapName = mapEditText.text.toString()
-                var pattern = Pattern.compile("[^a-zA-Z0-9_\\-]")
+                val pattern = Pattern.compile("[^a-zA-Z0-9_\\-]")
                 if (pattern.matcher(mapName).find()) {
                     mapEditText.setError("Bitte gib einen gültigen Namen ein")
                 } else {
@@ -288,8 +290,8 @@ class LoadImageActivity : AppCompatActivity() {
      *          false if the image couldn't be saved
      */
     private fun saveImage(imageName: String): Boolean {
-        var drawable = showImgIv.drawable as BitmapDrawable
-        var bitmap = drawable.bitmap
+        val drawable = showImgIv.drawable as BitmapDrawable
+        val bitmap = drawable.bitmap
         return saveBitmapToInternalStorage(this, imageName, bitmap)
     }
 }
