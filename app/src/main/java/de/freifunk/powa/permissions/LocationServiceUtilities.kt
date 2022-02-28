@@ -8,7 +8,6 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.provider.Settings
-import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import java.lang.Exception
 
@@ -139,19 +138,21 @@ fun getGpsLocation(context: Context, locationListener: (Location) -> Unit) {
 
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-    //check permissions
+    // check permissions
     checkPermissions(context, arrayOf("Manifest.permission.ACCESS_FINE_LOCATION"))
 
-    val listener: LocationListener = object: LocationListener{
+    val listener: LocationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
             locationListener(location)
-            //unregister location listener after called once
+            // unregister location listener after called once
             locationManager.removeUpdates(this)
         }
     }
 
-    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-        2000, 0.0f, listener)
+    locationManager.requestLocationUpdates(
+        LocationManager.GPS_PROVIDER,
+        2000, 0.0f, listener
+    )
 }
 
 /**

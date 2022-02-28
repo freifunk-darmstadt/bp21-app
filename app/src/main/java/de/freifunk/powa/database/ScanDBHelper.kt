@@ -6,8 +6,6 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import de.freifunk.powa.model.WiFiScanObject
-import de.freifunk.powa.permissions.getGpsLocation
-import de.freifunk.powa.permissions.locationToString
 import java.util.LinkedList
 
 val DATABASE_NAME = "ScansDB"
