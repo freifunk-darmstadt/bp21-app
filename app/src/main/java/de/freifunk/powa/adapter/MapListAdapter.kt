@@ -126,7 +126,7 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
             posBtn.setOnClickListener {
                 newMapName = mapEditText.text.toString()
                 returnValue = checkAndUpdateName(oldName, newMapName, bitmap, db, mapEditText)
-                if(returnValue){
+                if (returnValue) {
                     Toast.makeText(
                         listContext,
                         "Name wurde geändert",
@@ -134,7 +134,6 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
                     ).show()
                     mapNameDialog.dismiss()
                 }
-
             }
             negBtn.setOnClickListener {
                 mapNameDialog.dismiss()
@@ -154,24 +153,23 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
      * @param mapEditText textfield in which the new name is given
      * @return false if name doesn't match the pattern, already exists or the map couldn't be saved
      */
-   private fun checkAndUpdateName(oldName: String, name: String, bitmap: Bitmap, db: ScanDBHelper, mapEditText: EditText ): Boolean{
+    private fun checkAndUpdateName(oldName: String, name: String, bitmap: Bitmap, db: ScanDBHelper, mapEditText: EditText): Boolean {
         var pattern = Pattern.compile("[^a-zA-Z0-9_\\-]")
         if (pattern.matcher(name).find()) {
             mapEditText.setError("Bitte gib einen gültigen Namen ein")
             return false
         }
         var returnValue = db.updateMapName(oldName, name)
-        if(!(returnValue)){
+        if (!(returnValue)) {
             mapEditText.setError("Name existiert bereits!")
             return false
         }
         try {
-            renameFileInInternalStorage(listContext, oldName, name )
-        }catch (e: IOException){
+            renameFileInInternalStorage(listContext, oldName, name)
+        } catch (e: IOException) {
             Toast.makeText(listContext, "Bild konnte nicht gespeichert werden", Toast.LENGTH_SHORT).show()
             return false
         }
         return true
-
     }
 }
