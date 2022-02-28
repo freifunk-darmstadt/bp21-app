@@ -62,7 +62,6 @@ class LoadImageActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -80,7 +79,7 @@ class LoadImageActivity : AppCompatActivity() {
         var name = intent.getStringExtra("mapName")
 
         if (name != null) {
-            //load old image
+            // load old image
             var list: List<InternalStorageImage>
             val loadContext = this
             var internStorage: InternalStorageImage? = null
@@ -112,7 +111,7 @@ class LoadImageActivity : AppCompatActivity() {
 
         supportActionBar!!.hide()
         scanBtn.setOnClickListener {
-            if (scanBtn.text == resources.getString(R.string.start_scan)){
+            if (scanBtn.text == resources.getString(R.string.start_scan)) {
                 val scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY, scanBtn)
                 scanAct.scanBtn = scanBtn
                 scanBtn.isVisible = false
