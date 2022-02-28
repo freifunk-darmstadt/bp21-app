@@ -5,7 +5,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.os.Build
 import de.freifunk.powa.model.WiFiScanObject
 import de.freifunk.powa.permissions.getGpsLocation
 import de.freifunk.powa.permissions.locationToString
@@ -74,7 +73,7 @@ class ScanDBHelper(val context: Context) :
                 COLUMN_SCANS_WIFISTANDARD + " INTEGER, " +
                 COLUMN_SCANS_INFORMATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 " CONSTRAINT " + PRIMARY_KEY_NAME + " " +
-             //   " PRIMARY KEY ( " + COLUMN_SCANS_TIMESTAMP + "," + COLUMN_SCANS_BSSID + ")" + Could also be a primary key
+                //   " PRIMARY KEY ( " + COLUMN_SCANS_TIMESTAMP + "," + COLUMN_SCANS_BSSID + ")" + Could also be a primary key
                 " FOREIGN KEY (" + COLUMN_SCANS_MAP_NAME + ") " +
                 " REFERENCES " + MAP_TABLE_NAME + " (" + COLUMN_MAP_NAME + ")" +
                 " ON DELETE CASCADE " +
@@ -184,11 +183,11 @@ class ScanDBHelper(val context: Context) :
         var db = this.writableDatabase
         var value = ContentValues()
         var scanID: Int?
-        var query = " SELECT MAX("+ COLUMN_SCANS_INFORMATION_ID +")"+
-                " FROM " + SCAN_TABLE + " ;"
+        var query = " SELECT MAX(" + COLUMN_SCANS_INFORMATION_ID + ")" +
+            " FROM " + SCAN_TABLE + " ;"
         var cursor = db.rawQuery(query, null)
         cursor.moveToNext()
-        var index = cursor.getColumnIndex("MAX("+ COLUMN_SCANS_INFORMATION_ID +")")
+        var index = cursor.getColumnIndex("MAX(" + COLUMN_SCANS_INFORMATION_ID + ")")
         scanID = cursor.getInt(index)
         value.put(COLUMN_INFORMATION_TABLE_SCAN_ID, scanID)
         value.put(COLUMN_INFORMTION_TABLE_TIMESTAMP, timeStamp)
