@@ -11,6 +11,12 @@ import java.nio.file.Paths
 
 const val mapDir = "maps"
 
+/**
+ * This function stores a Bitmap to the internal storage of the app.
+ * @param bitmap the bitmap to save to internal storage
+ * @param context the context this method is called in
+ * @param filename the filename the image should be saved to
+ */
 fun saveBitmapToInternalStorage(context: Context, filename: String, bitmap: Bitmap): Boolean {
     return try {
         val dir = File(context.filesDir, mapDir)
@@ -34,6 +40,11 @@ fun saveBitmapToInternalStorage(context: Context, filename: String, bitmap: Bitm
     }
 }
 
+/**
+ * This function loads a list of Images from the internal storage and returns a List
+ * @param context the context of the app to return the stored images from
+ * @return a list containing all images stored for the app
+ */
 fun loadListOfInternalStorageImages(context: Context): List<InternalStorageImage> {
     val fD = context.filesDir
     val maps = Paths.get(fD.path + File.separator + mapDir).toFile()
@@ -46,6 +57,12 @@ fun loadListOfInternalStorageImages(context: Context): List<InternalStorageImage
     } ?: listOf()
 }
 
+/**
+ * This functions renames a image stored in the internal storage of the app
+ * @param context the context of the app that is trying to rename a file
+ * @param filename the old filename of the image
+ * @param newName the new filename of the image
+ */
 fun renameFileInInternalStorage(context: Context, filename: String, newName: String){
     val fD = context.filesDir
     var path = "${fD.path}${File.separator}$mapDir${File.separator}$filename"
@@ -74,6 +91,11 @@ fun renameFileInInternalStorage(context: Context, filename: String, newName: Str
     fileOld.renameTo(fileNew)
 }
 
+/**
+ * This function deletes a image that is stored in the internal app storage
+ * @param context the context the delete function is called from
+ * @param filename the image file to delete
+ */
 fun deleteFileFromInternalStorage(context: Context, filename: String): Boolean {
     val fD = context.filesDir
     var path = "${fD.path}${File.separator}$mapDir${File.separator}$filename"
