@@ -10,15 +10,13 @@ import android.text.InputType
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import de.freifunk.powa.MainActivity
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
@@ -45,6 +43,7 @@ class LoadImageActivity : AppCompatActivity() {
     private lateinit var mapName: String
     private lateinit var scanBtn: Button
     var scanIsReady: Boolean = true
+    lateinit var multiScanTextfield: EditText
     // create ComponentActivity to load and handle loading the image
     // A Dialog pops up after the User selects a map
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -71,11 +70,18 @@ class LoadImageActivity : AppCompatActivity() {
         scanBtn = findViewById(R.id.mapScanBtn)
         scaleGesture = ScaleGestureDetector(this, ScaleListener())
         markerGesture = GestureDetector(this, MarkerGestureListener())
+        multiScanTextfield = findViewById(R.id.numberOfScans)
         supportActionBar!!.hide()
 
         showImgIv.isInvisible = true
         scanBtn.isInvisible = true
-
+        multiScanTextfield.isInvisible = false
+        multiScanTextfield.addTextChangedListener {
+            var count = multiScanTextfield.text.toString().toInt()
+            if( count > 4 || count <1 ){
+                multiScanTextfield.setError("Eingabe muss zwischen 1 und 4 liegen")
+            }
+        }
         // request permissions on Button press and open system image selector
         loadImgBtn.setOnClickListener {
             getContent.launch("image/*")
@@ -162,7 +168,8 @@ class LoadImageActivity : AppCompatActivity() {
             var posBtn = scanDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             var negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
-                scanAct.startScan()
+                scanAct.startMultiScan(multiScanTextfield.text.toString().toInt())
+                //scanAct.startScan()
                 scanDialog.dismiss()
             }
             negBtn.setOnClickListener {
@@ -251,6 +258,7 @@ class LoadImageActivity : AppCompatActivity() {
             }
             markerView.invalidate()
             scanBtn.isInvisible = false
+            multiScanTextfield.isInvisible = false
             return super.onDoubleTap(e)
         }
 

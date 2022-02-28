@@ -89,4 +89,12 @@ class ScanActivity {
     fun startScan() {
         scan(scanContext, ::onSuccess, ::onFailure)
     }
+    fun startMultiScan(count: Int){
+        var i = count
+        while(i>0){
+            scan(scanContext, ::onSuccess, :: onFailure)
+            while (!scanBtn.isVisible){} // awaiting for scan to be ready
+            i--
+        }
+    }
 }
