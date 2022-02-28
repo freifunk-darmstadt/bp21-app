@@ -24,7 +24,7 @@ fun saveBitmapToInternalStorage(context: Context, filename: String, bitmap: Bitm
         dir.mkdirs()
 
         var filenameVar = filename
-        if (!filenameVar.endsWith(".jpg")){
+        if (!filenameVar.endsWith(".jpg")) {
             filenameVar = "$filename.jpg"
         }
 
@@ -63,28 +63,28 @@ fun loadListOfInternalStorageImages(context: Context): List<InternalStorageImage
  * @param filename the old filename of the image
  * @param newName the new filename of the image
  */
-fun renameFileInInternalStorage(context: Context, filename: String, newName: String){
+fun renameFileInInternalStorage(context: Context, filename: String, newName: String) {
     val fD = context.filesDir
     var path = "${fD.path}${File.separator}$mapDir${File.separator}$filename"
 
-    if (!path.endsWith(".jpg")){
+    if (!path.endsWith(".jpg")) {
         path = "$path.jpg"
     }
     val fileOld = Paths.get("${fD.path}${File.separator}$mapDir${File.separator}$path").toFile()
 
-    if(!fileOld.exists()){
+    if (!fileOld.exists()) {
         return
     }
 
     path = "${fD.path}${File.separator}$mapDir${File.separator}$newName"
 
-    if (!path.endsWith(".jpg")){
+    if (!path.endsWith(".jpg")) {
         path = "$path.jpg"
     }
 
     val fileNew = Paths.get("${fD.path}${File.separator}$mapDir${File.separator}$path").toFile()
 
-    if (fileNew.exists()){
+    if (fileNew.exists()) {
         throw IllegalArgumentException("File with new name already exists")
     }
 
@@ -100,7 +100,7 @@ fun deleteFileFromInternalStorage(context: Context, filename: String): Boolean {
     val fD = context.filesDir
     var path = "${fD.path}${File.separator}$mapDir${File.separator}$filename"
 
-    if (!path.endsWith(".jpg")){
+    if (!path.endsWith(".jpg")) {
         path = "$path.jpg"
     }
 
