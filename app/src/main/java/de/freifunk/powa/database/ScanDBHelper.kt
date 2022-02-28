@@ -174,7 +174,10 @@ class ScanDBHelper(val context: Context) :
     }
 
     /**
-     *
+     * This Method insert information elements into the database
+     * @param id id of the Informationlement
+     * @param byte the data of the Informationelement
+     * @param timeStamp timestamp of the corresponding scanresult
      */
     @SuppressLint("Range")
     fun insertInformation(id: Int, byte: ByteArray, timeStamp: String) {
@@ -298,6 +301,10 @@ class ScanDBHelper(val context: Context) :
         return true
     }
 
+    /**
+     * This Method deletes a map from the database
+     * @param mapName the name of the map to be deleted
+     */
     @SuppressLint("Range")
     fun deleteMap(mapName: String) {
         var db = writableDatabase
