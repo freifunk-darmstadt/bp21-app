@@ -11,8 +11,16 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter", "no description") {
     override fun export(file: File, maps: List<Map>) {
         if(!file.exists())
             return
-        file.writeText(mapToString(maps[0])) //TODO: export to JSON
+        file.writeText(makeJson(maps))
 
+    }
+
+    private fun makeJson(maps: List<Map>): String{
+        var retString = "{\"maps\": ["
+        for (map in maps)
+            retString = "$retString${mapToString(map)},"
+        retString.removeSuffix(",")
+        return "$retString]}"
     }
 
     private fun mapToString(map: Map): String{
