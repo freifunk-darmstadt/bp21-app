@@ -50,6 +50,7 @@ class LoadImageActivity : AppCompatActivity() {
     protected lateinit var scanBtn: Button
     lateinit var oldMarkers: SavedMarkerView
     lateinit var markerSwitch: Switch
+    lateinit var multiScanCounter: EditText
 
     // create ComponentActivity to load and handle loading the image
     // A Dialog pops up after the User selects a map
@@ -76,6 +77,7 @@ class LoadImageActivity : AppCompatActivity() {
         markerGesture = GestureDetector(this, MarkerGestureListener())
         oldMarkers = findViewById(R.id.old_markers_view)
         markerSwitch = findViewById(R.id.switchMarkers)
+        multiScanCounter = findViewById(R.id.multiScanTextField)
         createThrottlingDialog(this)
 
         var name = intent.getStringExtra("mapName")
@@ -106,21 +108,38 @@ class LoadImageActivity : AppCompatActivity() {
             showImgIv.setImageBitmap(internStorage!!.bitmap)
             oldMarkers.invalidate()
             scanBtn.isInvisible = true
+
         } else {
             scanBtn.text = resources.getString(R.string.load_image)
             showImgIv.isInvisible = true
         }
 
+        multiScanCounter.isInvisible = true
         supportActionBar!!.hide()
         scanBtn.setOnClickListener {
             if (scanBtn.text == resources.getString(R.string.start_scan)) {
-                val scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY, scanBtn)
-                scanAct.scanBtn = scanBtn
-                scanBtn.isVisible = false
-                createScanDialog(scanAct)
+                var msCounterString = multiScanCounter.text.toString().trim()
+                var msCounter: Int
+
+                if(msCounterString.length < 1){
+                    msCounter = 1
+                }else{
+                    msCounter = Integer.parseInt(multiScanCounter.text.toString())
+                }
+                if(msCounter > 4 || msCounter < 1 ){
+                    multiScanCounter.setError("Die Eingabe muss zwischen 1 und 4 liegen")
+                }else{
+                    val scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY, scanBtn, msCounter, multiScanCounter)
+                    scanAct.scanBtn = scanBtn
+                    scanBtn.isVisible = false
+                    multiScanCounter.isVisible = false
+                    createScanDialog(scanAct)
+                }
             } else {
                 getContent.launch("image/*")
                 scanBtn.text = resources.getString(R.string.start_scan)
+                multiScanCounter.isVisible = false
+                scanBtn.isVisible = false
             }
         }
 
@@ -151,6 +170,7 @@ class LoadImageActivity : AppCompatActivity() {
             }
             negBtn.setOnClickListener {
                 scanBtn.isVisible = true
+                multiScanCounter.isVisible = true
                 scanDialog.dismiss()
             }
         }
@@ -231,6 +251,8 @@ class LoadImageActivity : AppCompatActivity() {
             }
             markerView.invalidate()
             scanBtn.isInvisible = false
+            multiScanCounter.isInvisible = false
+
             return super.onDoubleTap(e)
         }
 
