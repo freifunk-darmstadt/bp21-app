@@ -8,9 +8,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.image.MapListActivity
-import de.freifunk.powa.permissions.GeneralPermissionRequestCode
-import de.freifunk.powa.permissions.PERMISSIONS
-import de.freifunk.powa.permissions.requestAllPermissions
+import de.freifunk.powa.permissions.*
+import de.freifunk.powa.scan.ScanActivity
 import de.freifunk.powa.scan.handleScanFailure
 import de.freifunk.powa.scan.scan
 
@@ -32,12 +31,16 @@ class MainActivity : AppCompatActivity() {
         goToScanActivityBtn = findViewById(R.id.goToScanActivityBtn)
 
         goToScanActivityBtn.setOnClickListener {
-            scan(this@MainActivity, { results ->
-                results.forEach {
-                    Toast.makeText(this, "SSID: ${it.SSID}, Level: ${it.level}", Toast.LENGTH_SHORT).show()
-                }
-            }, ::handleScanFailure)
+            var gpsLocation = getGpsLocation(this){ location ->  var coords = locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
+                var longitude = coords[0]
+                var latitide = coords[1]
+                var gpsScan = ScanActivity(this, "Outdoormap", longitude.toFloat(), latitide.toFloat(), null)
+                gpsScan.startScan()
+                Toast.makeText(this, "GPS Location: " + longitude.toFloat() + " " + latitide.toFloat(), Toast.LENGTH_SHORT).show()
+
+            }
         }
+
         findViewById<Button>(R.id.mainToListBtn).setOnClickListener {
             startActivity(Intent(this, MapListActivity::class.java))
         }
