@@ -107,7 +107,5 @@ class ScanActivity {
     fun startScan() {
         scan(scanContext, ::onSuccess, ::onFailure)
     }
-    fun startMultiScan(int: Int){
 
-    }
 }

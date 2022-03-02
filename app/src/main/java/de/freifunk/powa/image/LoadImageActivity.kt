@@ -124,7 +124,12 @@ class LoadImageActivity : AppCompatActivity() {
                 if(msCounterString.length < 1){
                     msCounter = 1
                 }else{
-                    msCounter = Integer.parseInt(multiScanCounter.text.toString())
+                    try {
+                        msCounter = Integer.parseInt(multiScanCounter.text.toString())
+                    }catch (e: NumberFormatException){
+                        multiScanCounter.setError("Gib eine ganze Zahl ein!!!")
+                        return@setOnClickListener
+                    }
                 }
                 if(msCounter > 4 || msCounter < 1 ){
                     multiScanCounter.setError("Die Eingabe muss zwischen 1 und 4 liegen")
