@@ -20,9 +20,9 @@ class ScanActivity {
     private var yCoordinate: Float = 0f // should be set before scan is invoked
     private var scanContext: Context
     private var multiScanCounter: Int = 0
-    var multiScanEditText: EditText
-    var scanBtn: Button
-    constructor(context: Context, name: String, x: Float, y: Float, btn: Button, msCounter: Int, multiScanEditText: EditText) {
+    var multiScanEditText: EditText?
+    var scanBtn: Button?
+    constructor(context: Context, name: String, x: Float, y: Float, btn: Button?, msCounter: Int, multiScanEditText: EditText?) {
         scanContext = context
         tableMapName = name
         xCoordinate = x
@@ -72,9 +72,12 @@ class ScanActivity {
         if (multiScanCounter > 0) {
             startScan()
         } else if (multiScanCounter == 0) {
-            scanBtn.isVisible = true
-            multiScanEditText.isVisible = true
+            if (scanBtn != null && multiScanEditText != null) {
+                scanBtn!!.isVisible = true
+                multiScanEditText!!.isVisible = true
+            }
         }
+        Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
     }
 
@@ -83,8 +86,8 @@ class ScanActivity {
      */
     fun onFailure() {
         Toast.makeText(scanContext, "Scan fehlgeschlagen", Toast.LENGTH_SHORT).show()
-        scanBtn.isVisible = true
-        multiScanEditText.isVisible = true
+        scanBtn!!.isVisible = true
+        multiScanEditText!!.isVisible = true
     }
 
     /**

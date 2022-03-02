@@ -4,6 +4,6 @@
     <string name="load_image">Karte laden</string>
     <string name="old_image_load">Alte Karten laden</string>
     <string name="new_image_load">Neue Karte laden</string>
-    <string name="go_to_scan">Zum Scan</string>
+    <string name="go_to_scan">Outdoor-Scan</string>
     <string name="toggle_marker">Marker ausblenden</string>
 </resources>
