@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.wifi.ScanResult
 import android.os.Build
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.core.view.isVisible
 import de.freifunk.powa.database.ScanDBHelper
@@ -13,19 +14,23 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class ScanActivity {
-    var tableMapName: String // should be set before scan is invoked
-    var timeStamp: String // time should be set before scan is invoked
-    var xCoordinate: Float = 0f // should be set before scan is invoked
-    var yCoordinate: Float = 0f // should be set before scan is invoked
-    var scanContext: Context
-    lateinit var scanBtn: Button
-    constructor(context: Context, name: String, x: Float, y: Float, btn: Button) {
+    private var tableMapName: String // should be set before scan is invoked
+    private var timeStamp: String // time should be set before scan is invoked
+    private var xCoordinate: Float = 0f // should be set before scan is invoked
+    private var yCoordinate: Float = 0f // should be set before scan is invoked
+    private var scanContext: Context
+    private var multiScanCounter: Int = 0
+    var multiScanEditText: EditText
+    var scanBtn: Button
+    constructor(context: Context, name: String, x: Float, y: Float, btn: Button, msCounter: Int, multiScanEditText: EditText) {
         scanContext = context
         tableMapName = name
         xCoordinate = x
         yCoordinate = y
         timeStamp = getTime()
         scanBtn = btn
+        multiScanCounter = msCounter
+        this.multiScanEditText = multiScanEditText
     }
 
     /**
@@ -63,8 +68,14 @@ class ScanActivity {
                 }
             }
         }
+        multiScanCounter--
+        if (multiScanCounter > 0) {
+            startScan()
+        } else if (multiScanCounter == 0) {
+            scanBtn.isVisible = true
+            multiScanEditText.isVisible = true
+        }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
-        scanBtn.isVisible = true
     }
 
     /**
@@ -73,6 +84,7 @@ class ScanActivity {
     fun onFailure() {
         Toast.makeText(scanContext, "Scan fehlgeschlagen", Toast.LENGTH_SHORT).show()
         scanBtn.isVisible = true
+        multiScanEditText.isVisible = true
     }
 
     /**
