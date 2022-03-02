@@ -31,6 +31,7 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter", "no description") {
                 "}"
     }
 
+    //getJSONArrayOfScans
     private fun listOfScansToString(scans: List<WiFiScanObject>): String {
         var retString = "{"
         for (wso in scans){
@@ -41,6 +42,7 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter", "no description") {
         return retString
     }
 
+    //getWifiScanJSONObject
     private fun wiFiScanObjectToString(wso: WiFiScanObject): String {
         return "{"+
                 "\"bssid\": \"${wso.bssid}\"," +
@@ -61,14 +63,15 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter", "no description") {
                 "}"
     }
 
+    //getScanInformationJSONObject
     private fun scanInformationToString(si: ScanInformation?): String {
         if (si == null)
             return "null"
 
-        val data = "ByteArray" //TODO: transform a ByteArray to a String
+        val data = String(si.data)
         return "{" +
                 "\"id\": ${si.id}," +
-                "\"data\": $data" +
+                "\"data\": \"$data\"" +
         "}"
     }
 }
