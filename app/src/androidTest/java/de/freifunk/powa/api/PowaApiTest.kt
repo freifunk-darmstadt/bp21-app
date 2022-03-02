@@ -12,7 +12,7 @@ import de.freifunk.powa.model.ScanInformation
 import de.freifunk.powa.model.WiFiScanObject
 import de.freifunk.powa.scan.scan
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.* // ktlint-disable no-wildcard-imports
 import org.junit.Before
 
 import org.junit.Test
