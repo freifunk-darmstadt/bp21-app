@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var goToLoadImgActivityBtn: Button
     private lateinit var goToScanActivityBtn: Button
-
+    private var outdoorName = "Outdoormap_Scan_Collection"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -31,10 +31,11 @@ class MainActivity : AppCompatActivity() {
         goToScanActivityBtn = findViewById(R.id.goToScanActivityBtn)
 
         goToScanActivityBtn.setOnClickListener {
-            var gpsLocation = getGpsLocation(this){ location ->  var coords = locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
+            var gpsLocation = getGpsLocation(this){ location ->
+                var coords = locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
                 var longitude = coords[0]
                 var latitide = coords[1]
-                var gpsScan = ScanActivity(this, "Outdoormap", longitude.toFloat(), latitide.toFloat(), null)
+                var gpsScan = ScanActivity(this, outdoorName, longitude.toFloat(), latitide.toFloat(), null)
                 gpsScan.startScan()
                 Toast.makeText(this, "GPS Location: " + longitude.toFloat() + " " + latitide.toFloat(), Toast.LENGTH_SHORT).show()
 
