@@ -16,7 +16,6 @@ import de.freifunk.powa.scan.scan
 import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import java.io.File
-import java.lang.IllegalArgumentException
 import java.net.URLConnection
 
 class PowaApi private constructor(context: Context){
@@ -99,7 +98,7 @@ class PowaApi private constructor(context: Context){
                 return -1
             }
         }) {
-            if (it != 1){
+            if (it != -1){
                 callback(exporter[it])
             }
         }.launch(Unit)

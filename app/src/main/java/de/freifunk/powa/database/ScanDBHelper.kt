@@ -178,7 +178,7 @@ class ScanDBHelper(val context: Context) :
             " FROM " + SCAN_TABLE + " ;"
         var cursor = db.rawQuery(query, null)
         cursor.moveToNext()
-        var index = cursor.getColumnIndex("MAX(" + COLUMN_SCANS_INFORMATION_ID + ")")
+        var index = cursor.getColumnIndex("MAX($COLUMN_SCANS_INFORMATION_ID)")
         scanID = cursor.getInt(index)
         value.put(COLUMN_INFORMATION_TABLE_SCAN_ID, scanID)
         value.put(COLUMN_INFORMTION_TABLE_TIMESTAMP, timeStamp)
@@ -277,7 +277,7 @@ class ScanDBHelper(val context: Context) :
     fun readInformationElement(informationID: Int): List<ScanInformation> {
         val db = this.writableDatabase
         val query = " SELECT * FROM " + INFORMATION_TABLE +
-                " WHERE " + COLUMN_INFORMATION_TABLE_ID + " = '" + informationID + "';"
+                " WHERE " + COLUMN_INFORMATION_TABLE_SCAN_ID + " = '" + informationID + "';"
         val cursor = db.rawQuery(query, null)
         val rtn = mutableListOf<ScanInformation>()
 
