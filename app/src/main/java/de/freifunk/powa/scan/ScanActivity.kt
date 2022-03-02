@@ -71,10 +71,9 @@ class ScanActivity {
         multiScanCounter--
         if (multiScanCounter > 0) {
             startScan()
-        }else if(multiScanCounter == 0) {
+        } else if (multiScanCounter == 0) {
             scanBtn.isVisible = true
             multiScanEditText.isVisible = true
-
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
     }
@@ -107,5 +106,4 @@ class ScanActivity {
     fun startScan() {
         scan(scanContext, ::onSuccess, ::onFailure)
     }
-
 }

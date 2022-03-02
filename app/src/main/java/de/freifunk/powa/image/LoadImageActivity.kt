@@ -108,7 +108,6 @@ class LoadImageActivity : AppCompatActivity() {
             showImgIv.setImageBitmap(internStorage!!.bitmap)
             oldMarkers.invalidate()
             scanBtn.isInvisible = true
-
         } else {
             scanBtn.text = resources.getString(R.string.load_image)
             showImgIv.isInvisible = true
@@ -121,19 +120,19 @@ class LoadImageActivity : AppCompatActivity() {
                 var msCounterString = multiScanCounter.text.toString().trim()
                 var msCounter: Int
 
-                if(msCounterString.length < 1){
+                if (msCounterString.length < 1) {
                     msCounter = 1
-                }else{
+                } else {
                     try {
                         msCounter = Integer.parseInt(multiScanCounter.text.toString())
-                    }catch (e: NumberFormatException){
+                    } catch (e: NumberFormatException) {
                         multiScanCounter.setError("Gib eine ganze Zahl ein!!!")
                         return@setOnClickListener
                     }
                 }
-                if(msCounter > 4 || msCounter < 1 ){
+                if (msCounter > 4 || msCounter < 1) {
                     multiScanCounter.setError("Die Eingabe muss zwischen 1 und 4 liegen")
-                }else{
+                } else {
                     val scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY, scanBtn, msCounter, multiScanCounter)
                     scanAct.scanBtn = scanBtn
                     scanBtn.isVisible = false
