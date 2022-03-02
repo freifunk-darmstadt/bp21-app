@@ -8,14 +8,23 @@
 
     <ImageView
         android:id="@+id/showImgIv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_width="408dp"
+        android:layout_height="730dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_delete" />
-
+    <de.freifunk.powa.image.SavedMarkerView
+        android:id="@+id/old_markers_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/showImgIv"
+        app:layout_constraintEnd_toEndOf="@id/showImgIv"
+        app:layout_constraintStart_toStartOf="@id/showImgIv"
+        app:layout_constraintTop_toTopOf="@id/showImgIv" />
     <de.freifunk.powa.MarkerView
         android:id="@+id/marker_view"
         android:layout_width="0dp"
@@ -24,18 +33,13 @@
         app:layout_constraintEnd_toEndOf="@id/showImgIv"
         app:layout_constraintStart_toStartOf="@id/showImgIv"
         app:layout_constraintTop_toTopOf="@id/showImgIv" />
-    <Button
-        android:id="@+id/loadImageBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:text="@string/load_image"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+
+
+
+
 
     <Button
-        android:id="@+id/mapScanBtn"
+        android:id="@+id/ScanBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="112dp"
@@ -43,5 +47,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Switch
+        android:id="@+id/switchMarkers"
+        android:layout_width="141dp"
+        android:layout_height="49dp"
+        android:text="@string/toggle_marker"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.059"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.963" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,10 +1,14 @@
 package de.freifunk.powa.permissions
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.provider.Settings
+import androidx.core.content.ContextCompat.getSystemService
 import java.lang.Exception
 
 /**
@@ -119,4 +123,47 @@ fun isWIFIEnabled(context: Context): Boolean {
     }
 
     return network_enabled
+}
+
+/**
+ * This function registers a location listener that will be called once a location is available.
+ * @param context the context from which this function is called
+ * @param locationListener the locationListener that should get called once a location is available
+ */
+@SuppressLint("MissingPermission")
+fun getGpsLocation(context: Context, locationListener: (Location) -> Unit) {
+    if (!isGPSEnabled(context)) {
+        enableLocationServices(context)
+    }
+
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+    // check permissions
+    checkPermissions(context, arrayOf("Manifest.permission.ACCESS_FINE_LOCATION"))
+
+    val listener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            locationListener(location)
+            // unregister location listener after called once
+            locationManager.removeUpdates(this)
+        }
+    }
+
+    locationManager.requestLocationUpdates(
+        LocationManager.GPS_PROVIDER,
+        2000, 0.0f, listener
+    )
+}
+
+/**
+ * the Char that should be used to separate longitude and latitude in locationToString()
+ */
+const val LOCATION_STRING_SEPARATOR = ":"
+
+/**
+ * @param location the location parameter, you want to get returned as a String.
+ * @return the location as a string
+ */
+fun locationToString(location: Location): String {
+    return "${location.longitude}$LOCATION_STRING_SEPARATOR${location.latitude}"
 }

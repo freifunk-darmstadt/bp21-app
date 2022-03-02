@@ -5,11 +5,10 @@ import android.os.Bundle
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.get
 import de.freifunk.powa.R
 import de.freifunk.powa.adapter.MapListAdapter
-import de.freifunk.powa.store_intern.InternalStorageImage
-import de.freifunk.powa.store_intern.loadListOfInternalStorageImages
+import de.freifunk.powa.storeIntern.InternalStorageImage
+import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import kotlinx.coroutines.runBlocking
 
 class MapListActivity : AppCompatActivity() {
@@ -28,15 +27,13 @@ class MapListActivity : AppCompatActivity() {
         }
         var mapListadapter = MapListAdapter(mapListContext, R.layout.list_row, listOfMaps)
         listView.adapter = mapListadapter
-        listView.setOnItemClickListener(
-            OnItemClickListener { _, _, pos, _ ->
-                var storageImage = mapListadapter.getItem(pos)
-                var intent = Intent(this, LoadOldImageActivity::class.java)
-                var name = storageImage?.name
+        listView.onItemClickListener = OnItemClickListener { _, _, pos, _ ->
+            var storageImage = mapListadapter.getItem(pos)
+            var intent = Intent(this, LoadImageActivity::class.java)
+            var name = storageImage?.name
 
-                intent.putExtra("mapName", name)
-                startActivity(intent)
-            }
-        )
+            intent.putExtra("mapName", name)
+            startActivity(intent)
+        }
     }
 }
