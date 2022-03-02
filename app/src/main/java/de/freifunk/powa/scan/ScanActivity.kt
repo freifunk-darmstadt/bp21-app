@@ -72,14 +72,13 @@ class ScanActivity {
         if (multiScanCounter > 0) {
             startScan()
         } else if (multiScanCounter == 0) {
-            if(scanBtn != null && multiScanEditText != null) {
+            if (scanBtn != null && multiScanEditText != null) {
                 scanBtn!!.isVisible = true
                 multiScanEditText!!.isVisible = true
             }
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
-
     }
 
     /**

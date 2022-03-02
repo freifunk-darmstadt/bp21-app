@@ -9,14 +9,12 @@ import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.image.MapListActivity
 import de.freifunk.powa.permissions.GeneralPermissionRequestCode
-import de.freifunk.powa.permissions.PERMISSIONS
-import de.freifunk.powa.permissions.requestAllPermissions
 import de.freifunk.powa.permissions.LOCATION_STRING_SEPARATOR
-import de.freifunk.powa.permissions.locationToString
+import de.freifunk.powa.permissions.PERMISSIONS
 import de.freifunk.powa.permissions.getGpsLocation
+import de.freifunk.powa.permissions.locationToString
+import de.freifunk.powa.permissions.requestAllPermissions
 import de.freifunk.powa.scan.ScanActivity
-import de.freifunk.powa.scan.handleScanFailure
-import de.freifunk.powa.scan.scan
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,14 +34,13 @@ class MainActivity : AppCompatActivity() {
         goToScanActivityBtn = findViewById(R.id.goToScanActivityBtn)
 
         goToScanActivityBtn.setOnClickListener {
-            var gpsLocation = getGpsLocation(this){ location ->
+            var gpsLocation = getGpsLocation(this) { location ->
                 var coords = locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
                 var longitude = coords[0]
                 var latitide = coords[1]
-                var gpsScan = ScanActivity(this, outdoorName, longitude.toFloat(), latitide.toFloat(), null,1,null)
+                var gpsScan = ScanActivity(this, outdoorName, longitude.toFloat(), latitide.toFloat(), null, 1, null)
                 gpsScan.startScan()
                 Toast.makeText(this, "GPS Location: " + longitude.toFloat() + " " + latitide.toFloat(), Toast.LENGTH_SHORT).show()
-
             }
         }
 
