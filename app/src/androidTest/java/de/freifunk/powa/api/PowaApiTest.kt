@@ -1,24 +1,18 @@
 package de.freifunk.powa.api
 
-import android.content.ClipDescription
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.graphics.set
 import androidx.test.platform.app.InstrumentationRegistry
-import de.freifunk.powa.TextScanner
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.model.Map
 import de.freifunk.powa.model.ScanInformation
 import de.freifunk.powa.model.WiFiScanObject
-import de.freifunk.powa.scan.scan
 import org.junit.After
 import org.junit.Assert.* // ktlint-disable no-wildcard-imports
 import org.junit.Before
-
 import org.junit.Test
 import java.io.File
-import java.lang.IllegalArgumentException
-import kotlin.math.exp
 import kotlin.random.Random
 
 class PowaApiTest {
@@ -43,40 +37,39 @@ class PowaApiTest {
 
     @Test
     fun getMapByName() {
-        val mapNames = listOf("Map1","Map2","Map3","Map4","Map5","Map6","Map7")
+        val mapNames = listOf("Map1", "Map2", "Map3", "Map4", "Map5", "Map6", "Map7")
         val maps = HashMap<String, Map>()
-        for (name in mapNames){
-            val scans = listOf(generateScan(),generateScan(),generateScan(),generateScan())
+        for (name in mapNames) {
+            val scans = listOf(generateScan(), generateScan(), generateScan(), generateScan())
             val map = generateMap(name, scans)
             api.addMap(thisContext, map)
             maps[name] = map
         }
 
-        for (name in mapNames){
+        for (name in mapNames) {
             assertEquals(maps[name], api.getMapByName(name))
         }
     }
 
     @Test
     fun addMap() {
-        val mapNames = listOf("Map1","Map2","Map3","Map4","Map5","Map6","Map7")
+        val mapNames = listOf("Map1", "Map2", "Map3", "Map4", "Map5", "Map6", "Map7")
 
-        assertEquals("Number of stored maps does not match expected",0, api.maps.size)
-        for (name in mapNames){
-            val scans = listOf(generateScan(name.hashCode()),generateScan(name.hashCode()+1),generateScan(name.hashCode()+2),generateScan(name.hashCode()+3))
+        assertEquals("Number of stored maps does not match expected", 0, api.maps.size)
+        for (name in mapNames) {
+            val scans = listOf(generateScan(name.hashCode()), generateScan(name.hashCode() + 1), generateScan(name.hashCode() + 2), generateScan(name.hashCode() + 3))
             val map = generateMap(name, scans)
             assertTrue("Api should return true after successfully adding map", api.addMap(thisContext, map))
         }
-        assertEquals("Number of stored maps does not match expected",mapNames.size, api.maps.size)
-        assertTrue(mapNames.all { name -> api.maps.any { it.name == name} })
+        assertEquals("Number of stored maps does not match expected", mapNames.size, api.maps.size)
+        assertTrue(mapNames.all { name -> api.maps.any { it.name == name } })
 
         assertFalse("Api should return false when trying to add existing map", api.addMap(thisContext, api.maps[0]))
 
-        for (name in mapNames){
+        for (name in mapNames) {
             val storedScans = dataBase.readScans(name)
-            //assertEquals(scans,storedScans)
+            // assertEquals(scans,storedScans)
         }
-
     }
 
     @Test
@@ -104,7 +97,7 @@ class PowaApiTest {
     @Test
     fun exportData() {
         var exported = false
-        val exporter = generateExporter("testName", "", "") { _, _ -> exported = true}
+        val exporter = generateExporter("testName", "", "") { _, _ -> exported = true }
 
         api.exportData(thisContext, exporter)
 
@@ -118,7 +111,7 @@ class PowaApiTest {
     private fun generateMap(
         mapName: String,
         scans: List<WiFiScanObject>,
-        location : String? = null,
+        location: String? = null,
         picture: Bitmap = createBitmap()
     ): Map {
         return Map(scans, mapName, location, picture)
@@ -128,24 +121,24 @@ class PowaApiTest {
         val scanObject = WiFiScanObject()
 
         scanObject.ssid = getRandomString(10, id)
-        scanObject.bssid = getRandomString(16, (id * 10)%8)
+        scanObject.bssid = getRandomString(16, (id * 10) % 8)
         scanObject.operatorFriendlyName = scanObject.ssid
         scanObject.capabilities = "$id"
         scanObject.timestamp = "${System.currentTimeMillis() + id}"
-        scanObject.venueName = getRandomString(16, (id * 10)%7)
-        scanObject.scanInformation = listOf(generateInformation(id), generateInformation(id+1), generateInformation(id+2))
+        scanObject.venueName = getRandomString(16, (id * 10) % 7)
+        scanObject.scanInformation = listOf(generateInformation(id), generateInformation(id + 1), generateInformation(id + 2))
 
         return scanObject
     }
 
     private fun generateInformation(id: Int = 0): ScanInformation {
-        return ScanInformation(id, Random(id).nextBytes(5),"${System.currentTimeMillis() + id}")
+        return ScanInformation(id, Random(id).nextBytes(5), "${System.currentTimeMillis() + id}")
     }
 
-    private fun getRandomString(length: Int, seed: Int) : String{
+    private fun getRandomString(length: Int, seed: Int): String {
         var string = ""
-        for (i in 0..length){
-            string += Char(Random(seed+i).nextInt(97, 122))
+        for (i in 0..length) {
+            string += Char(Random(seed + i).nextInt(97, 122))
         }
         return string
     }

@@ -16,12 +16,11 @@ import de.freifunk.powa.scan.scan
 import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import java.io.File
-import java.lang.IllegalArgumentException
 import java.net.URLConnection
 
-class PowaApi private constructor(context: Context){
+class PowaApi private constructor(context: Context) {
 
-    companion object{
+    companion object {
         @Volatile
         internal var instance: PowaApi? = null
 
@@ -34,9 +33,9 @@ class PowaApi private constructor(context: Context){
     val maps = mutableListOf<Map>()
     val exporter = mutableListOf<ExportConsumer>()
 
-    init{
+    init {
         val dbHelper = ScanDBHelper(context)
-        loadListOfInternalStorageImages(context).forEach{
+        loadListOfInternalStorageImages(context).forEach {
             val scanData = dbHelper.readScans(it.name)
 
             maps.add(Map(scanData ?: listOf(), it.name, dbHelper.readMapLocation(it.name), it.bitmap))
@@ -47,12 +46,12 @@ class PowaApi private constructor(context: Context){
         return maps.firstOrNull { it.name == mapName }
     }
 
-    fun addMap(context: Context, mapToAdd: Map) : Boolean{
+    fun addMap(context: Context, mapToAdd: Map): Boolean {
         val dbHelper = ScanDBHelper(context)
-        if (!dbHelper.insertMaps(mapToAdd.name)){
+        if (!dbHelper.insertMaps(mapToAdd.name)) {
             return false
         }
-        mapToAdd.scans.forEach{
+        mapToAdd.scans.forEach {
             dbHelper.insertScans(mapToAdd.name, it)
         }
         saveBitmapToInternalStorage(context, mapToAdd.name, mapToAdd.image)
@@ -62,14 +61,16 @@ class PowaApi private constructor(context: Context){
         return true
     }
 
-    fun runScan(context: Context,
-                onSuccess: (List<ScanResult>) -> Unit,
-                onFailure: () -> Unit,
-                filter: (List<ScanResult>) -> List<ScanResult> = (::filterData)){
-        scan(context, onSuccess, onFailure,filter)
+    fun runScan(
+        context: Context,
+        onSuccess: (List<ScanResult>) -> Unit,
+        onFailure: () -> Unit,
+        filter: (List<ScanResult>) -> List<ScanResult> = (::filterData)
+    ) {
+        scan(context, onSuccess, onFailure, filter)
     }
 
-    fun openMap(context: Context, mapToOpen: Map){
+    fun openMap(context: Context, mapToOpen: Map) {
         var intent = Intent(context, LoadImageActivity::class.java)
         var name = mapToOpen.name
 
@@ -77,35 +78,35 @@ class PowaApi private constructor(context: Context){
         context.startActivity(intent)
     }
 
-    fun registerExporter(exporter: ExportConsumer){
+    fun registerExporter(exporter: ExportConsumer) {
         this.exporter.add(exporter)
     }
 
-    fun unRegisterExporter(exporterName: String){
+    fun unRegisterExporter(exporterName: String) {
         this.exporter.remove(exporter.filter { it.exportName == exporterName }.getOrNull(0))
     }
 
     fun selectExporter(context: ComponentActivity, callback: (ExportConsumer) -> Unit) {
         context.registerForActivityResult(object :
-            ActivityResultContract<Unit, Int>() {
-            override fun createIntent(context: Context, input: Unit?): Intent {
-                return Intent(context, ExportActivity::class.java)
-            }
-
-            override fun parseResult(resultCode: Int, intent: Intent?): Int {
-                if (intent != null){
-                    return intent.getIntExtra("${context.packageName}.ExportID", -1)
+                ActivityResultContract<Unit, Int>() {
+                override fun createIntent(context: Context, input: Unit?): Intent {
+                    return Intent(context, ExportActivity::class.java)
                 }
-                return -1
-            }
-        }) {
-            if (it != 1){
+
+                override fun parseResult(resultCode: Int, intent: Intent?): Int {
+                    if (intent != null) {
+                        return intent.getIntExtra("${context.packageName}.ExportID", -1)
+                    }
+                    return -1
+                }
+            }) {
+            if (it != 1) {
                 callback(exporter[it])
             }
         }.launch(Unit)
     }
 
-    fun exportData(context: Context, consumer: ExportConsumer, maps : List<Map> = this.maps): File {
+    fun exportData(context: Context, consumer: ExportConsumer, maps: List<Map> = this.maps): File {
         val suffix = consumer.fileType
         val tempFile = File(context.filesDir, "exports" + File.separator + "exportedData.$suffix")
 
@@ -118,19 +119,21 @@ class PowaApi private constructor(context: Context){
 
         consumer.export(tempFile, maps)
 
-        tempFile.readLines().forEach{
+        tempFile.readLines().forEach {
             Toast.makeText(context, "Api Lines: $it", Toast.LENGTH_SHORT).show()
         }
 
         return tempFile
     }
 
-    fun shareData(context: Context, file: File){
+    fun shareData(context: Context, file: File) {
         val intent = Intent(Intent.ACTION_SEND)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-        val uri = FileProvider.getUriForFile(context.applicationContext,
-            BuildConfig.APPLICATION_ID + ".provider", file)
+        val uri = FileProvider.getUriForFile(
+            context.applicationContext,
+            BuildConfig.APPLICATION_ID + ".provider", file
+        )
 
         intent.putExtra(Intent.EXTRA_STREAM, uri)
 

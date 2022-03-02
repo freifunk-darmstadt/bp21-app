@@ -197,8 +197,8 @@ class ScanDBHelper(val context: Context) :
     fun readSpecificScan(mapName: String, timeStamp: String): List<WiFiScanObject>? {
         val db = this.writableDatabase
         val query = " SELECT * FROM " + SCAN_TABLE +
-                " WHERE " + COLUMN_SCANS_TIMESTAMP + " = '" + timeStamp + "' " +
-                "AND " + COLUMN_SCANS_MAP_NAME + " = '" + mapName + "';"
+            " WHERE " + COLUMN_SCANS_TIMESTAMP + " = '" + timeStamp + "' " +
+            "AND " + COLUMN_SCANS_MAP_NAME + " = '" + mapName + "';"
         val cursor = db.rawQuery(query, null)
         val scanLinkedList = LinkedList<WiFiScanObject>()
         if (cursor.count > 0) {
@@ -232,15 +232,15 @@ class ScanDBHelper(val context: Context) :
     }
 
     /**
-    * Get all entries to given map
-    * If null returned then there are none entries for the timestamp
-    * The entries are sorted in relation of index column
-    */
+     * Get all entries to given map
+     * If null returned then there are none entries for the timestamp
+     * The entries are sorted in relation of index column
+     */
     @SuppressLint("Range")
     fun readScans(mapName: String): List<WiFiScanObject>? {
         val db = this.writableDatabase
         val query = " SELECT * FROM " + SCAN_TABLE +
-               " WHERE " + COLUMN_SCANS_MAP_NAME + " = '" + mapName + "';"
+            " WHERE " + COLUMN_SCANS_MAP_NAME + " = '" + mapName + "';"
         val cursor = db.rawQuery(query, null)
         val scanLinkedList = LinkedList<WiFiScanObject>()
         if (cursor.count > 0) {
@@ -277,19 +277,20 @@ class ScanDBHelper(val context: Context) :
     fun readInformationElement(informationID: Int): List<ScanInformation> {
         val db = this.writableDatabase
         val query = " SELECT * FROM " + INFORMATION_TABLE +
-                " WHERE " + COLUMN_INFORMATION_TABLE_ID + " = '" + informationID + "';"
+            " WHERE " + COLUMN_INFORMATION_TABLE_ID + " = '" + informationID + "';"
         val cursor = db.rawQuery(query, null)
         val rtn = mutableListOf<ScanInformation>()
 
         if (cursor.count > 0) {
             cursor.moveToFirst()
-            do{
+            do {
                 rtn.add(
                     ScanInformation(
                         cursor.getInt(cursor.getColumnIndex(COLUMN_INFORMATION_TABLE_ID)),
                         cursor.getBlob(cursor.getColumnIndex(COLUMN_INFORMATION_TABLE_BYTES)),
                         cursor.getString(cursor.getColumnIndex(COLUMN_INFORMTION_TABLE_TIMESTAMP))
-                ))
+                    )
+                )
             } while (cursor.moveToNext())
         }
 
@@ -305,7 +306,7 @@ class ScanDBHelper(val context: Context) :
     fun readMapLocation(mapName: String): String? {
         val db = this.writableDatabase
         val query = " SELECT $COLUMN_MAP_LOCATION FROM " + MAP_TABLE_NAME +
-               " WHERE " + COLUMN_MAP_NAME + " = '" + mapName + "';"
+            " WHERE " + COLUMN_MAP_NAME + " = '" + mapName + "';"
         val cursor = db.rawQuery(query, null)
         var rtn: String? = null
 
