@@ -19,11 +19,7 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter","json", "no descriptio
      * @return the JSON-Object-Representation of a JSON-File, which encapsulates a list of MapObjects as String
      */
     private fun getJsonFile(maps: List<Map>): String{
-        var retString = "{\"maps\": ["
-        for (map in maps)
-            retString = "$retString${mapToString(map)},"
-        retString.removeSuffix(",")
-        return "$retString]}"
+        return "{\"maps\": [${maps.map { mapToString(it) }.joinToString(separator = ",") { it }}]}"
     }
 
     /**
@@ -41,13 +37,7 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter","json", "no descriptio
      * @return the JSON-List-Representation of a List of WifiScanObjects as String
      */
     private fun getJSONArrayOfScans(scans: List<WiFiScanObject>): String {
-        var retString = "{"
-        for (wso in scans){
-            retString = "$retString${getWifiScanJSONObject(wso)},"
-        }
-        retString.removeSuffix(",")
-        retString = "$retString}"
-        return retString
+        return "[${scans.map { getWifiScanJSONObject(it) }.joinToString(separator = ",") { it }}]"
     }
 
     /**
@@ -64,7 +54,7 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter","json", "no descriptio
                 "\"frequency\": ${wso.frequency}," +
                 "\"level\": ${wso.level}," +
                 "\"operatorFriendlyName\": \"${wso.operatorFriendlyName}\"," +
-                "\"venueName\": ${wso.venueName}," +
+                "\"venueName\": \"${wso.venueName}\"," +
                 "\"xCoordinate\": ${wso.xCoordinate}," +
                 "\"yCoordinate\": ${wso.yCoordinate}," +
                 "\"informationID\": ${wso.informationID}," +
@@ -77,11 +67,7 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter","json", "no descriptio
      * @return the JSON-List-Representation of a List of ScanInformation-Objects as String
      */
     private fun getJSONArrayOfScanInformationList(sis: List<ScanInformation>): String {
-        var retString = "["
-            for (si in sis)
-                retString = "$retString${getScanInformationJSONObject(si)},"
-        retString.removeSuffix(",")
-        return "$retString]"
+        return "[${sis.map { getScanInformationJSONObject(it) }.joinToString(separator = ",") { it }}]"
     }
 
     /**
@@ -91,7 +77,7 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter","json", "no descriptio
         if (si == null)
             return "null"
 
-        val data = String(si.data)
+        val data = si.data.contentToString()
         return "{" +
                 "\"id\": ${si.id}," +
                 "\"data\": \"$data\"" +

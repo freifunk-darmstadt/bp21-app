@@ -13,7 +13,7 @@ class WiFiScanObject {
     lateinit var venueName: String
     var xCoordinate: Float? = null
     var yCoordinate: Float? = null
-    lateinit var scanInformation: List<ScanInformation>
+    var scanInformation: List<ScanInformation> = listOf()
     var informationID: Int? = null
     lateinit var timestamp: String // timestamp should have the format "YYYY-MM-DD hh:mm:ss.SSSSSS"
     var wifiStandard: Int? = null
