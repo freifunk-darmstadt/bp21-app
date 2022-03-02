@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
                 var coords = locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
                 var longitude = coords[0]
                 var latitide = coords[1]
-                var gpsScan = ScanActivity(this, outdoorName, longitude.toFloat(), latitide.toFloat(), null)
+                var gpsScan = ScanActivity(this, outdoorName, longitude.toFloat(), latitide.toFloat(), null,1,null)
                 gpsScan.startScan()
                 Toast.makeText(this, "GPS Location: " + longitude.toFloat() + " " + latitide.toFloat(), Toast.LENGTH_SHORT).show()
 
