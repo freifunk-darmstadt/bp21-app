@@ -22,28 +22,6 @@ class ExportActivity : AppCompatActivity() {
         var mapListContext = this
 
         val api = PowaApi.getInstance(this)
-
-        for (i in 0..5) {
-            api.registerExporter(object : ExportConsumer("test $i", "json", "test description $i") {
-                override fun export(file: File, maps: List<Map>) {
-                    Toast.makeText(this@ExportActivity, "Writing $i to File", Toast.LENGTH_SHORT).show()
-
-                    file.readLines().forEach {
-                        Toast.makeText(this@ExportActivity, "ExportLines old: $it", Toast.LENGTH_SHORT).show()
-                    }
-
-                    val o = FileOutputStream(file)
-                    o.write("$i".toByteArray())
-                    o.flush()
-                    o.close()
-
-                    file.readLines().forEach {
-                        Toast.makeText(this@ExportActivity, "ExportLines: $it", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            })
-        }
-
         var listOfExporters = api.exporter
 
         var mapListadapter = ExporterListAdapter(mapListContext, R.layout.exporter_list_row, listOfExporters)
