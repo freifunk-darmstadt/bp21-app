@@ -4,13 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ListView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.R
 import de.freifunk.powa.adapter.ExporterListAdapter
-import de.freifunk.powa.model.Map
-import java.io.File
-import java.io.FileOutputStream
 
 class ExportActivity : AppCompatActivity() {
     lateinit var listView: ListView
