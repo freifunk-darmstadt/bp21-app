@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import de.freifunk.powa.api.ExportActivity
+import de.freifunk.powa.api.ExportConsumerJSON
+import de.freifunk.powa.api.PowaApi
 import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.image.MapListActivity
 import de.freifunk.powa.permissions.GeneralPermissionRequestCode
@@ -23,6 +26,16 @@ class MainActivity : AppCompatActivity() {
     private var outdoorName = "Outdoormap_Scan_Collection"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val api = PowaApi.getInstance(this)
+        api.registerExporter(ExportConsumerJSON())
+        api.selectExporter(this){
+            api.exportData(this, consumer = it).readLines().forEach{
+                Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()
+            }
+            api.shareData(this, api.exportData(this, consumer = it))
+        }
+
         setContentView(R.layout.activity_main)
 
         goToLoadImgActivityBtn = findViewById(R.id.goToLoadImageActivityBtn)
@@ -45,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.mainToListBtn).setOnClickListener {
+            //startActivity(Intent(this, ExportActivity::class.java))
             startActivity(Intent(this, MapListActivity::class.java))
         }
 
