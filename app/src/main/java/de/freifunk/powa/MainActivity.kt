@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.api.ExportActivity
+import de.freifunk.powa.api.ExportConsumerJSON
 import de.freifunk.powa.api.PowaApi
 import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.image.MapListActivity
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val api = PowaApi.getInstance(this)
+        api.registerExporter(ExportConsumerJSON())
         api.selectExporter(this){
             api.exportData(this, consumer = it).readLines().forEach{
                 Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()

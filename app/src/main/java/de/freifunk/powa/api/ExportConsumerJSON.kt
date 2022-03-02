@@ -5,17 +5,20 @@ import de.freifunk.powa.model.ScanInformation
 import de.freifunk.powa.model.WiFiScanObject
 import java.io.File
 
-class ExportConsumerJSON : ExportConsumer("JSON Exporter", "no description") {
+class ExportConsumerJSON : ExportConsumer("JSON Exporter","json", "no description") {
 
-    //file is empty
+    //file is empty && file ends with ".json"
     override fun export(file: File, maps: List<Map>) {
         if(!file.exists())
             return
-        file.writeText(makeJson(maps))
+        file.writeText(getJsonFile(maps))
 
     }
 
-    private fun makeJson(maps: List<Map>): String{
+    /**
+     * @return the JSON-Object-Representation of a JSON-File, which encapsulates a list of MapObjects as String
+     */
+    private fun getJsonFile(maps: List<Map>): String{
         var retString = "{\"maps\": ["
         for (map in maps)
             retString = "$retString${mapToString(map)},"
@@ -23,27 +26,34 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter", "no description") {
         return "$retString]}"
     }
 
+    /**
+     * @return the JSON-Object-Representation of a MapObject as String
+     */
     private fun mapToString(map: Map): String{
         return "{" +
                 "\"name\": \"${map.name}\"," +
                 "\"location\": \"${map.name}\"," +
-                "\"scans:\": ${listOfScansToString(map.scans)}" +
+                "\"scans:\": ${getJSONArrayOfScans(map.scans)}" +
                 "}"
     }
 
-    //getJSONArrayOfScans
-    private fun listOfScansToString(scans: List<WiFiScanObject>): String {
+    /**
+     * @return the JSON-List-Representation of a List of WifiScanObjects as String
+     */
+    private fun getJSONArrayOfScans(scans: List<WiFiScanObject>): String {
         var retString = "{"
         for (wso in scans){
-            retString = "$retString${wiFiScanObjectToString(wso)},"
+            retString = "$retString${getWifiScanJSONObject(wso)},"
         }
         retString.removeSuffix(",")
         retString = "$retString}"
         return retString
     }
 
-    //getWifiScanJSONObject
-    private fun wiFiScanObjectToString(wso: WiFiScanObject): String {
+    /**
+     * @return the JSON-Object-Representation of a WifiScanObject as String
+     */
+    private fun getWifiScanJSONObject(wso: WiFiScanObject): String {
         return "{"+
                 "\"bssid\": \"${wso.bssid}\"," +
                 "\"ssid\": \"${wso.ssid}\"," +
@@ -58,13 +68,26 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter", "no description") {
                 "\"xCoordinate\": ${wso.xCoordinate}," +
                 "\"yCoordinate\": ${wso.yCoordinate}," +
                 "\"informationID\": ${wso.informationID}," +
-                "\"scanInformation\": ${scanInformationToString(wso.scanInformation)}," +
+                "\"scanInformation\": ${getJSONArrayOfScanInformationList(wso.scanInformation)}," +
                 "\"timestamp\": \"${wso.timestamp}\"" +
                 "}"
     }
 
-    //getScanInformationJSONObject
-    private fun scanInformationToString(si: ScanInformation?): String {
+    /**
+     * @return the JSON-List-Representation of a List of ScanInformation-Objects as String
+     */
+    private fun getJSONArrayOfScanInformationList(sis: List<ScanInformation>): String {
+        var retString = "["
+            for (si in sis)
+                retString = "$retString${getScanInformationJSONObject(si)},"
+        retString.removeSuffix(",")
+        return "$retString]"
+    }
+
+    /**
+     * @return the JSON-Object-Representation of an ScanInformationObject as String
+     */
+    private fun getScanInformationJSONObject(si: ScanInformation?): String {
         if (si == null)
             return "null"
 
