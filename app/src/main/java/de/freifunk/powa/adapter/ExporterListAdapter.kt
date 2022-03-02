@@ -5,11 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import android.widget.TextView
 import de.freifunk.powa.R
 import de.freifunk.powa.api.ExportConsumer
-import de.freifunk.powa.store_intern.InternalStorageImage
 
 class ExporterListAdapter(context: Context, resource: Int, objects: List<ExportConsumer>) :
     ArrayAdapter<ExportConsumer>(context, resource, objects) {

@@ -9,14 +9,14 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.content.FileProvider
 import de.freifunk.powa.BuildConfig
 import de.freifunk.powa.database.ScanDBHelper
-import de.freifunk.powa.image.LoadOldImageActivity
+import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.model.Map
 import de.freifunk.powa.scan.filterData
 import de.freifunk.powa.scan.scan
 import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import java.io.File
-import java.lang.IllegalStateException
+import java.lang.IllegalArgumentException
 import java.net.URLConnection
 
 class PowaApi private constructor(context: Context){
@@ -47,10 +47,10 @@ class PowaApi private constructor(context: Context){
         return maps.firstOrNull { it.name == mapName }
     }
 
-    fun addMap(context: Context, mapToAdd: Map) {
+    fun addMap(context: Context, mapToAdd: Map) : Boolean{
         val dbHelper = ScanDBHelper(context)
         if (!dbHelper.insertMaps(mapToAdd.name)){
-            throw IllegalArgumentException("Map ${mapToAdd.name} already exists")
+            return false
         }
         mapToAdd.scans.forEach{
             dbHelper.insertScans(mapToAdd.name, it)
@@ -58,6 +58,8 @@ class PowaApi private constructor(context: Context){
         saveBitmapToInternalStorage(context, mapToAdd.name, mapToAdd.image)
 
         mapToAdd.location?.let { dbHelper.updateLocationInTableMap(mapToAdd.name, it) }
+        maps.add(mapToAdd)
+        return true
     }
 
     fun runScan(context: Context,
@@ -68,7 +70,7 @@ class PowaApi private constructor(context: Context){
     }
 
     fun openMap(context: Context, mapToOpen: Map){
-        var intent = Intent(context, LoadOldImageActivity::class.java)
+        var intent = Intent(context, LoadImageActivity::class.java)
         var name = mapToOpen.name
 
         intent.putExtra("mapName", name)
@@ -87,8 +89,7 @@ class PowaApi private constructor(context: Context){
         context.registerForActivityResult(object :
             ActivityResultContract<Unit, Int>() {
             override fun createIntent(context: Context, input: Unit?): Intent {
-                var intent = Intent(context, ExportActivity::class.java)
-                return intent
+                return Intent(context, ExportActivity::class.java)
             }
 
             override fun parseResult(resultCode: Int, intent: Intent?): Int {

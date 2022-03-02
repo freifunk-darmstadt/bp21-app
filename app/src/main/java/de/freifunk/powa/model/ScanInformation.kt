@@ -1,6 +1,8 @@
 package de.freifunk.powa.model
 
-data class ScanInformation (val id: Int, val data: ByteArray) {
+import java.sql.Timestamp
+
+data class ScanInformation (val id: Int, val data: ByteArray, val timestamp: String) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -10,6 +12,7 @@ data class ScanInformation (val id: Int, val data: ByteArray) {
 
         if (id != other.id) return false
         if (!data.contentEquals(other.data)) return false
+        if (timestamp != other.timestamp) return false
 
         return true
     }
@@ -17,6 +20,8 @@ data class ScanInformation (val id: Int, val data: ByteArray) {
     override fun hashCode(): Int {
         var result = id
         result = 31 * result + data.contentHashCode()
+        result = 31 * result + timestamp.hashCode()
         return result
     }
+
 }

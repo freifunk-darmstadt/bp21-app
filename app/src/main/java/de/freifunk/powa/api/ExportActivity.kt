@@ -10,12 +10,7 @@ import android.widget.ListView
 import android.widget.Toast
 import de.freifunk.powa.R
 import de.freifunk.powa.adapter.ExporterListAdapter
-import de.freifunk.powa.adapter.MapListAdapter
-import de.freifunk.powa.image.LoadOldImageActivity
 import de.freifunk.powa.model.Map
-import de.freifunk.powa.store_intern.InternalStorageImage
-import de.freifunk.powa.store_intern.loadListOfInternalStorageImages
-import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileOutputStream
 

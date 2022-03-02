@@ -5,7 +5,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.net.wifi.ScanResult
 import de.freifunk.powa.model.ScanInformation
 import de.freifunk.powa.model.WiFiScanObject
 import java.util.LinkedList
@@ -195,17 +194,17 @@ class ScanDBHelper(val context: Context) :
      * The entries are sorted in relation of index column
      */
     @SuppressLint("Range")
-    fun readSpecificScan(scanTableName: String, timeStamp: String): List<WiFiScanObject>? {
-        var db = this.writableDatabase
-        var query = " SELECT * FROM " + SCAN_TABLE +
+    fun readSpecificScan(mapName: String, timeStamp: String): List<WiFiScanObject>? {
+        val db = this.writableDatabase
+        val query = " SELECT * FROM " + SCAN_TABLE +
                 " WHERE " + COLUMN_SCANS_TIMESTAMP + " = '" + timeStamp + "' " +
-                "AND " + COLUMN_SCANS_MAP_NAME + " = '" + scanTableName + "';"
-        var cursor = db.rawQuery(query, null)
-        var scanLinkedList = LinkedList<WiFiScanObject>()
+                "AND " + COLUMN_SCANS_MAP_NAME + " = '" + mapName + "';"
+        val cursor = db.rawQuery(query, null)
+        val scanLinkedList = LinkedList<WiFiScanObject>()
         if (cursor.count > 0) {
             cursor.moveToFirst()
             do {
-                var scan = WiFiScanObject()
+                val scan = WiFiScanObject()
 
                 scan.bssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_BSSID))
                 scan.ssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_SSID))
@@ -238,16 +237,16 @@ class ScanDBHelper(val context: Context) :
     * The entries are sorted in relation of index column
     */
     @SuppressLint("Range")
-    fun readScans(scanTableName: String): List<WiFiScanObject>? {
-        var db = this.writableDatabase
-        var query = " SELECT * FROM " + SCAN_TABLE +
-                " WHERE " + COLUMN_SCANS_MAP_NAME + " = '" + scanTableName + "';"
-        var cursor = db.rawQuery(query, null)
-        var scanLinkedList = LinkedList<WiFiScanObject>()
+    fun readScans(mapName: String): List<WiFiScanObject>? {
+        val db = this.writableDatabase
+        val query = " SELECT * FROM " + SCAN_TABLE +
+               " WHERE " + COLUMN_SCANS_MAP_NAME + " = '" + mapName + "';"
+        val cursor = db.rawQuery(query, null)
+        val scanLinkedList = LinkedList<WiFiScanObject>()
         if (cursor.count > 0) {
             cursor.moveToFirst()
             do {
-                var scan = WiFiScanObject()
+                val scan = WiFiScanObject()
 
                 scan.bssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_BSSID))
                 scan.ssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_SSID))
@@ -275,12 +274,12 @@ class ScanDBHelper(val context: Context) :
     }
 
     @SuppressLint("Range")
-    fun readInformationElement(timeStamp: String): List<ScanInformation> {
+    fun readInformationElement(informationID: Int): List<ScanInformation> {
         val db = this.writableDatabase
         val query = " SELECT * FROM " + INFORMATION_TABLE +
-                " WHERE " + COLUMN_INFORMTION_TABLE_TIMESTAMP + " = '" + timeStamp + "';"
+                " WHERE " + COLUMN_INFORMATION_TABLE_ID + " = '" + informationID + "';"
         val cursor = db.rawQuery(query, null)
-        var rtn = mutableListOf<ScanInformation>()
+        val rtn = mutableListOf<ScanInformation>()
 
         if (cursor.count > 0) {
             cursor.moveToFirst()
@@ -288,7 +287,8 @@ class ScanDBHelper(val context: Context) :
                 rtn.add(
                     ScanInformation(
                         cursor.getInt(cursor.getColumnIndex(COLUMN_INFORMATION_TABLE_ID)),
-                        cursor.getBlob(cursor.getColumnIndex(COLUMN_INFORMATION_TABLE_BYTES))
+                        cursor.getBlob(cursor.getColumnIndex(COLUMN_INFORMATION_TABLE_BYTES)),
+                        cursor.getString(cursor.getColumnIndex(COLUMN_INFORMTION_TABLE_TIMESTAMP))
                 ))
             } while (cursor.moveToNext())
         }
