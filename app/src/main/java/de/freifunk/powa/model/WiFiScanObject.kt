@@ -13,7 +13,7 @@ class WiFiScanObject {
     lateinit var venueName: String
     var xCoordinate: Float? = null
     var yCoordinate: Float? = null
-    lateinit var scanInformation: List<ScanInformation>
+    var scanInformation: List<ScanInformation> = listOf()
     var informationID: Int? = null
     lateinit var timestamp: String // timestamp should have the format "YYYY-MM-DD hh:mm:ss.SSSSSS"
     var wifiStandard: Int? = null
@@ -69,6 +69,4 @@ class WiFiScanObject {
     override fun toString(): String {
         return "WiFiScanObject(bssid='$bssid', ssid='$ssid', capabilities='$capabilities', centerFreq0=$centerFreq0, centerFreq1=$centerFreq1, channelWidth=$channelWidth, frequency=$frequency, level=$level, operatorFriendlyName='$operatorFriendlyName', venueName='$venueName', xCoordinate=$xCoordinate, yCoordinate=$yCoordinate, scanInformation=$scanInformation, informationID=$informationID, timestamp='$timestamp', wifiStandard=$wifiStandard)"
     }
-
-
 }
