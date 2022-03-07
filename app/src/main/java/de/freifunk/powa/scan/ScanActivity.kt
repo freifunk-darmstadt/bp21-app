@@ -78,7 +78,7 @@ class ScanActivity {
             }
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
-        Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
+
     }
 
     /**
