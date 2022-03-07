@@ -16,13 +16,14 @@ import java.time.format.DateTimeFormatter
 class ScanActivity {
     private var tableMapName: String // should be set before scan is invoked
     private var timeStamp: String // time should be set before scan is invoked
-    private var xCoordinate: Float = 0f // should be set before scan is invoked
-    private var yCoordinate: Float = 0f // should be set before scan is invoked
+    private var xCoordinate: Float? = 0f // should be set before scan is invoked
+    private var yCoordinate: Float? = 0f // should be set before scan is invoked
     private var scanContext: Context
     private var multiScanCounter: Int = 0
-
+    private var longitude: Float = 0f
+    private var latitude: Float = 0f
     var scanBtn: Button?
-    constructor(context: Context, name: String, x: Float, y: Float, btn: Button?, msCounter: Int) {
+    constructor(context: Context, name: String, x: Float?, y: Float?, btn: Button?, msCounter: Int, longitude: Float, latitude: Float) {
         scanContext = context
         tableMapName = name
         xCoordinate = x
@@ -30,6 +31,8 @@ class ScanActivity {
         timeStamp = getTime()
         scanBtn = btn
         multiScanCounter = msCounter
+        this.longitude = longitude
+        this.latitude = latitude
 
     }
 
@@ -54,6 +57,8 @@ class ScanActivity {
             scanResults.timestamp = timeStamp
             scanResults.xCoordinate = xCoordinate
             scanResults.yCoordinate = yCoordinate
+            scanResults.longitude = longitude
+            scanResults.latitude = latitude
             if (Build.VERSION.SDK_INT >= 30) // only available in android API Level 30
                 scanResults.wifiStandard = it.wifiStandard // this order is important because of autoincrement in Scantable
 

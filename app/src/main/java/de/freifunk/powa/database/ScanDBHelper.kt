@@ -42,6 +42,8 @@ class ScanDBHelper(val context: Context) :
     val COLUMN_SCANS_MAP_NAME = "mapname"
     val COLUMN_SCANS_INFORMATION_ID = "informationid"
     val COLUMN_SCANS_WIFISTANDARD = "wifistandard"
+    val COLUMN_SCANS_GPS_LONGITUDE = "longitude"
+    val COLUMN_SCANS_GPS_LATITUDE = "latitude"
     override fun onCreate(db: SQLiteDatabase?) {
         // Create first table in which the mapnames are stored
         db?.execSQL(
@@ -56,8 +58,8 @@ class ScanDBHelper(val context: Context) :
             " CREATE TABLE IF NOT EXISTS " + SCAN_TABLE + " (" +
                 COLUMN_SCANS_MAP_NAME + " VARCHAR(256)," +
                 COLUMN_SCANS_TIMESTAMP + " TIMESTAMP NOT NULL," + // timeformat is: "YYYY-MM-DD hh:mm:ss.SSSSSS"
-                COLUMN_SCANS_X + " FLOAT NOT NULL," +
-                COLUMN_SCANS_Y + " FLOAT NOT NULL," +
+                COLUMN_SCANS_X + " FLOAT ," +
+                COLUMN_SCANS_Y + " FLOAT ," +
                 COLUMN_SCANS_BSSID + " VARCHAR(256) NOT NULL," + // exact length is still unknown
                 COLUMN_SCANS_SSID + " VARCHAR(256) NOT NULL," +
                 COLUMN_SCANS_CAPABILITIES + " TEXT NOT NULL," +
@@ -69,6 +71,8 @@ class ScanDBHelper(val context: Context) :
                 COLUMN_SCANS_OPERATOR_FRIENDLY_NAME + " VARCHAR(256) NOT NULL," +
                 COLUMN_SCANS_VENUE_NAME + " VARCHAR(256) NOT NULL," +
                 COLUMN_SCANS_WIFISTANDARD + " INTEGER, " +
+                COLUMN_SCANS_GPS_LONGITUDE + " FLOAT ," +
+                COLUMN_SCANS_GPS_LATITUDE + " FLOAT ," +
                 COLUMN_SCANS_INFORMATION_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 " CONSTRAINT " + PRIMARY_KEY_NAME + " " +
                 //   " PRIMARY KEY ( " + COLUMN_SCANS_TIMESTAMP + "," + COLUMN_SCANS_BSSID + ")" + Could also be a primary key
@@ -165,6 +169,8 @@ class ScanDBHelper(val context: Context) :
         value.put(COLUMN_SCANS_X, scan.xCoordinate)
         value.put(COLUMN_SCANS_Y, scan.yCoordinate)
         value.put(COLUMN_SCANS_WIFISTANDARD, scan.wifiStandard)
+        value.put(COLUMN_SCANS_GPS_LONGITUDE, scan.longitude)
+        value.put(COLUMN_SCANS_GPS_LATITUDE, scan.latitude)
         db.insert(SCAN_TABLE, null, value)
 
         db.close()
@@ -231,6 +237,8 @@ class ScanDBHelper(val context: Context) :
                 scan.yCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_Y))
                 scan.informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
                 scan.wifiStandard = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_WIFISTANDARD))
+                scan.longitude = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_GPS_LONGITUDE))
+                scan.latitude = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_GPS_LATITUDE))
                 scanLinkedList.add(scan)
             } while (cursor.moveToNext())
         } else {
@@ -275,6 +283,8 @@ class ScanDBHelper(val context: Context) :
                 scan.yCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_Y))
                 scan.informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
                 scan.wifiStandard = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_WIFISTANDARD))
+                scan.longitude = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_GPS_LONGITUDE))
+                scan.latitude = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_GPS_LATITUDE))
                 scanLinkedList.add(scan)
             } while (cursor.moveToNext())
         } else {
@@ -412,8 +422,8 @@ class ScanDBHelper(val context: Context) :
         if (cursor.count > 0) {
             cursor.moveToFirst()
             do {
-                var informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
-                db?.delete(INFORMATION_TABLE, "$COLUMN_INFORMATION_TABLE_ID=?", arrayOf(informationID.toString()))
+                var scanResultID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
+                db?.delete(INFORMATION_TABLE, "$COLUMN_INFORMATION_TABLE_SCAN_ID=?", arrayOf(scanResultID.toString()))
             } while (cursor.moveToNext())
         }
         // deleting the scanresults of the deleted maps

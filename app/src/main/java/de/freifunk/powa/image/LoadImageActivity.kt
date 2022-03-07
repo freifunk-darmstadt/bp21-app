@@ -24,6 +24,7 @@ import de.freifunk.powa.MainActivity
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
+import de.freifunk.powa.permissions.LOCATION_STRING_SEPARATOR
 import de.freifunk.powa.permissions.getGpsLocation
 import de.freifunk.powa.permissions.locationToString
 import de.freifunk.powa.scan.ScanActivity
@@ -120,11 +121,26 @@ class LoadImageActivity : AppCompatActivity() {
                 var msCounter = 1
                 if(multiScanToggle.isChecked)
                     msCounter = 4
-                val scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY, scanBtn, msCounter)
-                scanAct.scanBtn = scanBtn
-                scanBtn.isVisible = false
-                createScanDialog(scanAct)
+                getGpsLocation(this) { location ->
+                    var coords =
+                        locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
+                    var longitude = coords[0].toFloat()
+                    var latitude = coords[1].toFloat()
 
+                    val scanAct = ScanActivity(
+                        this,
+                        mapName,
+                        markerView.initX,
+                        markerView.initY,
+                        scanBtn,
+                        msCounter,
+                        longitude,
+                        latitude
+                    )
+                    scanAct.scanBtn = scanBtn
+                    scanBtn.isVisible = false
+                    createScanDialog(scanAct)
+                }
             } else {
                 getContent.launch("image/*")
                 scanBtn.text = resources.getString(R.string.start_scan)
