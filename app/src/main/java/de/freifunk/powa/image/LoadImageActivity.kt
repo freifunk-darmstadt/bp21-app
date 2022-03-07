@@ -154,6 +154,7 @@ class LoadImageActivity : AppCompatActivity() {
 
     /**
      * Creates a AlertDialog to ask the User if he/she wants to start a scan
+     * @param scanAct to start the scan
      */
     protected fun createScanDialog(scanAct: ScanActivity) {
 
@@ -182,6 +183,9 @@ class LoadImageActivity : AppCompatActivity() {
         scanDialog.show()
     }
 
+    /**
+     * Method for scrolling only
+     */
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         val historySize: Int
         val startX: Float
@@ -214,6 +218,9 @@ class LoadImageActivity : AppCompatActivity() {
         return super.onTouchEvent(event)
     }
 
+    /**
+     * @return return the height of the statusbar in px
+     */
     fun getHeight(): Int {
         val rectangle = Rect()
         window.decorView.getWindowVisibleDisplayFrame(rectangle)
@@ -221,6 +228,10 @@ class LoadImageActivity : AppCompatActivity() {
     }
 
     inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        /**
+         * Method for scaling the views
+         * @return true
+         */
         override fun onScale(detector: ScaleGestureDetector?): Boolean {
             scaleFactor *= detector!!.scaleFactor
             scaleFactor = max(minZoomFactor, min(scaleFactor, maxZoomFactor))
@@ -235,6 +246,10 @@ class LoadImageActivity : AppCompatActivity() {
     }
 
     inner class MarkerGestureListener : GestureDetector.SimpleOnGestureListener() {
+        /**
+         * Marks the position where the view was doubletapped
+         * @return return from super.onDoubleTap
+         */
         override fun onDoubleTap(e: MotionEvent?): Boolean {
             val statusBarHeight = getHeight()
             markerView.circleShouldDraw = true
@@ -258,10 +273,6 @@ class LoadImageActivity : AppCompatActivity() {
             multiScanCounter.isInvisible = false
 
             return super.onDoubleTap(e)
-        }
-
-        fun dpFromPx(px: Float): Float {
-            return px / resources.displayMetrics.density
         }
     }
 

@@ -98,6 +98,8 @@ class ScanDBHelper(val context: Context) :
 
     /**
      * This Method create a new Entry in the Map table
+     * @param name name of the map to be inserted
+     * @return true if the mapname did not exist and was succuessfully stored
      */
     fun insertMaps(name: String): Boolean {
         var db = this.writableDatabase
@@ -117,6 +119,9 @@ class ScanDBHelper(val context: Context) :
 
     /**
      * This Method adds a location to a Map in the Map table
+     * @param name name of the map to be updated
+     * @param location new location for the map. Format: (longitude:latitude)
+     * @return true if the location was successfully updated
      */
     fun updateLocationInTableMap(name: String, location: String): Boolean {
         var db = this.writableDatabase
@@ -139,11 +144,13 @@ class ScanDBHelper(val context: Context) :
     /**
      * Only invoke this method after validation of scan-attributes
      * This method insert data with given map into the database
+     * @param mapName the name of the map where the scan was started
+     * @param scan Scanresult of the scan which should be stored
      */
-    fun insertScans(scanTableName: String, scan: WiFiScanObject) {
+    fun insertScans(mapName: String, scan: WiFiScanObject) {
         var db = this.writableDatabase
         var value = ContentValues()
-        value.put(COLUMN_SCANS_MAP_NAME, scanTableName)
+        value.put(COLUMN_SCANS_MAP_NAME, mapName)
         value.put(COLUMN_SCANS_BSSID, scan.bssid)
         value.put(COLUMN_SCANS_SSID, scan.ssid)
         value.put(COLUMN_SCANS_CAPABILITIES, scan.capabilities)
@@ -192,6 +199,9 @@ class ScanDBHelper(val context: Context) :
      * Get a specific entry to given timestamp
      * If null returned then there are none entries for the timestamp
      * The entries are sorted in relation of index column
+     * @param mapName mapname for a scan performed on it
+     * @param timeStamp time when the scan was started
+     * @return returns all the Scanresults for the given name and timestamp
      */
     @SuppressLint("Range")
     fun readSpecificScan(mapName: String, timeStamp: String): List<WiFiScanObject>? {
@@ -235,6 +245,8 @@ class ScanDBHelper(val context: Context) :
      * Get all entries to given map
      * If null returned then there are none entries for the timestamp
      * The entries are sorted in relation of index column
+     * @param mapName mapname for a scan performed on it
+     * @return returns all the Scanresults for the given name
      */
     @SuppressLint("Range")
     fun readScans(mapName: String): List<WiFiScanObject>? {
@@ -273,6 +285,11 @@ class ScanDBHelper(val context: Context) :
         return scanLinkedList
     }
 
+    /**
+     * Read specific Informationelement
+     * @param informationID ID of Scantable (COLUMN_SCANS_INFORMATION_ID) which the informationelement references
+     * @return list of Informationelements
+     */
     @SuppressLint("Range")
     fun readInformationElement(informationID: Int): List<ScanInformation> {
         val db = this.writableDatabase
@@ -300,7 +317,9 @@ class ScanDBHelper(val context: Context) :
     }
 
     /**
-     *
+     * Get the location of a map
+     * @param mapName name of the map to get the location
+     * @return location of the map as a string
      */
     @SuppressLint("Range")
     fun readMapLocation(mapName: String): String? {
@@ -322,7 +341,8 @@ class ScanDBHelper(val context: Context) :
 
     /**
      * Scan the Database to the given text for the coordinates of the markers
-     * @param mapName name of the Map
+     * @param mapName name of the Map to get the positions of the markers
+     * @return list of pairs which represents (x,y)-coordinates of the map
      */
     @SuppressLint("Range")
     fun readCoordinates(mapName: String): MutableList<Pair<Float, Float>>? {
@@ -353,6 +373,7 @@ class ScanDBHelper(val context: Context) :
      * This Method updates the MAP
      * @param oldName the old value to be updated
      * @param newName the new value that replace oldname
+     * @return true if the name of the map was successfully updated
      */
     fun updateMapName(oldName: String, newName: String): Boolean {
         var db = this.writableDatabase
