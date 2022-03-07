@@ -20,9 +20,9 @@ class ScanActivity {
     private var yCoordinate: Float = 0f // should be set before scan is invoked
     private var scanContext: Context
     private var multiScanCounter: Int = 0
-    var multiScanEditText: EditText?
+
     var scanBtn: Button?
-    constructor(context: Context, name: String, x: Float, y: Float, btn: Button?, msCounter: Int, multiScanEditText: EditText?) {
+    constructor(context: Context, name: String, x: Float, y: Float, btn: Button?, msCounter: Int) {
         scanContext = context
         tableMapName = name
         xCoordinate = x
@@ -30,14 +30,13 @@ class ScanActivity {
         timeStamp = getTime()
         scanBtn = btn
         multiScanCounter = msCounter
-        this.multiScanEditText = multiScanEditText
+
     }
 
     /**
      * This Method saves the given results in the Sqlite-Database
      * @param results the List of the ScanResults. Results should be filtered first
      */
-
     fun onSuccess(results: List<ScanResult>) {
         results.forEach {
             var db = ScanDBHelper(scanContext)
@@ -72,9 +71,8 @@ class ScanActivity {
         if (multiScanCounter > 0) {
             startScan()
         } else if (multiScanCounter == 0) {
-            if (scanBtn != null && multiScanEditText != null) {
+            if (scanBtn != null ) {
                 scanBtn!!.isVisible = true
-                multiScanEditText!!.isVisible = true
             }
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
@@ -87,7 +85,6 @@ class ScanActivity {
     fun onFailure() {
         Toast.makeText(scanContext, "Scan fehlgeschlagen", Toast.LENGTH_SHORT).show()
         scanBtn!!.isVisible = true
-        multiScanEditText!!.isVisible = true
     }
 
     /**

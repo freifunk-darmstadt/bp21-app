@@ -6,4 +6,5 @@
     <string name="new_image_load">Neue Karte laden</string>
     <string name="go_to_scan">Outdoor-Scan</string>
     <string name="toggle_marker">Marker ausblenden</string>
+    <string name="toggle_multiscan">4-fach Scan</string>
 </resources>
