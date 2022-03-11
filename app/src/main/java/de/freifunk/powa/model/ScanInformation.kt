@@ -25,5 +25,4 @@ data class ScanInformation(val id: Int, val data: ByteArray, val timestamp: Stri
         result = 31 * result + timestamp.hashCode()
         return result
     }
-
 }
