@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.wifi.ScanResult
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.content.FileProvider
 import de.freifunk.powa.BuildConfig
@@ -173,8 +174,8 @@ class PowaApi private constructor(context: Context) {
      * @param context the context from which the export activity should be launched
      * @param callback the function that should be called as soon as the user selected a export consumer
      */
-    fun selectExporter(context: ComponentActivity, callback: (ExportConsumer) -> Unit) {
-        context.registerForActivityResult(object :
+    fun registerSelectExporter(context: ComponentActivity, callback: (ExportConsumer) -> Unit): ActivityResultLauncher<Unit> {
+        return context.registerForActivityResult(object :
                 ActivityResultContract<Unit, Int>() {
                 //create intent to launch selector
                 override fun createIntent(context: Context, input: Unit?): Intent {
@@ -193,7 +194,7 @@ class PowaApi private constructor(context: Context) {
             if (it != 1) {
                 callback(exporter[it])
             }
-        }.launch(Unit)
+        }
     }
 
     /**

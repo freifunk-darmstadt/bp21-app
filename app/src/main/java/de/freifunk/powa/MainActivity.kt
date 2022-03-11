@@ -20,33 +20,25 @@ import de.freifunk.powa.scan.ScanActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var goToLoadImgActivityBtn: Button
-    private lateinit var goToScanActivityBtn: Button
     private var outdoorName = "Outdoormap_Scan_Collection"
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
         val api = PowaApi.getInstance(this)
         api.registerExporter(ExportConsumerJSON())
-        api.selectExporter(this) {
-            api.exportData(this, consumer = it).readLines().forEach {
-                Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()
-            }
+        val selectExporter = api.registerSelectExporter(this) {
             api.shareData(this, api.exportData(this, consumer = it))
         }
 
-        setContentView(R.layout.activity_main)
-
-        goToLoadImgActivityBtn = findViewById(R.id.goToLoadImageActivityBtn)
-
-        goToLoadImgActivityBtn.setOnClickListener {
+        findViewById<Button>(R.id.goToLoadImageActivityBtn).setOnClickListener {
             startActivity(Intent(this, LoadImageActivity::class.java))
         }
 
-        goToScanActivityBtn = findViewById(R.id.goToScanActivityBtn)
-
-        goToScanActivityBtn.setOnClickListener {
-            var gpsLocation = getGpsLocation(this) { location ->
+        findViewById<Button>(R.id.goToScanActivityBtn).setOnClickListener {
+            getGpsLocation(this) { location ->
                 var coords = locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
                 var longitude = coords[0]
                 var latitide = coords[1]
@@ -57,8 +49,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.mainToListBtn).setOnClickListener {
-            // startActivity(Intent(this, ExportActivity::class.java))
             startActivity(Intent(this, MapListActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.exportBtn).setOnClickListener {
+            selectExporter.launch(Unit)
         }
 
         requestAllPermissions(this@MainActivity)
