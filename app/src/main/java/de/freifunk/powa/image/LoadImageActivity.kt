@@ -135,7 +135,8 @@ class LoadImageActivity : AppCompatActivity() {
                         scanBtn,
                         msCounter,
                         longitude,
-                        latitude
+                        latitude,
+                        oldMarkers
                     )
                     scanAct.scanBtn = scanBtn
                     scanBtn.isVisible = false
@@ -173,6 +174,7 @@ class LoadImageActivity : AppCompatActivity() {
             val negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
                 scanAct.startScan()
+
                 scanDialog.dismiss()
             }
             negBtn.setOnClickListener {
@@ -253,6 +255,7 @@ class LoadImageActivity : AppCompatActivity() {
          * @return return from super.onDoubleTap
          */
         override fun onDoubleTap(e: MotionEvent?): Boolean {
+
             val statusBarHeight = getHeight()
             markerView.circleShouldDraw = true
             val middleX = showImgIv.width / 2
@@ -273,7 +276,6 @@ class LoadImageActivity : AppCompatActivity() {
             markerView.invalidate()
             scanBtn.isInvisible = false
             multiScanToggle.isInvisible = false
-
             return super.onDoubleTap(e)
         }
     }

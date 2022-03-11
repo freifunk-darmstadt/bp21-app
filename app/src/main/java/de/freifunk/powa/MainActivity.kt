@@ -12,6 +12,7 @@ import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.image.MapListActivity
 import de.freifunk.powa.permissions.*
 import de.freifunk.powa.scan.ScanActivity
+import kotlinx.android.synthetic.main.activity_load_image.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity() {
                 var longitude = coords[0].toFloat()
                 var latitude = coords[1].toFloat()
 
-                var gpsScan = ScanActivity(this, outdoorName, null, null, null, 1, longitude, latitude)
+                var gpsScan = ScanActivity(this, outdoorName, null, null, null, 1, longitude, latitude, null)
                 gpsScan.startScan()
                 Toast.makeText(this, "GPS Location: " + longitude + " " + latitude, Toast.LENGTH_SHORT).show()
             }

@@ -1,13 +1,15 @@
 package de.freifunk.powa.scan
 
+import android.app.Activity
 import android.content.Context
 import android.net.wifi.ScanResult
 import android.os.Build
+import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.core.view.isVisible
 import de.freifunk.powa.database.ScanDBHelper
+import de.freifunk.powa.image.SavedMarkerView
 import de.freifunk.powa.model.WiFiScanObject
 import java.time.Instant
 import java.time.ZoneOffset
@@ -23,7 +25,8 @@ class ScanActivity {
     private var longitude: Float = 0f
     private var latitude: Float = 0f
     var scanBtn: Button?
-    constructor(context: Context, name: String, x: Float?, y: Float?, btn: Button?, msCounter: Int, longitude: Float, latitude: Float) {
+    var view: SavedMarkerView?
+    constructor(context: Context, name: String, x: Float?, y: Float?, btn: Button?, msCounter: Int, longitude: Float, latitude: Float, view: SavedMarkerView?) {
         scanContext = context
         tableMapName = name
         xCoordinate = x
@@ -33,6 +36,7 @@ class ScanActivity {
         multiScanCounter = msCounter
         this.longitude = longitude
         this.latitude = latitude
+        this.view = view
 
     }
 
@@ -78,6 +82,15 @@ class ScanActivity {
         } else if (multiScanCounter == 0) {
             if (scanBtn != null ) {
                 scanBtn!!.isVisible = true
+                if(view != null) {
+                    val db = ScanDBHelper(this.scanContext)
+                    val crdOfMarkers = db.readCoordinates(this.tableMapName)
+
+                    if (crdOfMarkers != null) {
+                        view!!.coordinates = crdOfMarkers
+                    }
+                    view!!.invalidate()
+                }
             }
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
@@ -90,6 +103,9 @@ class ScanActivity {
     fun onFailure() {
         Toast.makeText(scanContext, "Scan fehlgeschlagen", Toast.LENGTH_SHORT).show()
         scanBtn!!.isVisible = true
+        if(view != null) {
+            this.view!!.invalidate()
+        }
     }
 
     /**
