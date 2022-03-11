@@ -27,6 +27,19 @@ class PowaApiTest {
     lateinit var api: PowaApi
     lateinit var dataBase: ScanDBHelper
 
+    @Test
+    fun testDequeue() {
+        val queue = mutableListOf(0,1,2,3,4,5)
+
+        val it = queue.iterator()
+        while (it.hasNext()){
+            it.next()
+            it.remove()
+        }
+        queue.map { it }
+        assertEquals(0, queue.size)
+    }
+
     @Before
     fun setup() {
         thisContext = InstrumentationRegistry.getInstrumentation().targetContext
@@ -41,6 +54,7 @@ class PowaApiTest {
         thisContext.deleteDatabase(dataBase.databaseName)
     }
 
+    /*
     @Test
     fun getMapByName() {
         val mapNames = listOf("Map1","Map2","Map3","Map4","Map5","Map6","Map7")
@@ -165,9 +179,10 @@ class PowaApiTest {
         operation: (File, List<Map>) -> Unit
     ): ExportConsumer {
         return object : ExportConsumer("exporter", "txt", "text") {
-            override fun export(file: File, maps: List<Map>) {
+            override fun export(file: File, maps: Sequence<Map>) {
                 operation(file, maps)
             }
         }
     }
+    */
 }
