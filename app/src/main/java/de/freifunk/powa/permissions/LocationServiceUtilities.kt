@@ -7,6 +7,7 @@ import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.wifi.WifiManager
 import android.provider.Settings
 import androidx.core.content.ContextCompat.getSystemService
 import java.lang.Exception
@@ -109,20 +110,7 @@ fun isGPSEnabled(context: Context): Boolean {
  * @return true if the device has wifi services enabled false otherwise
  */
 fun isWIFIEnabled(context: Context): Boolean {
-    val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
-    // check if the device has network-access
-    if (!lm.allProviders.contains(LocationManager.NETWORK_PROVIDER))
-        return false
-
-    var network_enabled = false
-
-    try {
-        network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-    } catch (ex: Exception) {
-    }
-
-    return network_enabled
+    return (context.getSystemService(Context.WIFI_SERVICE) as WifiManager).wifiState == WifiManager.WIFI_STATE_ENABLED
 }
 
 /**
