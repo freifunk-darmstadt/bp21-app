@@ -8,10 +8,8 @@ import android.graphics.Bitmap
  * Also Contains a copy of the [image] saved for this map
  */
 data class Map(
-    private val _scans: List<WiFiScanObject>,
+    val scans: List<WiFiScanObject>,
     val name: String,
     val location: String?,
     val image: Bitmap
-) {
-    val scans: List<WiFiScanObject> get() = _scans
-}
+)

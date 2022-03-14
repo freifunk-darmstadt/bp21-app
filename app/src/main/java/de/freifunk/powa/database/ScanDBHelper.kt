@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import de.freifunk.powa.model.ScanInformation
 import de.freifunk.powa.model.WiFiScanObject
+import java.lang.IllegalStateException
 import java.util.LinkedList
 
 val DATABASE_NAME = "ScansDB"

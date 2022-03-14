@@ -18,6 +18,8 @@ import de.freifunk.powa.scan.scan
 import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import java.io.File
+import java.lang.Exception
+import java.lang.IllegalStateException
 import java.net.URLConnection
 
 class PowaApi private constructor(context: Context) {
@@ -39,12 +41,9 @@ class PowaApi private constructor(context: Context) {
     }
 
     /**
-     * stores all currently loaded maps with all scan informations
+     * Stores the names of all Maps currently existent in the app
      */
-    //val maps = mutableListOf<Map>()
-
-
-    val mapNames = mutableListOf<String>()
+    private val mapNames = mutableListOf<String>()
 
     /**
      * stores all data exporters
@@ -61,6 +60,10 @@ class PowaApi private constructor(context: Context) {
         }
     }
 
+    /**
+     * @param context the context of the app.
+     * @return a List of lazy loaded Maps representing all maps stored in the app
+     */
     fun getMaps(context: Context): MutableList<Map> {
         val dbHelper = ScanDBHelper(context)
         val images = loadListOfInternalStorageImages(context)
@@ -69,9 +72,9 @@ class PowaApi private constructor(context: Context) {
             .map {
                 name ->
                 val map: Map by lazy {
-                    val scanData: List<WiFiScanObject>? by lazy { dbHelper.readScans(name) }
+                    val scanData: List<WiFiScanObject> by lazy { dbHelper.readScans(name) ?: listOf() }
                     return@lazy Map(
-                        scanData ?: listOf(),
+                        scanData,
                         name,
                         dbHelper.readMapLocation(name),
                         images.filter { it.name ==  name}[0].bitmap)
@@ -110,6 +113,7 @@ class PowaApi private constructor(context: Context) {
         if (!dbHelper.insertMaps(mapToAdd.name)) {
             return false
         }
+        mapNames.add(mapToAdd.name)
         mapToAdd.scans.forEach {
             dbHelper.insertScans(mapToAdd.name, it)
         }
@@ -191,7 +195,7 @@ class PowaApi private constructor(context: Context) {
                 }
             }) {
             //call callback if user selected a valid exporter
-            if (it != 1) {
+            if (it != -1) {
                 callback(exporter[it])
             }
         }
