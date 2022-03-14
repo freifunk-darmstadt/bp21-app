@@ -313,6 +313,7 @@ class ScanDBHelper(val context: Context) :
             do {
                 rtn.add(
                     ScanInformation(
+                        cursor.getInt(cursor.getColumnIndex(COLUMN_INFORMATION_TABLE_SCAN_ID)),
                         cursor.getInt(cursor.getColumnIndex(COLUMN_INFORMATION_TABLE_ID)),
                         cursor.getBlob(cursor.getColumnIndex(COLUMN_INFORMATION_TABLE_BYTES)),
                         cursor.getString(cursor.getColumnIndex(COLUMN_INFORMTION_TABLE_TIMESTAMP))

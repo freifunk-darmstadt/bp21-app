@@ -291,7 +291,6 @@ class LoadImageActivity : AppCompatActivity() {
             markerView.invalidate()
             scanBtn.isInvisible = false
             multiScanToggle.isInvisible = false
-            return super.onDoubleTap(e)
         }
     }
 

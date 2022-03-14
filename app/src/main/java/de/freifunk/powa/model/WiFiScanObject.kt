@@ -48,7 +48,6 @@ class WiFiScanObject {
         if (latitude != other.latitude) return false
         return true
     }
-
     override fun hashCode(): Int {
         var result = bssid.hashCode()
         result = 31 * result + ssid.hashCode()
@@ -66,12 +65,15 @@ class WiFiScanObject {
         result = 31 * result + (informationID ?: 0)
         result = 31 * result + timestamp.hashCode()
         result = 31 * result + (wifiStandard ?: 0)
-        result = 31 * result + (longitude?.hashCode() ?:0)
-        result = 31 * result + (latitude?.hashCode() ?:0)
+        result = 31 * result + (longitude?.hashCode() ?: 0)
+        result = 31 * result + (latitude?.hashCode() ?: 0)
         return result
     }
+
 
     override fun toString(): String {
         return "WiFiScanObject(bssid='$bssid', ssid='$ssid', capabilities='$capabilities', centerFreq0=$centerFreq0, centerFreq1=$centerFreq1, channelWidth=$channelWidth, frequency=$frequency, level=$level, operatorFriendlyName='$operatorFriendlyName', venueName='$venueName', xCoordinate=$xCoordinate, yCoordinate=$yCoordinate, scanInformation=$scanInformation, informationID=$informationID, timestamp='$timestamp', wifiStandard=$wifiStandard, longitude=$longitude, latitude=$latitude)"
     }
+
+
 }

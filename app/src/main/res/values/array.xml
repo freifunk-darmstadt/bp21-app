@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="multiscan_array">{1,2,3,4}</array>
+    <array name="multiscan_values">{1,2,3,4}</array>
+</resources>
