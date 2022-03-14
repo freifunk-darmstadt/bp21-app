@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <array name="multiscan_array">{1,2,3,4}</array>
-    <array name="multiscan_values">{1,2,3,4}</array>
+    <string-array name="multiscan_array">
+        <item>
+            "1"
+        </item>
+        <item>
+            "2"
+        </item>
+        <item>
+            "3"
+        </item>
+        <item>
+            "4"
+        </item>
+    </string-array>
+    <integer-array name="multiscan_values">
+        <item>
+            1
+        </item>
+        <item>
+            2
+        </item>
+        <item>
+            3
+        </item>
+        <item>
+            4
+        </item>
+    </integer-array>
 </resources>

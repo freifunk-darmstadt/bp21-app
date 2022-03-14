@@ -121,9 +121,12 @@ class LoadImageActivity : AppCompatActivity() {
         supportActionBar!!.hide()
         scanBtn.setOnClickListener {
             if (scanBtn.text == resources.getString(R.string.start_scan)) {
-                var msCounter = 1
-                if(multiScanToggle.isChecked)
-                    msCounter = 4
+                var msCounter: Int = 1
+                if(multiScanToggle.isChecked) {
+                    msCounter = PreferenceManager.getDefaultSharedPreferences(context).getInt(resources.getString(R.string.multiscan_key),1)
+                    PreferenceManager.
+
+                }
                 getGpsLocation(this) { location ->
                     var coords =
                         locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
