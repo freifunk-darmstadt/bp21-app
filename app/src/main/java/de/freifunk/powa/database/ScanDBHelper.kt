@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import de.freifunk.powa.model.ScanInformation
 import de.freifunk.powa.model.WiFiScanObject
+import java.lang.Exception
+import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import java.util.LinkedList
 
@@ -174,7 +176,7 @@ class ScanDBHelper(val context: Context) :
         value.put(COLUMN_SCANS_WIFISTANDARD, scan.wifiStandard)
         value.put(COLUMN_SCANS_GPS_LONGITUDE, scan.longitude)
         value.put(COLUMN_SCANS_GPS_LATITUDE, scan.latitude)
-        db.insert(SCAN_TABLE, null, value)
+        db.insert(SCAN_TABLE, null, value).toString()
 
         db.close()
     }
@@ -201,7 +203,7 @@ class ScanDBHelper(val context: Context) :
         value.put(COLUMN_INFORMATION_TABLE_ID, id)
         value.put(COLUMN_INFORMATION_TABLE_BYTES, byte)
         value.put(COLUMN_INFORMATION_TABLE_EXT_ID, extid)
-        db.insert(INFORMATION_TABLE, null, value)
+        db.insert(INFORMATION_TABLE, null, value).toString()
         db.close()
     }
 
@@ -289,6 +291,7 @@ class ScanDBHelper(val context: Context) :
                     rtn.wifiStandard = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_WIFISTANDARD))
                     rtn.longitude = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_GPS_LONGITUDE))
                     rtn.latitude = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_GPS_LATITUDE))
+                    rtn.scanInformation = readInformationElement(rtn.informationID!!)
                     return@lazy rtn
                 }
                 scanLinkedList.add(scan)
@@ -310,7 +313,7 @@ class ScanDBHelper(val context: Context) :
     fun readInformationElement(informationID: Int): List<ScanInformation> {
         val db = this.writableDatabase
         val query = " SELECT * FROM " + INFORMATION_TABLE +
-            " WHERE " + COLUMN_INFORMATION_TABLE_ID + " = '" + informationID + "';"
+            " WHERE " + COLUMN_INFORMATION_TABLE_SCAN_ID + " = '" + informationID + "';"
         val cursor = db.rawQuery(query, null)
         val rtn = mutableListOf<ScanInformation>()
 

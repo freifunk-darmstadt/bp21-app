@@ -116,6 +116,9 @@ class PowaApi private constructor(context: Context) {
         mapNames.add(mapToAdd.name)
         mapToAdd.scans.forEach {
             dbHelper.insertScans(mapToAdd.name, it)
+            it.scanInformation.forEach{
+                dbHelper.insertInformation(it.id, it.extendedID, it.data, it.timestamp)
+            }
         }
         saveBitmapToInternalStorage(context, mapToAdd.name, mapToAdd.image)
 

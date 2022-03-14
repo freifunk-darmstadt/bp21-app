@@ -12,7 +12,6 @@ data class ScanInformation(val scandid: Int, val id: Int, val extendedID: Int,va
 
         other as ScanInformation
 
-        if (scandid != other.scandid) return false
         if (id != other.id) return false
         if (extendedID != other.extendedID) return false
         if (!data.contentEquals(other.data)) return false
@@ -22,8 +21,7 @@ data class ScanInformation(val scandid: Int, val id: Int, val extendedID: Int,va
     }
 
     override fun hashCode(): Int {
-        var result = scandid
-        result = 31 * result + id
+        var result = id
         result = 31 * result + extendedID
         result = 31 * result + data.contentHashCode()
         result = 31 * result + timestamp.hashCode()
