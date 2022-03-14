@@ -25,7 +25,7 @@ class MapListActivity : AppCompatActivity() {
 
             listOfMaps = loadListOfInternalStorageImages(mapListContext)
         }
-        var mapListadapter = MapListAdapter(mapListContext, R.layout.list_row, listOfMaps)
+        var mapListadapter = MapListAdapter(mapListContext, R.layout.list_row, listOfMaps,this)
         listView.adapter = mapListadapter
         listView.onItemClickListener = OnItemClickListener { _, _, pos, _ ->
             var storageImage = mapListadapter.getItem(pos)

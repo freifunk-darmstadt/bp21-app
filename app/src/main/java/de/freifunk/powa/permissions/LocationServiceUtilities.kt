@@ -7,8 +7,11 @@ import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Bundle
 import android.provider.Settings
 import androidx.core.content.ContextCompat.getSystemService
+import de.freifunk.powa.scan.ScanActivity
+import kotlinx.coroutines.runBlocking
 import java.lang.Exception
 
 /**
@@ -147,6 +150,10 @@ fun getGpsLocation(context: Context, locationListener: (Location) -> Unit) {
             // unregister location listener after called once
             locationManager.removeUpdates(this)
         }
+        // this Methods must be override because of API-Level < 30
+        override fun onProviderDisabled(provider: String) {}
+        override fun onProviderEnabled(provider: String) {}
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
     }
 
     locationManager.requestLocationUpdates(
@@ -167,3 +174,4 @@ const val LOCATION_STRING_SEPARATOR = ":"
 fun locationToString(location: Location): String {
     return "${location.longitude}$LOCATION_STRING_SEPARATOR${location.latitude}"
 }
+

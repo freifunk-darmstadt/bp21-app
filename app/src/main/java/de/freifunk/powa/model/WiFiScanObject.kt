@@ -17,6 +17,8 @@ class WiFiScanObject {
     var informationID: Int? = null
     lateinit var timestamp: String // timestamp should have the format "YYYY-MM-DD hh:mm:ss.SSSSSS"
     var wifiStandard: Int? = null
+    var longitude: Float ?= null
+    var latitude: Float ?= null
     constructor() {
     }
 
@@ -42,7 +44,8 @@ class WiFiScanObject {
         if (informationID != other.informationID) return false
         if (timestamp != other.timestamp) return false
         if (wifiStandard != other.wifiStandard) return false
-
+        if (longitude != other.longitude) return false
+        if (latitude != other.latitude) return false
         return true
     }
 
@@ -63,10 +66,12 @@ class WiFiScanObject {
         result = 31 * result + (informationID ?: 0)
         result = 31 * result + timestamp.hashCode()
         result = 31 * result + (wifiStandard ?: 0)
+        result = 31 * result + (longitude?.hashCode() ?:0)
+        result = 31 * result + (latitude?.hashCode() ?:0)
         return result
     }
 
     override fun toString(): String {
-        return "WiFiScanObject(bssid='$bssid', ssid='$ssid', capabilities='$capabilities', centerFreq0=$centerFreq0, centerFreq1=$centerFreq1, channelWidth=$channelWidth, frequency=$frequency, level=$level, operatorFriendlyName='$operatorFriendlyName', venueName='$venueName', xCoordinate=$xCoordinate, yCoordinate=$yCoordinate, scanInformation=$scanInformation, informationID=$informationID, timestamp='$timestamp', wifiStandard=$wifiStandard)"
+        return "WiFiScanObject(bssid='$bssid', ssid='$ssid', capabilities='$capabilities', centerFreq0=$centerFreq0, centerFreq1=$centerFreq1, channelWidth=$channelWidth, frequency=$frequency, level=$level, operatorFriendlyName='$operatorFriendlyName', venueName='$venueName', xCoordinate=$xCoordinate, yCoordinate=$yCoordinate, scanInformation=$scanInformation, informationID=$informationID, timestamp='$timestamp', wifiStandard=$wifiStandard, longitude=$longitude, latitude=$latitude)"
     }
 }
