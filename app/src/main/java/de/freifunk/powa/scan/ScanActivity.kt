@@ -72,7 +72,7 @@ class ScanActivity {
                 it.informationElements.forEach {
                     var bytes = ByteArray(it.bytes.capacity())
                     it.bytes.get(bytes)
-                    db.insertInformation(it.id, bytes, timeStamp)
+                    db.insertInformation(it.id, it.idExt,bytes, timeStamp)
                 }
             }
         }

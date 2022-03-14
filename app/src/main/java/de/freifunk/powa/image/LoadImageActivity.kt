@@ -124,7 +124,7 @@ class LoadImageActivity : AppCompatActivity() {
                 var msCounter: Int = 1
                 if(multiScanToggle.isChecked) {
                     msCounter = PreferenceManager.getDefaultSharedPreferences(context).getInt(resources.getString(R.string.multiscan_key),1)
-                    PreferenceManager.
+
 
                 }
                 getGpsLocation(this) { location ->

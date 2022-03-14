@@ -38,6 +38,7 @@ class ScanDBHelper(val context: Context) :
     val COLUMN_INFORMATION_TABLE_BYTES = "bytes"
     val COLUMN_INFORMATION_TABLE_PK = "pk"
     val COLUMN_INFORMATION_TABLE_SCAN_ID = "scanid"
+    val COLUMN_INFORMATION_TABLE_EXT_ID = "extid"
     val SCAN_TABLE = "scans"
     val COLUMN_SCANS_MAP_NAME = "mapname"
     val COLUMN_SCANS_INFORMATION_ID = "informationid"
@@ -85,6 +86,7 @@ class ScanDBHelper(val context: Context) :
         db?.execSQL(
             "CREATE TABLE " + INFORMATION_TABLE + " (" +
                 COLUMN_INFORMATION_TABLE_ID + " INTEGER ," +
+                COLUMN_INFORMATION_TABLE_EXT_ID + " INTEGER ," +
                 COLUMN_INFORMATION_TABLE_BYTES + " BLOB ," +
                 COLUMN_INFORMTION_TABLE_TIMESTAMP + " TIMESTAMP NOT NULL," +
                 COLUMN_INFORMATION_TABLE_SCAN_ID + " INTEGER NOT NULL," +
@@ -183,7 +185,7 @@ class ScanDBHelper(val context: Context) :
      * @param timeStamp timestamp of the corresponding scanresult
      */
     @SuppressLint("Range")
-    fun insertInformation(id: Int, byte: ByteArray, timeStamp: String) {
+    fun insertInformation(id: Int, extid: Int,byte: ByteArray, timeStamp: String) {
         var db = this.writableDatabase
         var value = ContentValues()
         var scanID: Int?
@@ -197,6 +199,7 @@ class ScanDBHelper(val context: Context) :
         value.put(COLUMN_INFORMTION_TABLE_TIMESTAMP, timeStamp)
         value.put(COLUMN_INFORMATION_TABLE_ID, id)
         value.put(COLUMN_INFORMATION_TABLE_BYTES, byte)
+        value.put(COLUMN_INFORMATION_TABLE_EXT_ID, extid)
         db.insert(INFORMATION_TABLE, null, value)
         db.close()
     }
@@ -315,6 +318,7 @@ class ScanDBHelper(val context: Context) :
                     ScanInformation(
                         cursor.getInt(cursor.getColumnIndex(COLUMN_INFORMATION_TABLE_SCAN_ID)),
                         cursor.getInt(cursor.getColumnIndex(COLUMN_INFORMATION_TABLE_ID)),
+                        cursor.getInt(cursor.getColumnIndex(COLUMN_INFORMATION_TABLE_EXT_ID)),
                         cursor.getBlob(cursor.getColumnIndex(COLUMN_INFORMATION_TABLE_BYTES)),
                         cursor.getString(cursor.getColumnIndex(COLUMN_INFORMTION_TABLE_TIMESTAMP))
                     )
