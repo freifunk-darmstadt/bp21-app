@@ -17,6 +17,8 @@ import de.freifunk.powa.permissions.getGpsLocation
 import de.freifunk.powa.permissions.locationToString
 import de.freifunk.powa.permissions.requestAllPermissions
 import de.freifunk.powa.scan.ScanActivity
+import kotlinx.android.synthetic.main.activity_load_image.*
+import de.freifunk.powa.settings.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,14 +39,17 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LoadImageActivity::class.java))
         }
 
+
         findViewById<Button>(R.id.goToScanActivityBtn).setOnClickListener {
             getGpsLocation(this) { location ->
-                var coords = locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
-                var longitude = coords[0]
-                var latitide = coords[1]
-                var gpsScan = ScanActivity(this, outdoorName, longitude.toFloat(), latitide.toFloat(), null, 1, null)
+                var coords =
+                    locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
+                var longitude = coords[0].toFloat()
+                var latitude = coords[1].toFloat()
+
+                var gpsScan = ScanActivity(this, outdoorName, null, null, null, 1, longitude, latitude, null)
                 gpsScan.startScan()
-                Toast.makeText(this, "GPS Location: " + longitude.toFloat() + " " + latitide.toFloat(), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "GPS Location: " + longitude + " " + latitude, Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -57,6 +62,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         requestAllPermissions(this@MainActivity)
+
+        findViewById<Button>(R.id.goToSettingsBtn).setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
     }
 
     override fun onRequestPermissionsResult(

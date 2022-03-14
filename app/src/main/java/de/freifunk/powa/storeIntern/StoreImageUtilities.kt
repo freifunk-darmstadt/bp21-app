@@ -70,7 +70,7 @@ fun renameFileInInternalStorage(context: Context, filename: String, newName: Str
     if (!path.endsWith(".jpg")) {
         path = "$path.jpg"
     }
-    val fileOld = Paths.get("${fD.path}${File.separator}$mapDir${File.separator}$path").toFile()
+    val fileOld = Paths.get(path).toFile()
 
     if (!fileOld.exists()) {
         return
@@ -82,7 +82,7 @@ fun renameFileInInternalStorage(context: Context, filename: String, newName: Str
         path = "$path.jpg"
     }
 
-    val fileNew = Paths.get("${fD.path}${File.separator}$mapDir${File.separator}$path").toFile()
+    val fileNew = Paths.get(path).toFile()
 
     if (fileNew.exists()) {
         throw IllegalArgumentException("File with new name already exists")

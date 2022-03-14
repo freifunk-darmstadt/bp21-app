@@ -1,13 +1,15 @@
 package de.freifunk.powa.scan
 
+import android.app.Activity
 import android.content.Context
 import android.net.wifi.ScanResult
 import android.os.Build
+import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.core.view.isVisible
 import de.freifunk.powa.database.ScanDBHelper
+import de.freifunk.powa.image.SavedMarkerView
 import de.freifunk.powa.model.WiFiScanObject
 import java.time.Instant
 import java.time.ZoneOffset
@@ -16,13 +18,15 @@ import java.time.format.DateTimeFormatter
 class ScanActivity {
     private var tableMapName: String // should be set before scan is invoked
     private var timeStamp: String // time should be set before scan is invoked
-    private var xCoordinate: Float = 0f // should be set before scan is invoked
-    private var yCoordinate: Float = 0f // should be set before scan is invoked
+    private var xCoordinate: Float? = 0f // should be set before scan is invoked
+    private var yCoordinate: Float? = 0f // should be set before scan is invoked
     private var scanContext: Context
     private var multiScanCounter: Int = 0
-    var multiScanEditText: EditText?
+    private var longitude: Float = 0f
+    private var latitude: Float = 0f
     var scanBtn: Button?
-    constructor(context: Context, name: String, x: Float, y: Float, btn: Button?, msCounter: Int, multiScanEditText: EditText?) {
+    var view: SavedMarkerView?
+    constructor(context: Context, name: String, x: Float?, y: Float?, btn: Button?, msCounter: Int, longitude: Float, latitude: Float, view: SavedMarkerView?) {
         scanContext = context
         tableMapName = name
         xCoordinate = x
@@ -30,14 +34,16 @@ class ScanActivity {
         timeStamp = getTime()
         scanBtn = btn
         multiScanCounter = msCounter
-        this.multiScanEditText = multiScanEditText
+        this.longitude = longitude
+        this.latitude = latitude
+        this.view = view
+
     }
 
     /**
      * This Method saves the given results in the Sqlite-Database
      * @param results the List of the ScanResults. Results should be filtered first
      */
-
     fun onSuccess(results: List<ScanResult>) {
         results.forEach {
             var db = ScanDBHelper(scanContext)
@@ -55,6 +61,8 @@ class ScanActivity {
             scanResults.timestamp = timeStamp
             scanResults.xCoordinate = xCoordinate
             scanResults.yCoordinate = yCoordinate
+            scanResults.longitude = longitude
+            scanResults.latitude = latitude
             if (Build.VERSION.SDK_INT >= 30) // only available in android API Level 30
                 scanResults.wifiStandard = it.wifiStandard // this order is important because of autoincrement in Scantable
 
@@ -64,7 +72,7 @@ class ScanActivity {
                 it.informationElements.forEach {
                     var bytes = ByteArray(it.bytes.capacity())
                     it.bytes.get(bytes)
-                    db.insertInformation(it.id, bytes, timeStamp)
+                    db.insertInformation(it.id, it.idExt,bytes, timeStamp)
                 }
             }
         }
@@ -72,13 +80,21 @@ class ScanActivity {
         if (multiScanCounter > 0) {
             startScan()
         } else if (multiScanCounter == 0) {
-            if (scanBtn != null && multiScanEditText != null) {
+            if (scanBtn != null ) {
                 scanBtn!!.isVisible = true
-                multiScanEditText!!.isVisible = true
+                if(view != null) {
+                    val db = ScanDBHelper(this.scanContext)
+                    val crdOfMarkers = db.readCoordinates(this.tableMapName)
+
+                    if (crdOfMarkers != null) {
+                        view!!.coordinates = crdOfMarkers
+                    }
+                    view!!.invalidate()
+                }
             }
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
-        Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
+
     }
 
     /**
@@ -87,7 +103,9 @@ class ScanActivity {
     fun onFailure() {
         Toast.makeText(scanContext, "Scan fehlgeschlagen", Toast.LENGTH_SHORT).show()
         scanBtn!!.isVisible = true
-        multiScanEditText!!.isVisible = true
+        if(view != null) {
+            this.view!!.invalidate()
+        }
     }
 
     /**

@@ -181,12 +181,12 @@ class PowaApi private constructor(context: Context) {
     fun registerSelectExporter(context: ComponentActivity, callback: (ExportConsumer) -> Unit): ActivityResultLauncher<Unit> {
         return context.registerForActivityResult(object :
                 ActivityResultContract<Unit, Int>() {
-                //create intent to launch selector
+                // create intent to launch selector
                 override fun createIntent(context: Context, input: Unit?): Intent {
                     return Intent(context, ExportActivity::class.java)
                 }
 
-                //retrieve information from launched activity
+                // retrieve information from launched activity
                 override fun parseResult(resultCode: Int, intent: Intent?): Int {
                     if (intent != null) {
                         return intent.getIntExtra("${context.packageName}.ExportID", -1)
