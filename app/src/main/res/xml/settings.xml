@@ -4,4 +4,7 @@
         android:key="scanThrottle"
         android:title="Benachrichtigung über scan Throttle deaktivieren"/>
     <!-- https://developer.android.com/guide/topics/ui/settings -->
+    <SwitchPreferenceCompat
+        android:key="onLongtap"
+        android:title="@string/longtap_switch" />
 </PreferenceScreen>

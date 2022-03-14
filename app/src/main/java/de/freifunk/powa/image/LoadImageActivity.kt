@@ -1,5 +1,6 @@
 package de.freifunk.powa.image
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Rect
@@ -20,6 +21,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.preference.PreferenceManager
 import de.freifunk.powa.MainActivity
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
@@ -51,7 +53,7 @@ class LoadImageActivity : AppCompatActivity() {
     lateinit var oldMarkers: SavedMarkerView
     lateinit var markerSwitch: Switch
     lateinit var multiScanCounter: EditText
-
+    lateinit var context: Context
     // create ComponentActivity to load and handle loading the image
     // A Dialog pops up after the User selects a map
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -79,7 +81,7 @@ class LoadImageActivity : AppCompatActivity() {
         markerSwitch = findViewById(R.id.switchMarkers)
         multiScanCounter = findViewById(R.id.multiScanTextField)
         createThrottlingDialog(this)
-
+        context = this
         var name = intent.getStringExtra("mapName")
 
         if (name != null) {
@@ -236,6 +238,20 @@ class LoadImageActivity : AppCompatActivity() {
 
     inner class MarkerGestureListener : GestureDetector.SimpleOnGestureListener() {
         override fun onDoubleTap(e: MotionEvent?): Boolean {
+            if(!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)){
+                setMarker(e)
+            }
+
+            return super.onDoubleTap(e)
+        }
+
+        override fun onLongPress(e: MotionEvent?) {
+            if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)){
+                setMarker(e)
+            }
+            super.onLongPress(e)
+        }
+        fun setMarker(e: MotionEvent?){
             val statusBarHeight = getHeight()
             markerView.circleShouldDraw = true
             val middleX = showImgIv.width / 2
@@ -256,10 +272,7 @@ class LoadImageActivity : AppCompatActivity() {
             markerView.invalidate()
             scanBtn.isInvisible = false
             multiScanCounter.isInvisible = false
-
-            return super.onDoubleTap(e)
         }
-
         fun dpFromPx(px: Float): Float {
             return px / resources.displayMetrics.density
         }
