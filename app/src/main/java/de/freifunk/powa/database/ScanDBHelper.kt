@@ -307,7 +307,7 @@ class ScanDBHelper(val context: Context) :
     fun readInformationElement(informationID: Int): List<ScanInformation> {
         val db = this.writableDatabase
         val query = " SELECT * FROM " + INFORMATION_TABLE +
-            " WHERE " + COLUMN_INFORMATION_TABLE_ID + " = '" + informationID + "';"
+            " WHERE " + COLUMN_INFORMATION_TABLE_SCAN_ID + " = '" + informationID + "';"
         val cursor = db.rawQuery(query, null)
         val rtn = mutableListOf<ScanInformation>()
 
