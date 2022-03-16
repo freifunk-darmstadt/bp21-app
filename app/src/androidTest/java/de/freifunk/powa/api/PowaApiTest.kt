@@ -51,20 +51,6 @@ class PowaApiTest {
         }
     }
 
-    /*@Test
-    fun testDequeue() {
-        val queue = mutableListOf(0,1,2,3,4,5)
-
-        val it = queue.iterator()
-        while (it.hasNext()){
-            it.next()
-            it.remove()
-        }
-        queue.map { it }
-        assertEquals(0, queue.size)
-    }
-     */
-
     @Test
     fun addMap() {
         val mapNames = listOf("addMap1", "addMap2", "addMap3", "addMap4", "addMap5", "addMap6", "addMap7")
