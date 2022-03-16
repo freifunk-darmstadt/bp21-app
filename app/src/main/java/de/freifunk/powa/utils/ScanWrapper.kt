@@ -1,21 +1,19 @@
-package de.freifunk.powa.scan
+package de.freifunk.powa.utils
 
-import android.app.Activity
 import android.content.Context
 import android.net.wifi.ScanResult
 import android.os.Build
-import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.view.isVisible
-import de.freifunk.powa.database.ScanDBHelper
-import de.freifunk.powa.image.SavedMarkerView
+import de.freifunk.powa.activity.view.SavedMarkerView
 import de.freifunk.powa.model.WiFiScanObject
+import de.freifunk.powa.scan.scan
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-class ScanActivity {
+class ScanWrapper {
     private var tableMapName: String // should be set before scan is invoked
     private var timeStamp: String // time should be set before scan is invoked
     private var xCoordinate: Float? = 0f // should be set before scan is invoked

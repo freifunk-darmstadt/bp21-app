@@ -1,5 +1,6 @@
-package de.freifunk.powa.api
+package de.freifunk.powa.api.exporter
 
+import de.freifunk.powa.api.ExportConsumer
 import de.freifunk.powa.model.Map
 import de.freifunk.powa.model.ScanInformation
 import de.freifunk.powa.model.WiFiScanObject

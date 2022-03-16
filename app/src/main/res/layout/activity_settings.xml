@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".settings.SettingsActivity">
+    tools:context=".activity.SettingsActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/settings_container"
-        android:name="de.freifunk.powa.settings.MySettingsFragment"
+        android:name="de.freifunk.powa.activity.view.SettingsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"

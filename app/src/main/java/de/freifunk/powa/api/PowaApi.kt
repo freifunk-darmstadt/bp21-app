@@ -9,8 +9,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.content.FileProvider
 import de.freifunk.powa.BuildConfig
+import de.freifunk.powa.activity.ExportActivity
 import de.freifunk.powa.database.ScanDBHelper
-import de.freifunk.powa.image.LoadImageActivity
+import de.freifunk.powa.activity.LoadImageActivity
 import de.freifunk.powa.model.Map
 import de.freifunk.powa.model.WiFiScanObject
 import de.freifunk.powa.scan.filterData
@@ -18,8 +19,6 @@ import de.freifunk.powa.scan.scan
 import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import java.io.File
-import java.lang.Exception
-import java.lang.IllegalStateException
 import java.net.URLConnection
 
 class PowaApi private constructor(context: Context) {

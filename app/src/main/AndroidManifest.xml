@@ -18,22 +18,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.POWA">
         <activity
-            android:name=".settings.SettingsActivity"
+            android:name=".activity.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".image.LoadImageActivity"
+            android:name=".activity.LoadImageActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".api.ExportActivity"
+            android:name=".activity.ExportActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
         <activity
-            android:name=".image.MapListActivity"
+            android:name=".activity.MapListActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

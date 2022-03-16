@@ -1,4 +1,4 @@
-package de.freifunk.powa.image
+package de.freifunk.powa.activity.view
 
 import android.content.Context
 import android.graphics.Canvas

@@ -10,9 +10,6 @@ import android.location.LocationManager
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.provider.Settings
-import androidx.core.content.ContextCompat.getSystemService
-import de.freifunk.powa.scan.ScanActivity
-import kotlinx.coroutines.runBlocking
 import java.lang.Exception
 
 /**

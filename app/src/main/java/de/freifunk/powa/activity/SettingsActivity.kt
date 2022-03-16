@@ -1,4 +1,4 @@
-package de.freifunk.powa.settings
+package de.freifunk.powa.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

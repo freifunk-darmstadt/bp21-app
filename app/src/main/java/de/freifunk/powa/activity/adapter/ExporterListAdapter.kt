@@ -1,4 +1,4 @@
-package de.freifunk.powa.adapter
+package de.freifunk.powa.activity.adapter
 
 import android.content.Context
 import android.view.LayoutInflater

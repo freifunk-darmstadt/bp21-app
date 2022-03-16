@@ -1,4 +1,4 @@
-package de.freifunk.powa.adapter
+package de.freifunk.powa.activity.adapter
 
 import android.app.Activity
 import android.content.Context
@@ -13,7 +13,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
-import de.freifunk.powa.storeIntern.InternalStorageImage
+import de.freifunk.powa.model.InternalStorageImage
 import de.freifunk.powa.storeIntern.deleteFileFromInternalStorage
 import de.freifunk.powa.storeIntern.renameFileInInternalStorage
 import java.io.IOException

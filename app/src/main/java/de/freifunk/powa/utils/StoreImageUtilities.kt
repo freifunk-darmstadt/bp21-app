@@ -3,6 +3,7 @@ package de.freifunk.powa.storeIntern
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import de.freifunk.powa.model.InternalStorageImage
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

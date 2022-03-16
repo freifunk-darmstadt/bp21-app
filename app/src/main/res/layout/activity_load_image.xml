@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".image.LoadImageActivity">
+    tools:context=".activity.LoadImageActivity">
 
     <ImageView
         android:id="@+id/showImgIv"
@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_delete" />
-    <de.freifunk.powa.image.SavedMarkerView
+    <de.freifunk.powa.activity.view.SavedMarkerView
         android:id="@+id/old_markers_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -27,7 +27,7 @@
         app:layout_constraintTop_toTopOf="@id/showImgIv" />
 
 
-    <de.freifunk.powa.MarkerView
+    <de.freifunk.powa.activity.view.MarkerView
         android:id="@+id/marker_view"
         android:layout_width="0dp"
         android:layout_height="0dp"

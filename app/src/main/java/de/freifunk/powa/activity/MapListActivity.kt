@@ -1,4 +1,4 @@
-package de.freifunk.powa.image
+package de.freifunk.powa.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,8 +6,8 @@ import android.widget.AdapterView.OnItemClickListener
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.R
-import de.freifunk.powa.adapter.MapListAdapter
-import de.freifunk.powa.storeIntern.InternalStorageImage
+import de.freifunk.powa.activity.adapter.MapListAdapter
+import de.freifunk.powa.model.InternalStorageImage
 import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import kotlinx.coroutines.runBlocking
 

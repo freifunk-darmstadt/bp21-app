@@ -1,4 +1,4 @@
-package de.freifunk.powa.api
+package de.freifunk.powa.activity
 
 import android.app.Activity
 import android.content.Intent
@@ -6,7 +6,8 @@ import android.os.Bundle
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.R
-import de.freifunk.powa.adapter.ExporterListAdapter
+import de.freifunk.powa.activity.adapter.ExporterListAdapter
+import de.freifunk.powa.api.PowaApi
 
 class ExportActivity : AppCompatActivity() {
     lateinit var listView: ListView
