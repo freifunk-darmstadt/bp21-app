@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import de.freifunk.powa.api.ExportConsumerJSON
-import de.freifunk.powa.api.PowaApi
 import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.image.MapListActivity
 import de.freifunk.powa.permissions.GeneralPermissionRequestCode
@@ -17,6 +15,7 @@ import de.freifunk.powa.permissions.getGpsLocation
 import de.freifunk.powa.permissions.locationToString
 import de.freifunk.powa.permissions.requestAllPermissions
 import de.freifunk.powa.scan.ScanActivity
+import de.freifunk.powa.settings.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,14 +25,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val api = PowaApi.getInstance(this)
+        /*val api = PowaApi.getInstance(this)
         api.registerExporter(ExportConsumerJSON())
         api.selectExporter(this) {
             api.exportData(this, consumer = it).readLines().forEach {
                 Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()
             }
             api.shareData(this, api.exportData(this, consumer = it))
-        }
+        }*/
 
         setContentView(R.layout.activity_main)
 
@@ -46,13 +45,15 @@ class MainActivity : AppCompatActivity() {
         goToScanActivityBtn = findViewById(R.id.goToScanActivityBtn)
 
         goToScanActivityBtn.setOnClickListener {
-            var gpsLocation = getGpsLocation(this) { location ->
-                var coords = locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
-                var longitude = coords[0]
-                var latitide = coords[1]
-                var gpsScan = ScanActivity(this, outdoorName, longitude.toFloat(), latitide.toFloat(), null, 1, null)
+            getGpsLocation(this) { location ->
+                var coords =
+                    locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
+                var longitude = coords[0].toFloat()
+                var latitude = coords[1].toFloat()
+
+                var gpsScan = ScanActivity(this, outdoorName, null, null, null, 1, longitude, latitude, null)
                 gpsScan.startScan()
-                Toast.makeText(this, "GPS Location: " + longitude.toFloat() + " " + latitide.toFloat(), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "GPS Location: " + longitude + " " + latitude, Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -62,6 +63,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         requestAllPermissions(this@MainActivity)
+
+        findViewById<Button>(R.id.goToSettingsBtn).setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
     }
 
     override fun onRequestPermissionsResult(

@@ -1,0 +1,7 @@
+2000-12-6 04:23:40;34.4;54.3;A;ssid;capabilites;50;60;100;80;3;wLan;Internet;1
+2000-12-6 04:23:40;36.4;55.3;B;ssid;capabilites;50;60;100;80;3;wLan;Internet;2
+2000-12-6 04:23:40;37.4;57.3;C;ssid;capabilites;50;60;100;80;3;wLan;Internet;3
+2000-12-6 04:23:40;40.4;60.3;D;ssid;capabilites;50;60;100;80;3;wLan;Internet;4
+2000-12-6 04:23:40;44.4;64.3;E;ssid;capabilites;50;60;100;80;3;wLan;Internet;5
+2000-12-6 04:23:40;47.4;67.3;F;ssid;capabilites;50;60;100;80;3;wLan;Internet;6
+2000-12-6 04:23:40;100.4;100.3;G;ssid;capabilites;50;60;100;80;3;wLan;Internet;7

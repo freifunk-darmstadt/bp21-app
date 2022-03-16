@@ -4,4 +4,15 @@
         android:key="scanThrottle"
         android:title="Benachrichtigung über scan Throttle deaktivieren"/>
     <!-- https://developer.android.com/guide/topics/ui/settings -->
+    <SwitchPreferenceCompat
+        android:key="onLongtap"
+        android:title="@string/longtap_switch" />
+    <ListPreference
+        android:defaultValue="2"
+        android:entries="@array/multiscan_array"
+        android:entryValues="@array/multiscan_values"
+        android:key="@string/multiscan_key"
+        android:title="Setze Anzahl für Multiscan" />
+
+
 </PreferenceScreen>

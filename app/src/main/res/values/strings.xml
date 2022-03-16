@@ -5,5 +5,10 @@
     <string name="old_image_load">Alte Karten laden</string>
     <string name="new_image_load">Neue Karte laden</string>
     <string name="go_to_scan">Outdoor-Scan</string>
+    <string name="go_to_settings">Einstellungen</string>
     <string name="toggle_marker">Marker ausblenden</string>
+    <string name="toggle_multiscan">Multiscan</string>
+    <string name="longtap_switch">Zum markieren eines Standpunkts Longtap anstatt Doubletap nutzen</string>
+    <string name="number_multiscasn">Anzahl der Multiscans</string>
+    <string name="multiscan_key">onMultiscan</string>
 </resources>
