@@ -1,5 +1,6 @@
 package de.freifunk.powa.image
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Rect
@@ -20,6 +21,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.preference.PreferenceManager
 import de.freifunk.powa.MainActivity
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
@@ -51,6 +53,7 @@ class LoadImageActivity : AppCompatActivity() {
     protected lateinit var scanBtn: Button
     lateinit var oldMarkers: SavedMarkerView
     lateinit var markerSwitch: Switch
+    lateinit var context: Context
     lateinit var multiScanToggle: Switch
 
     // create ComponentActivity to load and handle loading the image
@@ -80,7 +83,7 @@ class LoadImageActivity : AppCompatActivity() {
         markerSwitch = findViewById(R.id.switchMarkers)
         multiScanToggle = findViewById(R.id.multiScanToggle)
         createThrottlingDialog(this)
-
+        context = this
         var name = intent.getStringExtra("mapName")
 
         if (name != null) {
@@ -118,9 +121,12 @@ class LoadImageActivity : AppCompatActivity() {
         supportActionBar!!.hide()
         scanBtn.setOnClickListener {
             if (scanBtn.text == resources.getString(R.string.start_scan)) {
-                var msCounter = 1
-                if(multiScanToggle.isChecked)
-                    msCounter = 4
+                var msCounter: Int = 1
+                if (multiScanToggle.isChecked) {
+                    var str: String? = PreferenceManager.getDefaultSharedPreferences(context).getString(resources.getString(R.string.multiscan_key), "2")
+
+                    msCounter = Integer.parseInt(str)
+                }
                 getGpsLocation(this) { location ->
                     var coords =
                         locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
@@ -255,7 +261,29 @@ class LoadImageActivity : AppCompatActivity() {
          * @return return from super.onDoubleTap
          */
         override fun onDoubleTap(e: MotionEvent?): Boolean {
+            if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)) {
+                setMarker(e)
+            }
 
+            return super.onDoubleTap(e)
+        }
+
+        /**
+         * Marks the position where the view was longpressed
+         * @param return from super.onLongPress
+         */
+        override fun onLongPress(e: MotionEvent?) {
+            if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)) {
+                setMarker(e)
+            }
+            super.onLongPress(e)
+        }
+
+        /**
+         * This Method sets a Marker
+         * @param e is the MotionEvent. It can be a LongPress or a doubletap
+         */
+        fun setMarker(e: MotionEvent?) {
             val statusBarHeight = getHeight()
             markerView.circleShouldDraw = true
             val middleX = showImgIv.width / 2
@@ -276,7 +304,6 @@ class LoadImageActivity : AppCompatActivity() {
             markerView.invalidate()
             scanBtn.isInvisible = false
             multiScanToggle.isInvisible = false
-            return super.onDoubleTap(e)
         }
     }
 

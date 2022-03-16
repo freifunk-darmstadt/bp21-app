@@ -17,8 +17,8 @@ class WiFiScanObject {
     var informationID: Int? = null
     lateinit var timestamp: String // timestamp should have the format "YYYY-MM-DD hh:mm:ss.SSSSSS"
     var wifiStandard: Int? = null
-    var longitude: Float ?= null
-    var latitude: Float ?= null
+    var longitude: Float ? = null
+    var latitude: Float ? = null
     constructor() {
     }
 
@@ -48,7 +48,6 @@ class WiFiScanObject {
         if (latitude != other.latitude) return false
         return true
     }
-
     override fun hashCode(): Int {
         var result = bssid.hashCode()
         result = 31 * result + ssid.hashCode()
@@ -66,8 +65,8 @@ class WiFiScanObject {
         result = 31 * result + (informationID ?: 0)
         result = 31 * result + timestamp.hashCode()
         result = 31 * result + (wifiStandard ?: 0)
-        result = 31 * result + (longitude?.hashCode() ?:0)
-        result = 31 * result + (latitude?.hashCode() ?:0)
+        result = 31 * result + (longitude?.hashCode() ?: 0)
+        result = 31 * result + (latitude?.hashCode() ?: 0)
         return result
     }
 
