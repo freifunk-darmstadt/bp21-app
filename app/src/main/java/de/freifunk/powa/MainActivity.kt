@@ -15,34 +15,28 @@ import de.freifunk.powa.permissions.getGpsLocation
 import de.freifunk.powa.permissions.locationToString
 import de.freifunk.powa.permissions.requestAllPermissions
 import de.freifunk.powa.scan.ScanActivity
+import kotlinx.android.synthetic.main.activity_load_image.*
 import de.freifunk.powa.settings.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var goToLoadImgActivityBtn: Button
-    private lateinit var goToScanActivityBtn: Button
     private var outdoorName = "Outdoormap_Scan_Collection"
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
         /*val api = PowaApi.getInstance(this)
         api.registerExporter(ExportConsumerJSON())
-        api.selectExporter(this) {
-            api.exportData(this, consumer = it).readLines().forEach {
-                Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()
-            }
+        val selectExporter = api.registerSelectExporter(this) {
             api.shareData(this, api.exportData(this, consumer = it))
         }*/
 
-        setContentView(R.layout.activity_main)
-
-        goToLoadImgActivityBtn = findViewById(R.id.goToLoadImageActivityBtn)
-
-        goToLoadImgActivityBtn.setOnClickListener {
+        findViewById<Button>(R.id.goToLoadImageActivityBtn).setOnClickListener {
             startActivity(Intent(this, LoadImageActivity::class.java))
         }
 
-        goToScanActivityBtn = findViewById(R.id.goToScanActivityBtn)
 
         goToScanActivityBtn.setOnClickListener {
             getGpsLocation(this) { location ->
@@ -58,8 +52,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.mainToListBtn).setOnClickListener {
-            // startActivity(Intent(this, ExportActivity::class.java))
             startActivity(Intent(this, MapListActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.exportBtn).setOnClickListener {
+            selectExporter.launch(Unit)
         }
 
         requestAllPermissions(this@MainActivity)

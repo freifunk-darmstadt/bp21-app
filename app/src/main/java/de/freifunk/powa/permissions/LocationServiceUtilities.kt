@@ -11,6 +11,8 @@ import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.provider.Settings
 import androidx.core.content.ContextCompat.getSystemService
+import de.freifunk.powa.scan.ScanActivity
+import kotlinx.coroutines.runBlocking
 import java.lang.Exception
 
 /**
@@ -160,3 +162,4 @@ const val LOCATION_STRING_SEPARATOR = ":"
 fun locationToString(location: Location): String {
     return "${location.longitude}$LOCATION_STRING_SEPARATOR${location.latitude}"
 }
+

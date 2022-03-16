@@ -9,5 +9,5 @@ abstract class ExportConsumer
  * @param description the description that should be displayed if a Exporter is selected
  */(val exportName: String, val fileType: String, val description: String) {
 
-    abstract fun export(file: File, maps: List<Map>)
+    abstract fun export(file: File, maps: MutableList<Map>)
 }

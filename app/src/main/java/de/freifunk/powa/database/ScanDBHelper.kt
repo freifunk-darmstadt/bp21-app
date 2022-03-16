@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import de.freifunk.powa.model.ScanInformation
 import de.freifunk.powa.model.WiFiScanObject
+import java.lang.Exception
+import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 import java.util.LinkedList
 
 val DATABASE_NAME = "ScansDB"
@@ -270,25 +273,28 @@ class ScanDBHelper(val context: Context) :
         if (cursor.count > 0) {
             cursor.moveToFirst()
             do {
-                val scan = WiFiScanObject()
-
-                scan.bssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_BSSID))
-                scan.ssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_SSID))
-                scan.capabilities = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_CAPABILITIES))
-                scan.centerFreq0 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ0))
-                scan.centerFreq1 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ1))
-                scan.channelWidth = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CHANNEL_WIDTH))
-                scan.frequency = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_FREQUENCY))
-                scan.level = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_LEVEL))
-                scan.operatorFriendlyName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_OPERATOR_FRIENDLY_NAME))
-                scan.timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_TIMESTAMP))
-                scan.venueName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_VENUE_NAME))
-                scan.xCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_X))
-                scan.yCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_Y))
-                scan.informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
-                scan.wifiStandard = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_WIFISTANDARD))
-                scan.longitude = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_GPS_LONGITUDE))
-                scan.latitude = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_GPS_LATITUDE))
+                val scan: WiFiScanObject by lazy {
+                    val rtn =  WiFiScanObject()
+                    rtn.bssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_BSSID))
+                    rtn.ssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_SSID))
+                    rtn.capabilities = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_CAPABILITIES))
+                    rtn.centerFreq0 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ0))
+                    rtn.centerFreq1 = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CENTERFREQ1))
+                    rtn.channelWidth = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_CHANNEL_WIDTH))
+                    rtn.frequency = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_FREQUENCY))
+                    rtn.level = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_LEVEL))
+                    rtn.operatorFriendlyName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_OPERATOR_FRIENDLY_NAME))
+                    rtn.timestamp = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_TIMESTAMP))
+                    rtn.venueName = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_VENUE_NAME))
+                    rtn.xCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_X))
+                    rtn.yCoordinate = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_Y))
+                    rtn.informationID = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_INFORMATION_ID))
+                    rtn.wifiStandard = cursor.getInt(cursor.getColumnIndex(COLUMN_SCANS_WIFISTANDARD))
+                    rtn.longitude = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_GPS_LONGITUDE))
+                    rtn.latitude = cursor.getFloat(cursor.getColumnIndex(COLUMN_SCANS_GPS_LATITUDE))
+                    rtn.scanInformation = readInformationElement(rtn.informationID!!)
+                    return@lazy rtn
+                }
                 scanLinkedList.add(scan)
             } while (cursor.moveToNext())
         } else {

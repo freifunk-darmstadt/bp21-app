@@ -5,17 +5,21 @@ import android.content.Intent
 import android.net.wifi.ScanResult
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.content.FileProvider
 import de.freifunk.powa.BuildConfig
 import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.model.Map
+import de.freifunk.powa.model.WiFiScanObject
 import de.freifunk.powa.scan.filterData
 import de.freifunk.powa.scan.scan
 import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import java.io.File
+import java.lang.Exception
+import java.lang.IllegalStateException
 import java.net.URLConnection
 
 class PowaApi private constructor(context: Context) {
@@ -37,9 +41,9 @@ class PowaApi private constructor(context: Context) {
     }
 
     /**
-     * stores all currently loaded maps with all scan informations
+     * Stores the names of all Maps currently existent in the app
      */
-    val maps = mutableListOf<Map>()
+    private val mapNames = mutableListOf<String>()
 
     /**
      * stores all data exporters
@@ -51,16 +55,50 @@ class PowaApi private constructor(context: Context) {
         loadListOfInternalStorageImages(context).forEach {
             val scanData = dbHelper.readScans(it.name)
 
-            maps.add(Map(scanData ?: listOf(), it.name, dbHelper.readMapLocation(it.name), it.bitmap))
+            //maps.add(Map(scanData ?: listOf(), it.name, dbHelper.readMapLocation(it.name), it.bitmap))
+            mapNames.add(it.name)
         }
+    }
+
+    /**
+     * @param context the context of the app.
+     * @return a List of lazy loaded Maps representing all maps stored in the app
+     */
+    fun getMaps(context: Context): MutableList<Map> {
+        val dbHelper = ScanDBHelper(context)
+        val images = loadListOfInternalStorageImages(context)
+
+        return mapNames
+            .map {
+                name ->
+                val map: Map by lazy {
+                    val scanData: List<WiFiScanObject> by lazy { dbHelper.readScans(name) ?: listOf() }
+                    return@lazy Map(
+                        scanData,
+                        name,
+                        dbHelper.readMapLocation(name),
+                        images.filter { it.name ==  name}[0].bitmap)
+                }
+                return@map map
+            }.toMutableList()
     }
 
     /**
      * @param mapName the name of the map to return
      * @return returns the map with the given name or null if no map with the name exists
      */
-    fun getMapByName(mapName: String): Map? {
-        return maps.firstOrNull { it.name == mapName }
+    fun getMapByName(context: Context, mapName: String): Map? {
+        val dbHelper = ScanDBHelper(context)
+        val images = loadListOfInternalStorageImages(context)
+        val map: Map? by lazy {
+            val scanData = dbHelper.readScans(mapName)
+            return@lazy Map(
+                scanData ?: listOf(),
+                mapName,
+                dbHelper.readMapLocation(mapName),
+                images.filter { it.name ==  mapName}[0].bitmap)
+        }
+        return map
     }
 
     /**
@@ -75,13 +113,16 @@ class PowaApi private constructor(context: Context) {
         if (!dbHelper.insertMaps(mapToAdd.name)) {
             return false
         }
+        mapNames.add(mapToAdd.name)
         mapToAdd.scans.forEach {
             dbHelper.insertScans(mapToAdd.name, it)
+            it.scanInformation.forEach{
+                dbHelper.insertInformation(it.id, it.extendedID, it.data, it.timestamp)
+            }
         }
         saveBitmapToInternalStorage(context, mapToAdd.name, mapToAdd.image)
 
         mapToAdd.location?.let { dbHelper.updateLocationInTableMap(mapToAdd.name, it) }
-        maps.add(mapToAdd)
         return true
     }
 
@@ -140,8 +181,8 @@ class PowaApi private constructor(context: Context) {
      * @param context the context from which the export activity should be launched
      * @param callback the function that should be called as soon as the user selected a export consumer
      */
-    fun selectExporter(context: ComponentActivity, callback: (ExportConsumer) -> Unit) {
-        context.registerForActivityResult(object :
+    fun registerSelectExporter(context: ComponentActivity, callback: (ExportConsumer) -> Unit): ActivityResultLauncher<Unit> {
+        return context.registerForActivityResult(object :
                 ActivityResultContract<Unit, Int>() {
                 // create intent to launch selector
                 override fun createIntent(context: Context, input: Unit?): Intent {
@@ -156,11 +197,11 @@ class PowaApi private constructor(context: Context) {
                     return -1
                 }
             }) {
-            // call callback if user selected a valid exporter
-            if (it != 1) {
+            //call callback if user selected a valid exporter
+            if (it != -1) {
                 callback(exporter[it])
             }
-        }.launch(Unit)
+        }
     }
 
     /**
@@ -168,7 +209,7 @@ class PowaApi private constructor(context: Context) {
      *
      * @param context the context this function is called from. Used to store the file.
      */
-    fun exportData(context: Context, consumer: ExportConsumer, maps: List<Map> = this.maps): File {
+    fun exportData(context: Context, consumer: ExportConsumer, maps: MutableList<Map> = getMaps(context)): File {
         val suffix = consumer.fileType
         val tempFile = File(context.filesDir, "exports" + File.separator + "exportedData.$suffix")
 

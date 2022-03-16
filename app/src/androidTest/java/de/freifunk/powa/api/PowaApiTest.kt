@@ -39,15 +39,15 @@ class PowaApiTest {
     fun getMapByName() {
         val mapNames = listOf("Map1", "Map2", "Map3", "Map4", "Map5", "Map6", "Map7")
         val maps = HashMap<String, Map>()
-        for (name in mapNames) {
-            val scans = listOf(generateScan(), generateScan(), generateScan(), generateScan())
-            val map = generateMap(name, scans)
+        for (i in 0 until mapNames.size) {
+            val scans = listOf(generateScan(i*4 + 1), generateScan(i*4 + 2), generateScan(i*4 + 3), generateScan(i*4 + 4))
+            val map = generateMap(mapNames[i], scans)
             api.addMap(thisContext, map)
-            maps[name] = map
+            maps[mapNames[i]] = map
         }
 
         for (name in mapNames) {
-            assertEquals(maps[name], api.getMapByName(name))
+            assertEquals(maps[name], api.getMapByName(thisContext, name))
         }
     }
 
@@ -56,21 +56,21 @@ class PowaApiTest {
         val mapNames = listOf("addMap1", "addMap2", "addMap3", "addMap4", "addMap5", "addMap6", "addMap7")
         val maps = mutableListOf<Map>()
 
-        assertEquals("Number of stored maps does not match expected", 0, api.maps.size)
-        for (name in mapNames) {
-            val scans = listOf(generateScan(name.hashCode()), generateScan(name.hashCode() + 1), generateScan(name.hashCode() + 2), generateScan(name.hashCode() + 3))
-            val map = generateMap(name, scans)
+        assertEquals("Number of stored maps does not match expected", 0, api.getMaps(thisContext).size)
+        for (i in 0 until mapNames.size) {
+            val scans = listOf(generateScan(i*4 +1), generateScan(i*4 +  2), generateScan(i*4 + 3), generateScan(i*4 + 4))
+            val map = generateMap(mapNames[i], scans)
             maps.add(map)
             assertTrue("Api should return true after successfully adding map", api.addMap(thisContext, map))
         }
-        assertEquals("Number of stored maps does not match expected", mapNames.size, api.maps.size)
-        assertTrue(maps.all { map -> api.maps.any { it == map } })
+        assertEquals("Number of stored maps does not match expected", mapNames.size, api.getMaps(thisContext).size)
+        assertTrue("created map was not found in loaded maps", maps.all { map -> api.getMaps(thisContext).any { it == map } })
 
-        assertFalse("Api should return false when trying to add existing map", api.addMap(thisContext, api.maps[0]))
+        assertFalse("Api should return false when trying to add existing map", api.addMap(thisContext, api.getMaps(thisContext)[0]))
 
-        for (name in mapNames) {
-            val storedScans = dataBase.readScans(name)
-            // assertEquals(scans,storedScans)
+        for (i in 0 until maps.size) {
+            val storedScans = dataBase.readScans(mapNames[i])
+            assertEquals(maps[i].scans, storedScans)
         }
     }
 
@@ -125,12 +125,23 @@ class PowaApiTest {
         scanObject.timestamp = "${System.currentTimeMillis() + id}"
         scanObject.venueName = getRandomString(16, (id * 10) % 7)
         scanObject.scanInformation = listOf(generateInformation(id), generateInformation(id + 1), generateInformation(id + 2))
+        scanObject.centerFreq0 = Random(id).nextInt(0, 10)
+        scanObject.centerFreq1 = Random(id).nextInt(0, 10)
+        scanObject.channelWidth = Random(id).nextInt(0, 10)
+        scanObject.frequency = Random(id).nextInt(0, 10)
+        scanObject.level = Random(id).nextInt(-90, 0)
+        scanObject.wifiStandard = Random(id).nextInt(0, 5)
+        scanObject.xCoordinate = Random(id).nextFloat()
+        scanObject.yCoordinate = Random(id+1).nextFloat()
+        scanObject.longitude = Random(id+2).nextFloat()
+        scanObject.latitude = Random(id+3).nextFloat()
+        scanObject.informationID = id
 
         return scanObject
     }
 
     private fun generateInformation(id: Int = 0): ScanInformation {
-        return ScanInformation(id, Random(id).nextBytes(5), "${System.currentTimeMillis() + id}")
+        return ScanInformation(0, id, Random(id).nextInt(0, 25), Random(id).nextBytes(5), "${System.currentTimeMillis() + id}")
     }
 
     private fun getRandomString(length: Int, seed: Int): String {
@@ -158,7 +169,7 @@ class PowaApiTest {
         operation: (File, List<Map>) -> Unit
     ): ExportConsumer {
         return object : ExportConsumer("exporter", "txt", "text") {
-            override fun export(file: File, maps: List<Map>) {
+            override fun export(file: File, maps: MutableList<Map>) {
                 operation(file, maps)
             }
         }
