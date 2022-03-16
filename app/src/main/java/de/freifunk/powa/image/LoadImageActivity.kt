@@ -180,6 +180,7 @@ class LoadImageActivity : AppCompatActivity() {
             val negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
                 scanAct.startScan()
+
                 scanDialog.dismiss()
             }
             negBtn.setOnClickListener {
