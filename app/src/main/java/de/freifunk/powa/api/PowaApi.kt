@@ -247,10 +247,6 @@ class PowaApi private constructor(context: Context) {
 
         consumer.export(tempFile, maps)
 
-        tempFile.readLines().forEach {
-            Toast.makeText(context, "Api Lines: $it", Toast.LENGTH_SHORT).show()
-        }
-
         return tempFile
     }
 

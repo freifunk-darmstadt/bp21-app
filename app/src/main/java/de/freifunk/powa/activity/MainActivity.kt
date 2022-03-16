@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity() {
                 var gpsScan = ScanWrapper(this, outdoorName, null, null, null, 1, null)
                 gpsScan.updateLocation(longitude, latitude)
                 gpsScan.startScan()
-                Toast.makeText(this, "GPS Location: " + longitude + " " + latitude, Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -52,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         val api = PowaApi.getInstance(this)
         api.registerExporter(ExportConsumerJSON())
-        val selectExporter = api.registerSelectExporter(this){
+        val selectExporter = api.registerSelectExporter(this) {
             api.shareData(this, api.exportData(this, it))
         }
 
@@ -64,31 +63,6 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.goToSettingsBtn).setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == GeneralPermissionRequestCode) {
-            for (resultIndex in grantResults.indices) {
-                if (grantResults[resultIndex] == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Permission granted: ${PERMISSIONS[resultIndex]}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Permission denied: ${PERMISSIONS[resultIndex]}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
         }
     }
 }

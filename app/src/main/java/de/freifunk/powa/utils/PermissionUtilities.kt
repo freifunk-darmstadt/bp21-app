@@ -58,13 +58,6 @@ fun checkPermissions(context: Context, permissions: Array<String>) {
             // collect all denied permissions
             // (this function only does checking NOT requesting for permissions)
             notGrantedPermissions.add(permissions[permissionIndex])
-        } else {
-            // Show that permission is granted
-            Toast.makeText(
-                context,
-                "(check), Permission Granted: ${permissions[permissionIndex]}",
-                Toast.LENGTH_SHORT
-            ).show()
         }
     }
 }
