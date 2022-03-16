@@ -266,12 +266,21 @@ class LoadImageActivity : AppCompatActivity() {
             return super.onDoubleTap(e)
         }
 
+        /**
+         * Marks the position where the view was longpressed
+         * @param return from super.onLongPress
+         */
         override fun onLongPress(e: MotionEvent?) {
             if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)){
                 setMarker(e)
             }
             super.onLongPress(e)
         }
+
+        /**
+         * This Method sets a Marker
+         * @param e is the MotionEvent. It can be a LongPress or a doubletap
+         */
         fun setMarker(e: MotionEvent?){
             val statusBarHeight = getHeight()
             markerView.circleShouldDraw = true
