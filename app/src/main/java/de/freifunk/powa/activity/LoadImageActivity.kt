@@ -25,6 +25,7 @@ import androidx.preference.PreferenceManager
 import de.freifunk.powa.activity.view.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.activity.view.SavedMarkerView
+import de.freifunk.powa.api.PowaApi
 import de.freifunk.powa.permissions.LOCATION_STRING_SEPARATOR
 import de.freifunk.powa.permissions.getGpsLocation
 import de.freifunk.powa.permissions.locationToString
@@ -52,6 +53,7 @@ class LoadImageActivity : AppCompatActivity() {
     private lateinit var mapName: String
     protected lateinit var scanBtn: Button
     lateinit var oldMarkers: SavedMarkerView
+    private val api = PowaApi.getInstance(this)
     lateinit var markerSwitch: Switch
     lateinit var context: Context
     lateinit var multiScanToggle: Switch
@@ -332,13 +334,16 @@ class LoadImageActivity : AppCompatActivity() {
                     mapEditText.setError("Bitte gib einen gültigen Namen ein")
                 } else {
 
-                    if (db.insertMaps(mapName)) {
+                    if (api.getMapByName(this, mapName) == null) {
                         getGpsLocation(this) { location ->
                             db.updateLocationInTableMap(mapName, locationToString(location))
                         }
 
+                        val drawable = showImgIv.drawable as BitmapDrawable
+                        val bitmap = drawable.bitmap
+                        val map = de.freifunk.powa.model.Map(listOf(), mapName, null, bitmap)
                         mapNameDialog.dismiss()
-                        if (saveImage(mapName))
+                        if (api.addMap(this, map))
                             Toast.makeText(this, "Bild wurde erfolgreich gespeichert", Toast.LENGTH_SHORT).show()
                         else
                             Toast.makeText(this, "Bild konnte nicht gespeichert werden", Toast.LENGTH_SHORT).show()

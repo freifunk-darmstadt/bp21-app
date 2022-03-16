@@ -15,7 +15,9 @@ import de.freifunk.powa.model.Map
 import de.freifunk.powa.model.WiFiScanObject
 import de.freifunk.powa.scan.filterData
 import de.freifunk.powa.scan.scan
+import de.freifunk.powa.storeIntern.deleteFileFromInternalStorage
 import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
+import de.freifunk.powa.storeIntern.renameFileInInternalStorage
 import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import de.freifunk.powa.utils.ScanDBHelper
 import java.io.File
@@ -87,6 +89,9 @@ class PowaApi private constructor(context: Context) {
      * @return returns the map with the given name or null if no map with the name exists
      */
     fun getMapByName(context: Context, mapName: String): Map? {
+        if (mapName !in mapNames){
+            return null
+        }
         val dbHelper = ScanDBHelper(context)
         val images = loadListOfInternalStorageImages(context)
         val map: Map? by lazy {
@@ -98,6 +103,27 @@ class PowaApi private constructor(context: Context) {
                 images.filter { it.name ==  mapName}[0].bitmap)
         }
         return map
+    }
+
+    fun renameMap(context: Context, map: Map, newName: String){
+        renameFileInInternalStorage(context, map.name, newName)
+        val db = ScanDBHelper(context)
+        db.updateMapName(map.name, newName)
+
+        mapNames.remove(map.name)
+        mapNames.add(newName)
+    }
+
+    fun deleteMap(context: Context, map: Map) : Boolean{
+        if (map.name in mapNames){
+            return false
+        }
+        val db = ScanDBHelper(context)
+
+        deleteFileFromInternalStorage(context, map.name + ".jpg")
+        db.deleteMap(map.name)
+        mapNames.remove(map.name)
+        return true;
     }
 
     /**

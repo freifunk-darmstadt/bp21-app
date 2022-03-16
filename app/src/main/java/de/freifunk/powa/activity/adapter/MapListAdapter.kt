@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import de.freifunk.powa.R
+import de.freifunk.powa.api.PowaApi
 import de.freifunk.powa.model.InternalStorageImage
 import de.freifunk.powa.storeIntern.deleteFileFromInternalStorage
 import de.freifunk.powa.storeIntern.renameFileInInternalStorage
@@ -89,13 +90,12 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
      * @return true if the entry was successfully deleted
      */
     fun deleteMap(name: String): Boolean {
-        var db = ScanDBHelper(listContext)
+        val api = PowaApi.getInstance(listContext)
+        val returnVal = api.getMapByName(listContext, name)?.let { api.deleteMap(listContext, it) }
 
-        val returnVal = deleteFileFromInternalStorage(listContext, name + ".jpg")
-        db.deleteMap(name)
         Toast.makeText(listContext, "Karte wurde gelöscht", Toast.LENGTH_SHORT).show()
         activity.recreate()
-        return returnVal
+        return returnVal ?: false
     }
 
     /**
@@ -158,13 +158,15 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
             mapEditText.setError("Bitte gib einen gültigen Namen ein")
             return false
         }
-        var returnValue = db.updateMapName(oldName, name)
-        if (!(returnValue)) {
-            mapEditText.setError("Name existiert bereits!")
+        val api = PowaApi.getInstance(listContext)
+
+        if (api.getMapByName(listContext, name) != null) {
+            mapEditText.error = "Name existiert bereits!"
             return false
         }
         try {
-            renameFileInInternalStorage(listContext, oldName, name)
+            api.getMapByName(listContext, oldName)
+                ?.let { api.renameMap(listContext, it, name) }
         } catch (e: IOException) {
             Toast.makeText(listContext, "Bild konnte nicht gespeichert werden", Toast.LENGTH_SHORT).show()
             return false
