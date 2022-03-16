@@ -98,10 +98,8 @@ class ScanWrapper {
      */
     fun onFailure() {
         Toast.makeText(scanContext, "Scan fehlgeschlagen", Toast.LENGTH_SHORT).show()
-        scanBtn!!.isVisible = true
-        if (view != null) {
-            this.view!!.invalidate()
-        }
+        scanBtn?.isVisible = true
+        this.view?.invalidate()
     }
 
     /**
