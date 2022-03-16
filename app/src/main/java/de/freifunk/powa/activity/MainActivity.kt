@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.R
 import de.freifunk.powa.api.PowaApi
+import de.freifunk.powa.api.exporter.ExportConsumerJSON
 import de.freifunk.powa.permissions.GeneralPermissionRequestCode
 import de.freifunk.powa.permissions.LOCATION_STRING_SEPARATOR
 import de.freifunk.powa.permissions.PERMISSIONS
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val api = PowaApi.getInstance(this)
+        api.registerExporter(ExportConsumerJSON())
         val selectExporter = api.registerSelectExporter(this){
             api.shareData(this, api.exportData(this, it))
         }
