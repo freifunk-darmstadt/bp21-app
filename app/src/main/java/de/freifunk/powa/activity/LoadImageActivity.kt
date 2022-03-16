@@ -24,7 +24,6 @@ import androidx.core.view.isVisible
 import androidx.preference.PreferenceManager
 import de.freifunk.powa.activity.view.MarkerView
 import de.freifunk.powa.R
-import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.activity.view.SavedMarkerView
 import de.freifunk.powa.permissions.LOCATION_STRING_SEPARATOR
 import de.freifunk.powa.permissions.getGpsLocation
@@ -34,6 +33,7 @@ import de.freifunk.powa.scan.createThrottlingDialog
 import de.freifunk.powa.model.InternalStorageImage
 import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
+import de.freifunk.powa.utils.ScanDBHelper
 import kotlinx.coroutines.runBlocking
 import java.util.regex.Pattern
 import kotlin.math.max
