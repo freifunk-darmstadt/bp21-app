@@ -10,12 +10,12 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.ImageButton
-import android.widget.PopupMenu
-import android.widget.Toast
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
