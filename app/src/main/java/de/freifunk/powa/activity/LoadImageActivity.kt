@@ -127,26 +127,25 @@ class LoadImageActivity : AppCompatActivity() {
 
                     msCounter = Integer.parseInt(str)
                 }
+                val scanAct = ScanWrapper(
+                    this,
+                    mapName,
+                    markerView.initX,
+                    markerView.initY,
+                    scanBtn,
+                    msCounter,
+                    oldMarkers
+                )
+                scanAct.scanBtn = scanBtn
+                scanBtn.isVisible = false
+                createScanDialog(scanAct)
                 getGpsLocation(this) { location ->
                     var coords =
                         locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
                     var longitude = coords[0].toFloat()
                     var latitude = coords[1].toFloat()
 
-                    val scanAct = ScanWrapper(
-                        this,
-                        mapName,
-                        markerView.initX,
-                        markerView.initY,
-                        scanBtn,
-                        msCounter,
-                        longitude,
-                        latitude,
-                        oldMarkers
-                    )
-                    scanAct.scanBtn = scanBtn
-                    scanBtn.isVisible = false
-                    createScanDialog(scanAct)
+                    scanAct.updateLocation(longitude, latitude)
                 }
             } else {
                 getContent.launch("image/*")

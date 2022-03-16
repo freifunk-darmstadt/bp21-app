@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.core.view.isVisible
 import de.freifunk.powa.activity.view.SavedMarkerView
+import de.freifunk.powa.model.ScanInformation
 import de.freifunk.powa.model.WiFiScanObject
 import de.freifunk.powa.scan.scan
 import java.time.Instant
@@ -22,9 +23,12 @@ class ScanWrapper {
     private var multiScanCounter: Int = 0
     private var longitude: Float = 0f
     private var latitude: Float = 0f
+
+    private val scans = mutableListOf<WiFiScanObject>()
+
     var scanBtn: Button?
     var view: SavedMarkerView?
-    constructor(context: Context, name: String, x: Float?, y: Float?, btn: Button?, msCounter: Int, longitude: Float, latitude: Float, view: SavedMarkerView?) {
+    constructor(context: Context, name: String, x: Float?, y: Float?, btn: Button?, msCounter: Int, view: SavedMarkerView?) {
         scanContext = context
         tableMapName = name
         xCoordinate = x
@@ -32,8 +36,6 @@ class ScanWrapper {
         timeStamp = getTime()
         scanBtn = btn
         multiScanCounter = msCounter
-        this.longitude = longitude
-        this.latitude = latitude
         this.view = view
     }
 
@@ -43,7 +45,6 @@ class ScanWrapper {
      */
     fun onSuccess(results: List<ScanResult>) {
         results.forEach {
-            var db = ScanDBHelper(scanContext)
             var scanResults = WiFiScanObject()
             scanResults.bssid = it.BSSID
             scanResults.ssid = it.SSID
@@ -58,20 +59,32 @@ class ScanWrapper {
             scanResults.timestamp = timeStamp
             scanResults.xCoordinate = xCoordinate
             scanResults.yCoordinate = yCoordinate
-            scanResults.longitude = longitude
-            scanResults.latitude = latitude
-            if (Build.VERSION.SDK_INT >= 30) // only available in android API Level 30
-                scanResults.wifiStandard = it.wifiStandard // this order is important because of autoincrement in Scantable
 
-            db.insertScans(tableMapName, scanResults)
             if (Build.VERSION.SDK_INT >= 30) {
                 // only available in android API Level 30
                 it.informationElements.forEach {
                     var bytes = ByteArray(it.bytes.capacity())
                     it.bytes.get(bytes)
-                    db.insertInformation(it.id, it.idExt, bytes, timeStamp)
+
+                    val informations = mutableListOf<ScanInformation>()
+                    informations.add(ScanInformation(-1, it.id, it.idExt, bytes, timeStamp))
                 }
             }
+
+            if (longitude == 0f && latitude == 0f){
+                scanResults.longitude = longitude
+                scanResults.latitude = latitude
+
+                insertDataBase(scanResults)
+                for (inf in scanResults.scanInformation){
+                    insertInformation(inf)
+                }
+            } else {
+                scans.add(scanResults)
+            }
+
+            if (Build.VERSION.SDK_INT >= 30) // only available in android API Level 30
+                scanResults.wifiStandard = it.wifiStandard // this order is important because of autoincrement in Scantable
         }
         multiScanCounter--
         if (multiScanCounter > 0) {
@@ -91,6 +104,31 @@ class ScanWrapper {
             }
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
+    }
+
+    fun updateLocation(longitude: Float = 0f, latitude: Float = 0f){
+        this.longitude = longitude
+        this.latitude = latitude
+
+        for (scan in scans){
+            scan.latitude = latitude
+            scan.longitude = longitude
+            insertDataBase(scan)
+            for (inf in scan.scanInformation){
+                insertInformation(inf)
+            }
+        }
+        scans.clear()
+    }
+
+    private fun insertDataBase(scanResult: WiFiScanObject){
+        var db = ScanDBHelper(scanContext)
+        db.insertScans(tableMapName, scanResult)
+    }
+
+    private fun insertInformation(scanResult: ScanInformation){
+        var db = ScanDBHelper(scanContext)
+        db.insertInformation(scanResult.id, scanResult.extendedID, scanResult.data, scanResult.timestamp)
     }
 
     /**
