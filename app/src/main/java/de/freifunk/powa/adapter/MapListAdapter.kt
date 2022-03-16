@@ -1,5 +1,6 @@
 package de.freifunk.powa.adapter
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -29,10 +30,12 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
     var listResources: Int = 0
     var listOfImages: List<InternalStorageImage> = listOf()
     var newMapName: String = ""
-    constructor(context: Context, resource: Int, objects: List<InternalStorageImage>) : super(context, resource, objects) {
+    var activity: Activity
+    constructor(context: Context, resource: Int, objects: List<InternalStorageImage>, act: Activity) : super(context, resource, objects) {
         listContext = context
         listResources = resource
         listOfImages = objects
+        this.activity = act
     }
 
     /**
@@ -97,6 +100,7 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
         val returnVal = deleteFileFromInternalStorage(listContext, name + ".jpg")
         db.deleteMap(name)
         Toast.makeText(listContext, "Karte wurde gelöscht", Toast.LENGTH_SHORT).show()
+        activity.recreate()
         return returnVal
     }
 
@@ -132,6 +136,7 @@ class MapListAdapter : ArrayAdapter<InternalStorageImage> {
                         "Name wurde geändert",
                         Toast.LENGTH_SHORT
                     ).show()
+                    activity.recreate()
                     mapNameDialog.dismiss()
                 }
             }

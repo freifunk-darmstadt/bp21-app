@@ -1,5 +1,6 @@
 package de.freifunk.powa.image
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Rect
@@ -20,10 +21,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.preference.PreferenceManager
 import de.freifunk.powa.MainActivity
 import de.freifunk.powa.MarkerView
 import de.freifunk.powa.R
 import de.freifunk.powa.database.ScanDBHelper
+import de.freifunk.powa.permissions.LOCATION_STRING_SEPARATOR
 import de.freifunk.powa.permissions.getGpsLocation
 import de.freifunk.powa.permissions.locationToString
 import de.freifunk.powa.scan.ScanActivity
@@ -50,7 +53,8 @@ class LoadImageActivity : AppCompatActivity() {
     protected lateinit var scanBtn: Button
     lateinit var oldMarkers: SavedMarkerView
     lateinit var markerSwitch: Switch
-    lateinit var multiScanCounter: EditText
+    lateinit var context: Context
+    lateinit var multiScanToggle: Switch
 
     // create ComponentActivity to load and handle loading the image
     // A Dialog pops up after the User selects a map
@@ -77,9 +81,9 @@ class LoadImageActivity : AppCompatActivity() {
         markerGesture = GestureDetector(this, MarkerGestureListener())
         oldMarkers = findViewById(R.id.old_markers_view)
         markerSwitch = findViewById(R.id.switchMarkers)
-        multiScanCounter = findViewById(R.id.multiScanTextField)
+        multiScanToggle = findViewById(R.id.multiScanToggle)
         createThrottlingDialog(this)
-
+        context = this
         var name = intent.getStringExtra("mapName")
 
         if (name != null) {
@@ -113,36 +117,41 @@ class LoadImageActivity : AppCompatActivity() {
             showImgIv.isInvisible = true
         }
 
-        multiScanCounter.isInvisible = true
+        multiScanToggle.isInvisible = true
         supportActionBar!!.hide()
         scanBtn.setOnClickListener {
             if (scanBtn.text == resources.getString(R.string.start_scan)) {
-                var msCounterString = multiScanCounter.text.toString().trim()
-                var msCounter: Int
+                var msCounter: Int = 1
+                if (multiScanToggle.isChecked) {
+                    var str: String? = PreferenceManager.getDefaultSharedPreferences(context).getString(resources.getString(R.string.multiscan_key), "2")
 
-                if (msCounterString.length < 1) {
-                    msCounter = 1
-                } else {
-                    try {
-                        msCounter = Integer.parseInt(multiScanCounter.text.toString())
-                    } catch (e: NumberFormatException) {
-                        multiScanCounter.setError("Gib eine ganze Zahl ein!!!")
-                        return@setOnClickListener
-                    }
+                    msCounter = Integer.parseInt(str)
                 }
-                if (msCounter > 4 || msCounter < 1) {
-                    multiScanCounter.setError("Die Eingabe muss zwischen 1 und 4 liegen")
-                } else {
-                    val scanAct = ScanActivity(this, mapName, markerView.initX, markerView.initY, scanBtn, msCounter, multiScanCounter)
+                getGpsLocation(this) { location ->
+                    var coords =
+                        locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
+                    var longitude = coords[0].toFloat()
+                    var latitude = coords[1].toFloat()
+
+                    val scanAct = ScanActivity(
+                        this,
+                        mapName,
+                        markerView.initX,
+                        markerView.initY,
+                        scanBtn,
+                        msCounter,
+                        longitude,
+                        latitude,
+                        oldMarkers
+                    )
                     scanAct.scanBtn = scanBtn
                     scanBtn.isVisible = false
-                    multiScanCounter.isVisible = false
                     createScanDialog(scanAct)
                 }
             } else {
                 getContent.launch("image/*")
                 scanBtn.text = resources.getString(R.string.start_scan)
-                multiScanCounter.isVisible = false
+                multiScanToggle.isVisible = false
                 scanBtn.isVisible = false
             }
         }
@@ -154,6 +163,7 @@ class LoadImageActivity : AppCompatActivity() {
 
     /**
      * Creates a AlertDialog to ask the User if he/she wants to start a scan
+     * @param scanAct to start the scan
      */
     protected fun createScanDialog(scanAct: ScanActivity) {
 
@@ -174,7 +184,7 @@ class LoadImageActivity : AppCompatActivity() {
             }
             negBtn.setOnClickListener {
                 scanBtn.isVisible = true
-                multiScanCounter.isVisible = true
+                multiScanToggle.isVisible = true
                 scanDialog.dismiss()
             }
         }
@@ -182,6 +192,9 @@ class LoadImageActivity : AppCompatActivity() {
         scanDialog.show()
     }
 
+    /**
+     * Method for scrolling only
+     */
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         val historySize: Int
         val startX: Float
@@ -214,6 +227,9 @@ class LoadImageActivity : AppCompatActivity() {
         return super.onTouchEvent(event)
     }
 
+    /**
+     * @return return the height of the statusbar in px
+     */
     fun getHeight(): Int {
         val rectangle = Rect()
         window.decorView.getWindowVisibleDisplayFrame(rectangle)
@@ -221,6 +237,10 @@ class LoadImageActivity : AppCompatActivity() {
     }
 
     inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        /**
+         * Method for scaling the views
+         * @return true
+         */
         override fun onScale(detector: ScaleGestureDetector?): Boolean {
             scaleFactor *= detector!!.scaleFactor
             scaleFactor = max(minZoomFactor, min(scaleFactor, maxZoomFactor))
@@ -235,7 +255,34 @@ class LoadImageActivity : AppCompatActivity() {
     }
 
     inner class MarkerGestureListener : GestureDetector.SimpleOnGestureListener() {
+        /**
+         * Marks the position where the view was doubletapped
+         * @return return from super.onDoubleTap
+         */
         override fun onDoubleTap(e: MotionEvent?): Boolean {
+            if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)) {
+                setMarker(e)
+            }
+
+            return super.onDoubleTap(e)
+        }
+
+        /**
+         * Marks the position where the view was longpressed
+         * @param return from super.onLongPress
+         */
+        override fun onLongPress(e: MotionEvent?) {
+            if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)) {
+                setMarker(e)
+            }
+            super.onLongPress(e)
+        }
+
+        /**
+         * This Method sets a Marker
+         * @param e is the MotionEvent. It can be a LongPress or a doubletap
+         */
+        fun setMarker(e: MotionEvent?) {
             val statusBarHeight = getHeight()
             markerView.circleShouldDraw = true
             val middleX = showImgIv.width / 2
@@ -255,13 +302,7 @@ class LoadImageActivity : AppCompatActivity() {
             }
             markerView.invalidate()
             scanBtn.isInvisible = false
-            multiScanCounter.isInvisible = false
-
-            return super.onDoubleTap(e)
-        }
-
-        fun dpFromPx(px: Float): Float {
-            return px / resources.displayMetrics.density
+            multiScanToggle.isInvisible = false
         }
     }
 
