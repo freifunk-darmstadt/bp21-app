@@ -11,17 +11,16 @@ import android.text.InputType
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
-import android.widget.ImageView
 import android.widget.Button
-import android.widget.Switch
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.Switch
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.preference.ListPreference
 import androidx.preference.PreferenceManager
 import de.freifunk.powa.MainActivity
 import de.freifunk.powa.MarkerView
@@ -32,7 +31,6 @@ import de.freifunk.powa.permissions.getGpsLocation
 import de.freifunk.powa.permissions.locationToString
 import de.freifunk.powa.scan.ScanActivity
 import de.freifunk.powa.scan.createThrottlingDialog
-import de.freifunk.powa.settings.MySettingsFragment
 import de.freifunk.powa.storeIntern.InternalStorageImage
 import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
 import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
@@ -124,8 +122,8 @@ class LoadImageActivity : AppCompatActivity() {
         scanBtn.setOnClickListener {
             if (scanBtn.text == resources.getString(R.string.start_scan)) {
                 var msCounter: Int = 1
-                if(multiScanToggle.isChecked) {
-                    var str: String? = PreferenceManager.getDefaultSharedPreferences(context).getString(resources.getString(R.string.multiscan_key),"2")
+                if (multiScanToggle.isChecked) {
+                    var str: String? = PreferenceManager.getDefaultSharedPreferences(context).getString(resources.getString(R.string.multiscan_key), "2")
 
                     msCounter = Integer.parseInt(str)
                 }
@@ -161,7 +159,6 @@ class LoadImageActivity : AppCompatActivity() {
         markerSwitch.setOnClickListener {
             oldMarkers.isInvisible = markerSwitch.isChecked
         }
-
     }
 
     /**
@@ -263,7 +260,7 @@ class LoadImageActivity : AppCompatActivity() {
          * @return return from super.onDoubleTap
          */
         override fun onDoubleTap(e: MotionEvent?): Boolean {
-            if(!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)){
+            if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)) {
                 setMarker(e)
             }
 
@@ -275,7 +272,7 @@ class LoadImageActivity : AppCompatActivity() {
          * @param return from super.onLongPress
          */
         override fun onLongPress(e: MotionEvent?) {
-            if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)){
+            if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)) {
                 setMarker(e)
             }
             super.onLongPress(e)
@@ -285,7 +282,7 @@ class LoadImageActivity : AppCompatActivity() {
          * This Method sets a Marker
          * @param e is the MotionEvent. It can be a LongPress or a doubletap
          */
-        fun setMarker(e: MotionEvent?){
+        fun setMarker(e: MotionEvent?) {
             val statusBarHeight = getHeight()
             markerView.circleShouldDraw = true
             val middleX = showImgIv.width / 2

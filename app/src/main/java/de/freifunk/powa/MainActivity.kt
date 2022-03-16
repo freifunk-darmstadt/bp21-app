@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.image.MapListActivity
-import de.freifunk.powa.permissions.* //ktlint-disable no-wildcard-imports
+import de.freifunk.powa.permissions.* // ktlint-disable no-wildcard-imports
 import de.freifunk.powa.scan.ScanActivity
 import de.freifunk.powa.settings.SettingsActivity
 

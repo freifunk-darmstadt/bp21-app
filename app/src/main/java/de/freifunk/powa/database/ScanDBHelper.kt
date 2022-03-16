@@ -186,7 +186,7 @@ class ScanDBHelper(val context: Context) :
      * @param timeStamp timestamp of the corresponding scanresult
      */
     @SuppressLint("Range")
-    fun insertInformation(id: Int, extid: Int,byte: ByteArray, timeStamp: String) {
+    fun insertInformation(id: Int, extid: Int, byte: ByteArray, timeStamp: String) {
         var db = this.writableDatabase
         var value = ContentValues()
         var scanID: Int?

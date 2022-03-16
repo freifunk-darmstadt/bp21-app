@@ -48,8 +48,8 @@ class ScanDBHelperTest {
             var actualValue = dataBase.insertMaps(mapName)
             var db = dataBase.writableDatabase
             var query = " SELECT * FROM " + dataBase.MAP_TABLE_NAME +
-              " WHERE " + dataBase.COLUMN_MAP_NAME + "='" + mapName + "';"
-          var cursor = db.rawQuery(query, null)
+                " WHERE " + dataBase.COLUMN_MAP_NAME + "='" + mapName + "';"
+            var cursor = db.rawQuery(query, null)
 
             assertEquals(1, cursor.count)
             assertEquals(expectedValue, actualValue)
@@ -64,7 +64,7 @@ class ScanDBHelperTest {
         insertScanData(listOfLines, mapName)
 
         var db = dataBase.writableDatabase
-        var cursor = getCursor(db,dataBase.SCAN_TABLE, "*")
+        var cursor = getCursor(db, dataBase.SCAN_TABLE, "*")
         assertEquals(listOfLines.size, cursor.count)
     }
 
@@ -76,7 +76,7 @@ class ScanDBHelperTest {
 
         insertScanData(listOfLines, mapName)
         var db = dataBase.writableDatabase
-        var cursor = getCursor(db,dataBase.SCAN_TABLE,"*")
+        var cursor = getCursor(db, dataBase.SCAN_TABLE, "*")
         assertEquals(listOfLines.size, cursor.count)
         var timeStampScans = scanner.scan(thisContext, "readDataTestCase.txt")
         var line = scanner.decomposeString(timeStampScans[0], ";")
@@ -92,47 +92,46 @@ class ScanDBHelperTest {
         insertScanData(listOflinesOfScans, mapName)
         listOfLinesOfElements.forEach {
             var line = scanner.decomposeString(it, ";")
-            dataBase.insertInformation(line[0].toInt(), line[1].toInt(),line[2].toByteArray(Charsets.UTF_8), line[3])
+            dataBase.insertInformation(line[0].toInt(), line[1].toInt(), line[2].toByteArray(Charsets.UTF_8), line[3])
         }
         var db = dataBase.writableDatabase
-        var cursor = getCursor(db,dataBase.INFORMATION_TABLE,"*")
+        var cursor = getCursor(db, dataBase.INFORMATION_TABLE, "*")
         assertEquals(listOfLinesOfElements.size, cursor.count)
     }
     @Test
-    fun readScans(){
+    fun readScans() {
         var listOfLines = scanner.scan(thisContext, "insertDataTestCase.txt")
         var mapName = "TestTable"
         dataBase.insertMaps(mapName)
         insertScanData(listOfLines, mapName)
         var db = dataBase.writableDatabase
-        var cursor = getCursor(db,dataBase.SCAN_TABLE,"*")
+        var cursor = getCursor(db, dataBase.SCAN_TABLE, "*")
         assertEquals(listOfLines.size, cursor.count)
         var listOfTestData = scanner.scan(thisContext, "readDataTestCase.txt")
         var listOfScans = dataBase.readScans(mapName)
         assertEqualScanData(listOfTestData, listOfScans)
     }
     @Test
-    fun readInformationElement(){
+    fun readInformationElement() {
         var listOfLinesOfElements = scanner.scan(thisContext, "insertInfTestCase.txt")
         var listOflinesOfScans = scanner.scan(thisContext, "insertDataTestCase.txt")
         var mapName = "TestTable"
         dataBase.insertMaps(mapName)
         insertScanData(listOflinesOfScans, mapName)
         var db = dataBase.writableDatabase
-        var cursor = getCursor(db,dataBase.SCAN_TABLE, "MAX(" + dataBase.COLUMN_SCANS_INFORMATION_ID + ")")
+        var cursor = getCursor(db, dataBase.SCAN_TABLE, "MAX(" + dataBase.COLUMN_SCANS_INFORMATION_ID + ")")
         cursor.moveToNext()
         var index = cursor.getColumnIndex("MAX(" + dataBase.COLUMN_SCANS_INFORMATION_ID + ")")
         var scanID = cursor.getInt(index)
 
         listOfLinesOfElements.forEach {
             var line = scanner.decomposeString(it, ";")
-            dataBase.insertInformation(line[0].toInt(), line[1].toInt(),line[2].toByteArray(Charsets.UTF_8), line[3])
-
+            dataBase.insertInformation(line[0].toInt(), line[1].toInt(), line[2].toByteArray(Charsets.UTF_8), line[3])
         }
 
         var listOfElementsFromDatabase = dataBase.readInformationElement(scanID)
         var i = 0
-        listOfElementsFromDatabase.forEach{
+        listOfElementsFromDatabase.forEach {
             var lines = scanner.decomposeString(listOfLinesOfElements[i], ";")
             assertEquals(it.id, lines[0].toInt())
             assertEquals(it.extendedID, lines[1].toInt())
@@ -140,39 +139,38 @@ class ScanDBHelperTest {
             assertEquals(it.timestamp, lines[3])
             i++
         }
-
     }
     @Test
-    fun updateLocationInTableMap(){
+    fun updateLocationInTableMap() {
         var listOfLines = scanner.scan(thisContext, "gpsTestCase.txt")
         updateLocationFromData(listOfLines)
         var db = dataBase.writableDatabase
-        var cursor = getCursor(db,dataBase.MAP_TABLE_NAME,"*")
-        if(cursor.count > 0){
+        var cursor = getCursor(db, dataBase.MAP_TABLE_NAME, "*")
+        if (cursor.count > 0) {
             cursor.moveToFirst()
-            var i=0
-            do{
+            var i = 0
+            do {
                 var lines = scanner.decomposeString(listOfLines[i], ";")
                 var currentName = cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_NAME))
                 var currentLocation = cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_MAP_LOCATION))
                 assertEquals(currentName, lines[0])
                 assertEquals(currentLocation, lines[1])
                 i++
-            }while (cursor.moveToNext())
+            } while (cursor.moveToNext())
         }
     }
     @Test
-    fun readMapLocation(){
+    fun readMapLocation() {
         var listOfLines = scanner.scan(thisContext, "gpsTestCase.txt")
         updateLocationFromData(listOfLines)
         listOfLines.forEach {
             var line = scanner.decomposeString(it, ";")
             var actualLocation = dataBase.readMapLocation(line[0])
-            assertEquals(line[1],actualLocation )
+            assertEquals(line[1], actualLocation)
         }
     }
     @Test
-    fun readCoordinates(){
+    fun readCoordinates() {
         var listOflines = scanner.scan(thisContext, "readCoordinatesTestCase.txt")
         var mapName = "TestTable"
         dataBase.insertMaps(mapName)
@@ -181,17 +179,16 @@ class ScanDBHelperTest {
         var cursor = getCursor(db, dataBase.SCAN_TABLE, "*")
         assertEquals(listOflines.size, cursor.count)
         var listOfPair = dataBase.readCoordinates(mapName)
-        var i=0
-        listOflines.forEach{
-            var lines = scanner.decomposeString(it,";")
-            assertEquals(lines[1].toFloat(), listOfPair!!.get(i).first )
+        var i = 0
+        listOflines.forEach {
+            var lines = scanner.decomposeString(it, ";")
+            assertEquals(lines[1].toFloat(), listOfPair!!.get(i).first)
             assertEquals(lines[2].toFloat(), listOfPair!!.get(i).second)
             i++
         }
-
     }
     @Test
-    fun updateMapName(){
+    fun updateMapName() {
         var listOfLines = scanner.scan(thisContext, "insertDataTestCase.txt")
         var mapName = "TestTable"
         var newMap = "NewMap"
@@ -199,35 +196,34 @@ class ScanDBHelperTest {
         insertScanData(listOfLines, mapName)
         dataBase.updateMapName(mapName, newMap)
         var db = dataBase.writableDatabase
-        var cursor = getCursor(db,dataBase.SCAN_TABLE, "*")
-        var cursorMap = getCursor(db,dataBase.MAP_TABLE_NAME, "*")
-        if(cursorMap.count > 0) {
+        var cursor = getCursor(db, dataBase.SCAN_TABLE, "*")
+        var cursorMap = getCursor(db, dataBase.MAP_TABLE_NAME, "*")
+        if (cursorMap.count > 0) {
             cursorMap.moveToFirst()
             var mapInMapTable = cursorMap.getString(cursorMap.getColumnIndex(dataBase.COLUMN_MAP_NAME))
             assertEquals(newMap, mapInMapTable)
         }
-        if(cursor.count > 0){
+        if (cursor.count > 0) {
             cursor.moveToFirst()
-            var i =0
-            do{
+            var i = 0
+            do {
                 var currentName = cursor.getString(cursor.getColumnIndex(dataBase.COLUMN_SCANS_MAP_NAME))
                 assertEquals(currentName, newMap)
                 i++
-
-            }while(cursor.moveToNext())
+            } while (cursor.moveToNext())
         }
     }
     @Test
-    fun deleteMap(){
+    fun deleteMap() {
         var listOfLines = scanner.scan(thisContext, "insertDataTestCase.txt")
         var mapName = "TestTable"
         dataBase.insertMaps(mapName)
         insertScanData(listOfLines, mapName)
         dataBase.deleteMap(mapName)
         var db = dataBase.writableDatabase
-        var cursor = getCursor(db,dataBase.SCAN_TABLE, "*")
-        var cursorMap = getCursor(db,dataBase.MAP_TABLE_NAME, "*")
-        var cursorMapInformation = getCursor(db,dataBase.INFORMATION_TABLE, "*")
+        var cursor = getCursor(db, dataBase.SCAN_TABLE, "*")
+        var cursorMap = getCursor(db, dataBase.MAP_TABLE_NAME, "*")
+        var cursorMapInformation = getCursor(db, dataBase.INFORMATION_TABLE, "*")
         assertEquals(0, cursor.count)
         assertEquals(0, cursorMap.count)
         assertEquals(0, cursorMapInformation.count)
@@ -256,7 +252,7 @@ class ScanDBHelperTest {
      * @param listOfLines List of the TestData
      * @param mapName name where the Scandata should be stored with
      */
-    fun insertScanData(listOfLines: MutableList<String>, mapName: String){
+    fun insertScanData(listOfLines: MutableList<String>, mapName: String) {
         listOfLines.forEach {
             var line = scanner.decomposeString(it, ";")
             var wifiScanner = WiFiScanObject()
@@ -285,8 +281,8 @@ class ScanDBHelperTest {
      * @param column specifying the column for the query
      * @return returns the Cursor
      */
-    fun getCursor(db: SQLiteDatabase,tableName: String, column: String): Cursor{
-        var query = " SELECT "+ column + " FROM " + tableName
+    fun getCursor(db: SQLiteDatabase, tableName: String, column: String): Cursor {
+        var query = " SELECT " + column + " FROM " + tableName
         var cursor = db.rawQuery(query, null)
         return cursor
     }
@@ -295,8 +291,8 @@ class ScanDBHelperTest {
      * This Method updates the Database with the given TestData
      * @param listOfLines TestData which will be inserted into the database
      */
-    fun updateLocationFromData(listOfLines: MutableList<String>){
-        listOfLines.forEach{
+    fun updateLocationFromData(listOfLines: MutableList<String>) {
+        listOfLines.forEach {
             var line = scanner.decomposeString(it, ";")
             var mapName = line[0]
             var location = line[1]
@@ -310,7 +306,7 @@ class ScanDBHelperTest {
      * @param listOflines List of expected Values from the TestData
      * @param listOfScans List of actual Values which can be read from the Database
      */
-    fun assertEqualScanData(listOflines: MutableList<String>, listOfScans: List<WiFiScanObject>?){
+    fun assertEqualScanData(listOflines: MutableList<String>, listOfScans: List<WiFiScanObject>?) {
         var index = 0
         listOflines.forEach {
             var line = scanner.decomposeString(it, ";")
