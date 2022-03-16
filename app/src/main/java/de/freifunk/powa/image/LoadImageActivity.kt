@@ -122,10 +122,10 @@ class LoadImageActivity : AppCompatActivity() {
         scanBtn.setOnClickListener {
             if (scanBtn.text == resources.getString(R.string.start_scan)) {
                 var msCounter: Int = 1
-                if(multiScanToggle.isChecked) {
-                    msCounter = PreferenceManager.getDefaultSharedPreferences(context).getInt(resources.getString(R.string.multiscan_key),1)
+                if (multiScanToggle.isChecked) {
+                    var str: String? = PreferenceManager.getDefaultSharedPreferences(context).getString(resources.getString(R.string.multiscan_key), "2")
 
-
+                    msCounter = Integer.parseInt(str)
                 }
                 getGpsLocation(this) { location ->
                     var coords =
@@ -180,6 +180,7 @@ class LoadImageActivity : AppCompatActivity() {
             val negBtn = scanDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             posBtn.setOnClickListener {
                 scanAct.startScan()
+
                 scanDialog.dismiss()
             }
             negBtn.setOnClickListener {
@@ -260,20 +261,29 @@ class LoadImageActivity : AppCompatActivity() {
          * @return return from super.onDoubleTap
          */
         override fun onDoubleTap(e: MotionEvent?): Boolean {
-            if(!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)){
+            if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)) {
                 setMarker(e)
             }
 
             return super.onDoubleTap(e)
         }
 
+        /**
+         * Marks the position where the view was longpressed
+         * @param return from super.onLongPress
+         */
         override fun onLongPress(e: MotionEvent?) {
-            if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)){
+            if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("onLongtap", false)) {
                 setMarker(e)
             }
             super.onLongPress(e)
         }
-        fun setMarker(e: MotionEvent?){
+
+        /**
+         * This Method sets a Marker
+         * @param e is the MotionEvent. It can be a LongPress or a doubletap
+         */
+        fun setMarker(e: MotionEvent?) {
             val statusBarHeight = getHeight()
             markerView.circleShouldDraw = true
             val middleX = showImgIv.width / 2

@@ -176,7 +176,8 @@ class ScanDBHelper(val context: Context) :
         value.put(COLUMN_SCANS_WIFISTANDARD, scan.wifiStandard)
         value.put(COLUMN_SCANS_GPS_LONGITUDE, scan.longitude)
         value.put(COLUMN_SCANS_GPS_LATITUDE, scan.latitude)
-        db.insert(SCAN_TABLE, null, value).toString()
+        // InformationID will be automatically inserted
+        db.insert(SCAN_TABLE, null, value)
 
         db.close()
     }
@@ -188,7 +189,7 @@ class ScanDBHelper(val context: Context) :
      * @param timeStamp timestamp of the corresponding scanresult
      */
     @SuppressLint("Range")
-    fun insertInformation(id: Int, extid: Int,byte: ByteArray, timeStamp: String) {
+    fun insertInformation(id: Int, extid: Int, byte: ByteArray, timeStamp: String) {
         var db = this.writableDatabase
         var value = ContentValues()
         var scanID: Int?
@@ -203,7 +204,7 @@ class ScanDBHelper(val context: Context) :
         value.put(COLUMN_INFORMATION_TABLE_ID, id)
         value.put(COLUMN_INFORMATION_TABLE_BYTES, byte)
         value.put(COLUMN_INFORMATION_TABLE_EXT_ID, extid)
-        db.insert(INFORMATION_TABLE, null, value).toString()
+        db.insert(INFORMATION_TABLE, null, value)
         db.close()
     }
 

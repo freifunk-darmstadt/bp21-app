@@ -37,7 +37,6 @@ class ScanActivity {
         this.longitude = longitude
         this.latitude = latitude
         this.view = view
-
     }
 
     /**
@@ -72,7 +71,7 @@ class ScanActivity {
                 it.informationElements.forEach {
                     var bytes = ByteArray(it.bytes.capacity())
                     it.bytes.get(bytes)
-                    db.insertInformation(it.id, it.idExt,bytes, timeStamp)
+                    db.insertInformation(it.id, it.idExt, bytes, timeStamp)
                 }
             }
         }
@@ -80,9 +79,9 @@ class ScanActivity {
         if (multiScanCounter > 0) {
             startScan()
         } else if (multiScanCounter == 0) {
-            if (scanBtn != null ) {
+            if (scanBtn != null) {
                 scanBtn!!.isVisible = true
-                if(view != null) {
+                if (view != null) {
                     val db = ScanDBHelper(this.scanContext)
                     val crdOfMarkers = db.readCoordinates(this.tableMapName)
 
@@ -94,7 +93,6 @@ class ScanActivity {
             }
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
-
     }
 
     /**
@@ -103,7 +101,7 @@ class ScanActivity {
     fun onFailure() {
         Toast.makeText(scanContext, "Scan fehlgeschlagen", Toast.LENGTH_SHORT).show()
         scanBtn!!.isVisible = true
-        if(view != null) {
+        if (view != null) {
             this.view!!.invalidate()
         }
     }

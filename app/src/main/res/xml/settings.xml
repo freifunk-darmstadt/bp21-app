@@ -8,7 +8,7 @@
         android:key="onLongtap"
         android:title="@string/longtap_switch" />
     <ListPreference
-        android:defaultValue="1"
+        android:defaultValue="2"
         android:entries="@array/multiscan_array"
         android:entryValues="@array/multiscan_values"
         android:key="@string/multiscan_key"

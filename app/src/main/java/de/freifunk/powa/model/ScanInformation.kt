@@ -4,7 +4,7 @@ package de.freifunk.powa.model
  * This Class stores all additional information retrieved from a scan.
  * The [id] of the scan, the actual [data] of the Scan and the [timestamp] at which the scan was made
  */
-data class ScanInformation(val scandid: Int, val id: Int, val extendedID: Int,val data: ByteArray, val timestamp: String) {
+data class ScanInformation(val scandid: Int, val id: Int, val extendedID: Int, val data: ByteArray, val timestamp: String) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
