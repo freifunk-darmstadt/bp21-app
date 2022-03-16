@@ -173,6 +173,7 @@ class ScanDBHelper(val context: Context) :
         value.put(COLUMN_SCANS_WIFISTANDARD, scan.wifiStandard)
         value.put(COLUMN_SCANS_GPS_LONGITUDE, scan.longitude)
         value.put(COLUMN_SCANS_GPS_LATITUDE, scan.latitude)
+        // InformationID will be automatically inserted
         db.insert(SCAN_TABLE, null, value)
 
         db.close()
