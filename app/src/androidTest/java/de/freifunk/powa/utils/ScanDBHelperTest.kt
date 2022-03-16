@@ -1,4 +1,4 @@
-package de.freifunk.powa.database
+package de.freifunk.powa.utils
 
 import android.content.Context
 import android.database.Cursor

@@ -1,10 +1,14 @@
-package de.freifunk.powa.storeIntern
+package de.freifunk.powa.utils
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.core.graphics.set
 import androidx.test.platform.app.InstrumentationRegistry
+import de.freifunk.powa.storeIntern.deleteFileFromInternalStorage
+import de.freifunk.powa.storeIntern.loadListOfInternalStorageImages
+import de.freifunk.powa.storeIntern.mapDir
+import de.freifunk.powa.storeIntern.saveBitmapToInternalStorage
 import junit.framework.Assert.* // ktlint-disable no-wildcard-imports
 import junit.framework.AssertionFailedError
 import org.junit.After

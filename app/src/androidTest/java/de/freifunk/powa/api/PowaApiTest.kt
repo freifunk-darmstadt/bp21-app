@@ -4,10 +4,10 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.core.graphics.set
 import androidx.test.platform.app.InstrumentationRegistry
-import de.freifunk.powa.database.ScanDBHelper
 import de.freifunk.powa.model.Map
 import de.freifunk.powa.model.ScanInformation
 import de.freifunk.powa.model.WiFiScanObject
+import de.freifunk.powa.utils.ScanDBHelper
 import org.junit.After
 import org.junit.Assert.* // ktlint-disable no-wildcard-imports
 import org.junit.Before
