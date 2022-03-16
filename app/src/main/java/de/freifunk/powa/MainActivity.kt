@@ -10,7 +10,7 @@ import de.freifunk.powa.api.ExportConsumerJSON
 import de.freifunk.powa.api.PowaApi
 import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.image.MapListActivity
-import de.freifunk.powa.permissions.*
+import de.freifunk.powa.permissions.* //ktlint-disable no-wildcard-imports
 import de.freifunk.powa.scan.ScanActivity
 import kotlinx.android.synthetic.main.activity_load_image.*
 
