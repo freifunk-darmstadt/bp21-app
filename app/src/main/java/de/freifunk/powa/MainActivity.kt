@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import de.freifunk.powa.api.PowaApi
 import de.freifunk.powa.image.LoadImageActivity
 import de.freifunk.powa.image.MapListActivity
 import de.freifunk.powa.permissions.GeneralPermissionRequestCode
@@ -27,18 +28,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        /*val api = PowaApi.getInstance(this)
-        api.registerExporter(ExportConsumerJSON())
-        val selectExporter = api.registerSelectExporter(this) {
-            api.shareData(this, api.exportData(this, consumer = it))
-        }*/
-
         findViewById<Button>(R.id.goToLoadImageActivityBtn).setOnClickListener {
             startActivity(Intent(this, LoadImageActivity::class.java))
         }
 
 
-        goToScanActivityBtn.setOnClickListener {
+        findViewById<Button>(R.id.goToScanActivityBtn).setOnClickListener {
             getGpsLocation(this) { location ->
                 var coords =
                     locationToString(location).split(LOCATION_STRING_SEPARATOR).toTypedArray()
@@ -53,6 +48,11 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.mainToListBtn).setOnClickListener {
             startActivity(Intent(this, MapListActivity::class.java))
+        }
+
+        val api = PowaApi.getInstance(this)
+        val selectExporter = api.registerSelectExporter(this){
+            api.shareData(this, api.exportData(this, it))
         }
 
         findViewById<Button>(R.id.exportBtn).setOnClickListener {
