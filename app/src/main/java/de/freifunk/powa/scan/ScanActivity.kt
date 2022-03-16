@@ -1,10 +1,8 @@
 package de.freifunk.powa.scan
 
-import android.app.Activity
 import android.content.Context
 import android.net.wifi.ScanResult
 import android.os.Build
-import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -93,7 +91,6 @@ class ScanActivity {
             }
         }
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
-
     }
 
     /**
