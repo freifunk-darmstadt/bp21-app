@@ -40,7 +40,7 @@ class PowaApiTest {
         val mapNames = listOf("Map1", "Map2", "Map3", "Map4", "Map5", "Map6", "Map7")
         val maps = HashMap<String, Map>()
         for (i in 0 until mapNames.size) {
-            val scans = listOf(generateScan(i*4 + 1), generateScan(i*4 + 2), generateScan(i*4 + 3), generateScan(i*4 + 4))
+            val scans = listOf(generateScan(i * 4 + 1), generateScan(i * 4 + 2), generateScan(i * 4 + 3), generateScan(i * 4 + 4))
             val map = generateMap(mapNames[i], scans)
             api.addMap(thisContext, map)
             maps[mapNames[i]] = map
@@ -58,12 +58,12 @@ class PowaApiTest {
 
         assertEquals("Number of stored maps does not match expected", 1, api.getMaps(thisContext).size)
         for (i in 0 until mapNames.size) {
-            val scans = listOf(generateScan(i*4 +1), generateScan(i*4 +  2), generateScan(i*4 + 3), generateScan(i*4 + 4))
+            val scans = listOf(generateScan(i * 4 + 1), generateScan(i * 4 + 2), generateScan(i * 4 + 3), generateScan(i * 4 + 4))
             val map = generateMap(mapNames[i], scans)
             maps.add(map)
             assertTrue("Api should return true after successfully adding map", api.addMap(thisContext, map))
         }
-        assertEquals("Number of stored maps does not match expected", mapNames.size+1, api.getMaps(thisContext).size)
+        assertEquals("Number of stored maps does not match expected", mapNames.size + 1, api.getMaps(thisContext).size)
         assertTrue("created map was not found in loaded maps", maps.all { map -> api.getMaps(thisContext).any { it == map } })
 
         assertFalse("Api should return false when trying to add existing map", api.addMap(thisContext, api.getMaps(thisContext)[0]))
@@ -132,9 +132,9 @@ class PowaApiTest {
         scanObject.level = Random(id).nextInt(-90, 0)
         scanObject.wifiStandard = Random(id).nextInt(0, 5)
         scanObject.xCoordinate = Random(id).nextFloat()
-        scanObject.yCoordinate = Random(id+1).nextFloat()
-        scanObject.longitude = Random(id+2).nextFloat()
-        scanObject.latitude = Random(id+3).nextFloat()
+        scanObject.yCoordinate = Random(id + 1).nextFloat()
+        scanObject.longitude = Random(id + 2).nextFloat()
+        scanObject.latitude = Random(id + 3).nextFloat()
         scanObject.informationID = id
 
         return scanObject

@@ -14,7 +14,7 @@ data class Map(
     val name: String,
     val location: String?,
     val image: Bitmap
-){
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -40,7 +40,7 @@ data class Map(
         return result
     }
 
-    private fun bitmapEquals(bitmap1: Bitmap, bitmap2: Bitmap) : Boolean{
+    private fun bitmapEquals(bitmap1: Bitmap, bitmap2: Bitmap): Boolean {
         val buffer1: ByteBuffer = ByteBuffer.allocate(bitmap1.height * bitmap1.rowBytes)
         bitmap1.copyPixelsToBuffer(buffer1)
         val buffer2: ByteBuffer = ByteBuffer.allocate(bitmap2.height * bitmap2.rowBytes)

@@ -71,14 +71,14 @@ class ScanWrapper {
                 }
             }
 
-            if (longitude == 0f && latitude == 0f){
+            if (longitude == 0f && latitude == 0f) {
                 scans.add(scanResults)
             } else {
                 scanResults.longitude = longitude
                 scanResults.latitude = latitude
 
                 insertDataBase(scanResults)
-                for (inf in scanResults.scanInformation){
+                for (inf in scanResults.scanInformation) {
                     insertInformation(inf)
                 }
             }
@@ -110,15 +110,15 @@ class ScanWrapper {
      * this function updates the gps location([longitude], [latitude]) on this wrapper object.
      * If scans await the location this will cause them to be stored in the database.
      */
-    fun updateLocation(longitude: Float = 0f, latitude: Float = 0f){
+    fun updateLocation(longitude: Float = 0f, latitude: Float = 0f) {
         this.longitude = longitude
         this.latitude = latitude
 
-        for (scan in scans){
+        for (scan in scans) {
             scan.latitude = latitude
             scan.longitude = longitude
             insertDataBase(scan)
-            for (inf in scan.scanInformation){
+            for (inf in scan.scanInformation) {
                 insertInformation(inf)
             }
         }
@@ -128,7 +128,7 @@ class ScanWrapper {
     /**
      * This function stores the scan [scanResult] to the database
      */
-    private fun insertDataBase(scanResult: WiFiScanObject){
+    private fun insertDataBase(scanResult: WiFiScanObject) {
         var db = ScanDBHelper(scanContext)
         db.insertScans(tableMapName, scanResult)
     }
@@ -136,7 +136,7 @@ class ScanWrapper {
     /**
      * This function stores the scan [information] to the database
      */
-    private fun insertInformation(information: ScanInformation){
+    private fun insertInformation(information: ScanInformation) {
         var db = ScanDBHelper(scanContext)
         db.insertInformation(information.id, information.extendedID, information.data, information.timestamp)
     }

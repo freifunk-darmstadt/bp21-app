@@ -20,8 +20,6 @@ import androidx.appcompat.app.AlertDialog
 import de.freifunk.powa.R
 import de.freifunk.powa.api.PowaApi
 import de.freifunk.powa.model.InternalStorageImage
-import de.freifunk.powa.storeIntern.deleteFileFromInternalStorage
-import de.freifunk.powa.storeIntern.renameFileInInternalStorage
 import de.freifunk.powa.utils.ScanDBHelper
 import java.io.IOException
 import java.util.regex.Pattern

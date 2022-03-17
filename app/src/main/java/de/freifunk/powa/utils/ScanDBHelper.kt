@@ -7,9 +7,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import de.freifunk.powa.model.ScanInformation
 import de.freifunk.powa.model.WiFiScanObject
-import java.lang.Exception
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 import java.util.LinkedList
 
 val DATABASE_NAME = "ScansDB"
@@ -274,7 +271,7 @@ class ScanDBHelper(val context: Context) :
             cursor.moveToFirst()
             do {
                 val scan: WiFiScanObject by lazy {
-                    val rtn =  WiFiScanObject()
+                    val rtn = WiFiScanObject()
                     rtn.bssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_BSSID))
                     rtn.ssid = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_SSID))
                     rtn.capabilities = cursor.getString(cursor.getColumnIndex(COLUMN_SCANS_CAPABILITIES))

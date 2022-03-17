@@ -21,12 +21,12 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter", "json", "no descripti
     private fun getJsonFile(file: File, maps: MutableList<Map>) {
         val it = maps.iterator()
         file.appendText("{\"maps\": [")
-        while (it.hasNext()){
+        while (it.hasNext()) {
             val map = it.next()
             it.remove()
 
             mapToString(file, map)
-            if (it.hasNext()){
+            if (it.hasNext()) {
                 file.appendText(",")
             }
         }
@@ -37,10 +37,12 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter", "json", "no descripti
      * @return the JSON-Object-Representation of a MapObject as String
      */
     private fun mapToString(file: File, map: Map) {
-        file.appendText( "{" +
-            "\"name\": \"${map.name}\"," +
-            "\"location\": \"${map.name}\"," +
-            "\"scans:\": ")
+        file.appendText(
+            "{" +
+                "\"name\": \"${map.name}\"," +
+                "\"location\": \"${map.name}\"," +
+                "\"scans:\": "
+        )
         getJSONArrayOfScans(file, map.scans.toMutableList())
         file.appendText("}")
     }
@@ -51,12 +53,12 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter", "json", "no descripti
     private fun getJSONArrayOfScans(file: File, scans: MutableList<WiFiScanObject>) {
         file.appendText("[")
         val it = scans.iterator()
-        while (it.hasNext()){
+        while (it.hasNext()) {
             val scan = it.next()
             it.remove()
 
             getWifiScanJSONObject(file, scan)
-            if (it.hasNext()){
+            if (it.hasNext()) {
                 file.appendText(",")
             }
         }
@@ -67,25 +69,29 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter", "json", "no descripti
      * @return the JSON-Object-Representation of a WifiScanObject as String
      */
     private fun getWifiScanJSONObject(file: File, wso: WiFiScanObject) {
-        file.appendText("{" +
-            "\"bssid\": \"${wso.bssid}\"," +
-            "\"ssid\": \"${wso.ssid}\"," +
-            "\"capabilities\": \"${wso.capabilities}\"," +
-            "\"centerFreq0\": ${wso.centerFreq0}," +
-            "\"centerFreq1\": ${wso.centerFreq1}," +
-            "\"channelWidth\": ${wso.channelWidth}," +
-            "\"frequency\": ${wso.frequency}," +
-            "\"level\": ${wso.level}," +
-            "\"operatorFriendlyName\": \"${wso.operatorFriendlyName}\"," +
-            "\"venueName\": \"${wso.venueName}\"," +
-            "\"xCoordinate\": ${wso.xCoordinate}," +
-            "\"yCoordinate\": ${wso.yCoordinate}," +
-            "\"informationID\": ${wso.informationID}," +
-            "\"scanInformation\": ")
+        file.appendText(
+            "{" +
+                "\"bssid\": \"${wso.bssid}\"," +
+                "\"ssid\": \"${wso.ssid}\"," +
+                "\"capabilities\": \"${wso.capabilities}\"," +
+                "\"centerFreq0\": ${wso.centerFreq0}," +
+                "\"centerFreq1\": ${wso.centerFreq1}," +
+                "\"channelWidth\": ${wso.channelWidth}," +
+                "\"frequency\": ${wso.frequency}," +
+                "\"level\": ${wso.level}," +
+                "\"operatorFriendlyName\": \"${wso.operatorFriendlyName}\"," +
+                "\"venueName\": \"${wso.venueName}\"," +
+                "\"xCoordinate\": ${wso.xCoordinate}," +
+                "\"yCoordinate\": ${wso.yCoordinate}," +
+                "\"informationID\": ${wso.informationID}," +
+                "\"scanInformation\": "
+        )
         getJSONArrayOfScanInformationList(file, wso.scanInformation.toMutableList())
-        file.appendText("," +
-            "\"timestamp\": \"${wso.timestamp}\"" +
-            "}")
+        file.appendText(
+            "," +
+                "\"timestamp\": \"${wso.timestamp}\"" +
+                "}"
+        )
     }
 
     /**
@@ -94,12 +100,12 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter", "json", "no descripti
     private fun getJSONArrayOfScanInformationList(file: File, sis: MutableList<ScanInformation>) {
         file.appendText("[")
         val it = sis.iterator()
-        while (it.hasNext()){
+        while (it.hasNext()) {
             val inf = it.next()
             it.remove()
 
             getScanInformationJSONObject(file, inf)
-            if (it.hasNext()){
+            if (it.hasNext()) {
                 file.appendText(",")
             }
         }
@@ -116,10 +122,11 @@ class ExportConsumerJSON : ExportConsumer("JSON Exporter", "json", "no descripti
         }
 
         val data = si.data.contentToString()
-        file.appendText("{" +
-            "\"id\": ${si.id}," +
-            "\"data\": \"$data\"" +
-            "}"
+        file.appendText(
+            "{" +
+                "\"id\": ${si.id}," +
+                "\"data\": \"$data\"" +
+                "}"
         )
     }
 }

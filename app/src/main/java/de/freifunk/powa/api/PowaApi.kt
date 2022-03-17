@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.wifi.ScanResult
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
@@ -58,7 +57,7 @@ class PowaApi private constructor(context: Context) {
         loadListOfInternalStorageImages(context).forEach {
             val scanData = dbHelper.readScans(it.name)
 
-            //maps.add(Map(scanData ?: listOf(), it.name, dbHelper.readMapLocation(it.name), it.bitmap))
+            // maps.add(Map(scanData ?: listOf(), it.name, dbHelper.readMapLocation(it.name), it.bitmap))
             mapNames.add(it.name)
         }
         mapNames.add(MainActivity.OUTDOOR_MAP_NAME)
@@ -81,7 +80,8 @@ class PowaApi private constructor(context: Context) {
                         scanData,
                         name,
                         dbHelper.readMapLocation(name),
-                        images.filter { it.name ==  name}.getOrNull(0)?.bitmap ?: Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565))
+                        images.filter { it.name == name }.getOrNull(0)?.bitmap ?: Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565)
+                    )
                 }
                 return@map map
             }.toMutableList()
@@ -92,7 +92,7 @@ class PowaApi private constructor(context: Context) {
      * @return returns the map with the given name or null if no map with the name exists
      */
     fun getMapByName(context: Context, mapName: String): Map? {
-        if (mapName !in mapNames){
+        if (mapName !in mapNames) {
             return null
         }
         val dbHelper = ScanDBHelper(context)
@@ -103,7 +103,8 @@ class PowaApi private constructor(context: Context) {
                 scanData ?: listOf(),
                 mapName,
                 dbHelper.readMapLocation(mapName),
-                images.filter { it.name ==  mapName}[0].bitmap)
+                images.filter { it.name == mapName }[0].bitmap
+            )
         }
         return map
     }
@@ -111,7 +112,7 @@ class PowaApi private constructor(context: Context) {
     /**
      * Renames the given [map] in the apps [context] to the [newName]
      */
-    fun renameMap(context: Context, map: Map, newName: String){
+    fun renameMap(context: Context, map: Map, newName: String) {
         renameFileInInternalStorage(context, map.name, newName)
         val db = ScanDBHelper(context)
         db.updateMapName(map.name, newName)
@@ -123,8 +124,8 @@ class PowaApi private constructor(context: Context) {
     /**
      * Deletes the given [map] in the apps [context]
      */
-    fun deleteMap(context: Context, map: Map) : Boolean{
-        if (map.name !in mapNames){
+    fun deleteMap(context: Context, map: Map): Boolean {
+        if (map.name !in mapNames) {
             return false
         }
         val db = ScanDBHelper(context)
@@ -132,7 +133,7 @@ class PowaApi private constructor(context: Context) {
         deleteFileFromInternalStorage(context, map.name + ".jpg")
         db.deleteMap(map.name)
         mapNames.remove(map.name)
-        return true;
+        return true
     }
 
     /**
@@ -150,7 +151,7 @@ class PowaApi private constructor(context: Context) {
         mapNames.add(mapToAdd.name)
         mapToAdd.scans.forEach {
             dbHelper.insertScans(mapToAdd.name, it)
-            it.scanInformation.forEach{
+            it.scanInformation.forEach {
                 dbHelper.insertInformation(it.id, it.extendedID, it.data, it.timestamp)
             }
         }
@@ -231,7 +232,7 @@ class PowaApi private constructor(context: Context) {
                     return -1
                 }
             }) {
-            //call callback if user selected a valid exporter
+            // call callback if user selected a valid exporter
             if (it != -1) {
                 callback(exporter[it])
             }
