@@ -72,6 +72,8 @@ class ScanWrapper {
             }
 
             if (longitude == 0f && latitude == 0f){
+                scans.add(scanResults)
+            } else {
                 scanResults.longitude = longitude
                 scanResults.latitude = latitude
 
@@ -79,8 +81,6 @@ class ScanWrapper {
                 for (inf in scanResults.scanInformation){
                     insertInformation(inf)
                 }
-            } else {
-                scans.add(scanResults)
             }
 
             if (Build.VERSION.SDK_INT >= 30) // only available in android API Level 30
@@ -106,6 +106,10 @@ class ScanWrapper {
         Toast.makeText(scanContext, "Scan war erfolgreich", Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * this function updates the gps location([longitude], [latitude]) on this wrapper object.
+     * If scans await the location this will cause them to be stored in the database.
+     */
     fun updateLocation(longitude: Float = 0f, latitude: Float = 0f){
         this.longitude = longitude
         this.latitude = latitude
@@ -121,14 +125,20 @@ class ScanWrapper {
         scans.clear()
     }
 
+    /**
+     * This function stores the scan [scanResult] to the database
+     */
     private fun insertDataBase(scanResult: WiFiScanObject){
         var db = ScanDBHelper(scanContext)
         db.insertScans(tableMapName, scanResult)
     }
 
-    private fun insertInformation(scanResult: ScanInformation){
+    /**
+     * This function stores the scan [information] to the database
+     */
+    private fun insertInformation(information: ScanInformation){
         var db = ScanDBHelper(scanContext)
-        db.insertInformation(scanResult.id, scanResult.extendedID, scanResult.data, scanResult.timestamp)
+        db.insertInformation(information.id, information.extendedID, information.data, information.timestamp)
     }
 
     /**

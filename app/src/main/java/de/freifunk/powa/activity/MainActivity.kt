@@ -20,8 +20,9 @@ import kotlinx.android.synthetic.main.activity_load_image.*
 
 class MainActivity : AppCompatActivity() {
 
-    private var outdoorName = "Outdoormap_Scan_Collection"
-
+    companion object {
+        const val OUTDOOR_MAP_NAME = "Outdoormap_Scan_Collection"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +40,8 @@ class MainActivity : AppCompatActivity() {
                 var longitude = coords[0].toFloat()
                 var latitude = coords[1].toFloat()
 
-                var gpsScan = ScanWrapper(this, outdoorName, null, null, null, 1, null)
+                var gpsScan = ScanWrapper(this,
+                    Companion.OUTDOOR_MAP_NAME, null, null, null, 1, null)
                 gpsScan.updateLocation(longitude, latitude)
                 gpsScan.startScan()
             }

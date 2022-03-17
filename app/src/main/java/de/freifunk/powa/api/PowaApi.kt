@@ -2,6 +2,7 @@ package de.freifunk.powa.api
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.wifi.ScanResult
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -11,6 +12,7 @@ import androidx.core.content.FileProvider
 import de.freifunk.powa.BuildConfig
 import de.freifunk.powa.activity.ExportActivity
 import de.freifunk.powa.activity.LoadImageActivity
+import de.freifunk.powa.activity.MainActivity
 import de.freifunk.powa.model.Map
 import de.freifunk.powa.model.WiFiScanObject
 import de.freifunk.powa.scan.filterData
@@ -59,6 +61,7 @@ class PowaApi private constructor(context: Context) {
             //maps.add(Map(scanData ?: listOf(), it.name, dbHelper.readMapLocation(it.name), it.bitmap))
             mapNames.add(it.name)
         }
+        mapNames.add(MainActivity.OUTDOOR_MAP_NAME)
     }
 
     /**
@@ -78,7 +81,7 @@ class PowaApi private constructor(context: Context) {
                         scanData,
                         name,
                         dbHelper.readMapLocation(name),
-                        images.filter { it.name ==  name}[0].bitmap)
+                        images.filter { it.name ==  name}.getOrNull(0)?.bitmap ?: Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565))
                 }
                 return@map map
             }.toMutableList()
@@ -105,6 +108,9 @@ class PowaApi private constructor(context: Context) {
         return map
     }
 
+    /**
+     * Renames the given [map] in the apps [context] to the [newName]
+     */
     fun renameMap(context: Context, map: Map, newName: String){
         renameFileInInternalStorage(context, map.name, newName)
         val db = ScanDBHelper(context)
@@ -114,6 +120,9 @@ class PowaApi private constructor(context: Context) {
         mapNames.add(newName)
     }
 
+    /**
+     * Deletes the given [map] in the apps [context]
+     */
     fun deleteMap(context: Context, map: Map) : Boolean{
         if (map.name in mapNames){
             return false
@@ -135,7 +144,7 @@ class PowaApi private constructor(context: Context) {
      */
     fun addMap(context: Context, mapToAdd: Map): Boolean {
         val dbHelper = ScanDBHelper(context)
-        if (!dbHelper.insertMaps(mapToAdd.name)) {
+        if (mapToAdd.name in mapNames || !dbHelper.insertMaps(mapToAdd.name)) {
             return false
         }
         mapNames.add(mapToAdd.name)
