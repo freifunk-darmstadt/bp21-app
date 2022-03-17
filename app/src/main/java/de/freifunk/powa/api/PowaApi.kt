@@ -124,7 +124,7 @@ class PowaApi private constructor(context: Context) {
      * Deletes the given [map] in the apps [context]
      */
     fun deleteMap(context: Context, map: Map) : Boolean{
-        if (map.name in mapNames){
+        if (map.name !in mapNames){
             return false
         }
         val db = ScanDBHelper(context)
