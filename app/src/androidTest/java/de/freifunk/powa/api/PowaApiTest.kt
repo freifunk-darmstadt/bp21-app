@@ -56,14 +56,14 @@ class PowaApiTest {
         val mapNames = listOf("addMap1", "addMap2", "addMap3", "addMap4", "addMap5", "addMap6", "addMap7")
         val maps = mutableListOf<Map>()
 
-        assertEquals("Number of stored maps does not match expected", 0, api.getMaps(thisContext).size)
+        assertEquals("Number of stored maps does not match expected", 1, api.getMaps(thisContext).size)
         for (i in 0 until mapNames.size) {
             val scans = listOf(generateScan(i*4 +1), generateScan(i*4 +  2), generateScan(i*4 + 3), generateScan(i*4 + 4))
             val map = generateMap(mapNames[i], scans)
             maps.add(map)
             assertTrue("Api should return true after successfully adding map", api.addMap(thisContext, map))
         }
-        assertEquals("Number of stored maps does not match expected", mapNames.size, api.getMaps(thisContext).size)
+        assertEquals("Number of stored maps does not match expected", mapNames.size+1, api.getMaps(thisContext).size)
         assertTrue("created map was not found in loaded maps", maps.all { map -> api.getMaps(thisContext).any { it == map } })
 
         assertFalse("Api should return false when trying to add existing map", api.addMap(thisContext, api.getMaps(thisContext)[0]))
