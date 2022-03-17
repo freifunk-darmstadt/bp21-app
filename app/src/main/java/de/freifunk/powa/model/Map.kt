@@ -2,7 +2,7 @@ package de.freifunk.powa.model
 
 import android.graphics.Bitmap
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.Arrays
 
 /**
  * Stores data about a Map with the name [name] that is roughly located at [location].
